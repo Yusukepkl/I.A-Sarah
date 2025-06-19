@@ -21,8 +21,8 @@ Passo a passo para instalar o Gestor de Alunos
 
 5. **Usar o sistema**
    - Clique em "Adicionar" para registrar um novo aluno.
-   - Selecione um aluno e clique em "Detalhes" para inserir planos, pagamentos,
-     progresso, dieta e treino.
+   - Selecione um aluno na lista para visualizar e editar plano, pagamento,
+     progresso, dieta e treino no painel lateral.
    - Os botões "Treino PDF" e "Dieta PDF" exportam os textos para arquivos PDF
      na mesma pasta.
 
