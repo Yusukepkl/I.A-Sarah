@@ -25,19 +25,22 @@ class DetalhesWindow(tk.Toplevel):
         super().__init__()
         self.title(f"Detalhes do Aluno {dados[1]}")
         self.aluno_id = aluno_id
+        self.configure(padx=20, pady=20)
         labels = ["Plano", "Pagamento", "Progresso", "Dieta", "Treino"]
         self.campos = {}
         for i, campo in enumerate(labels, start=2):
-            ttk.Label(self, text=campo).grid(row=i, column=0, sticky='w', pady=2)
-            texto = tk.Text(self, width=40, height=3)
+            ttk.Label(self, text=campo, font=("Segoe UI", 10, "bold")).grid(row=i, column=0, sticky="w", pady=2)
+            texto = tk.Text(self, width=45, height=3, font=("Segoe UI", 10))
             texto.grid(row=i, column=1, pady=2)
             valor = dados[i] if dados[i] else ""
-            texto.insert('1.0', valor)
+            texto.insert("1.0", valor)
             self.campos[campo.lower()] = texto
 
-        ttk.Button(self, text="Salvar", command=self.salvar).grid(row=7, column=0, pady=5)
-        ttk.Button(self, text="Treino PDF", command=self.gerar_treino_pdf).grid(row=7, column=1, pady=5)
-        ttk.Button(self, text="Dieta PDF", command=self.gerar_dieta_pdf).grid(row=8, column=1, pady=5)
+        botoes = ttk.Frame(self)
+        botoes.grid(row=7, column=0, columnspan=2, pady=10)
+        ttk.Button(botoes, text="Salvar", command=self.salvar).pack(side="left", padx=5)
+        ttk.Button(botoes, text="Treino PDF", command=self.gerar_treino_pdf).pack(side="left", padx=5)
+        ttk.Button(botoes, text="Dieta PDF", command=self.gerar_dieta_pdf).pack(side="left", padx=5)
 
     def salvar(self):
         for campo, widget in self.campos.items():
@@ -79,22 +82,34 @@ def remover_aluno(lb):
 
 def criar_interface():
     db.init_db()
-    app = tb.Window(themename="darkly")
+    # tema mais claro e moderno para uma aparência revitalizada
+    app = tb.Window(themename="minty")
     app.title("Gestor de Alunos - Personal Trainer")
 
-    frame = ttk.Frame(app, padding=10)
-    frame.pack(fill='both', expand=True)
+    # aplicação de fontes padronizadas para todos os widgets
+    style = app.style
+    style.configure("TLabel", font=("Segoe UI", 10))
+    style.configure("TButton", font=("Segoe UI", 10, "bold"))
+    style.configure("TEntry", font=("Segoe UI", 10))
 
-    lb = tk.Listbox(frame, width=40, height=10)
-    lb.grid(row=0, column=0, columnspan=2, pady=5)
+    frame = ttk.Frame(app, padding=20)
+    frame.pack(fill="both", expand=True)
+
+    ttk.Label(frame, text="Alunos Cadastrados", font=("Segoe UI", 12, "bold")).grid(row=0, column=0, columnspan=2, pady=(0, 5))
+
+    lb = tk.Listbox(frame, width=40, height=10, font=("Segoe UI", 10))
+    lb.grid(row=1, column=0, columnspan=2, pady=5)
 
     entrada = ttk.Entry(frame, width=30)
-    entrada.grid(row=1, column=0, pady=5)
-    ttk.Button(frame, text="Adicionar", command=lambda: adicionar_aluno(lb, entrada)).grid(row=1, column=1)
+    entrada.grid(row=2, column=0, pady=5, sticky="ew")
+    ttk.Button(frame, text="Adicionar", command=lambda: adicionar_aluno(lb, entrada)).grid(row=2, column=1, padx=5)
 
-    ttk.Button(frame, text="Detalhes", command=lambda: abrir_detalhes(lb)).grid(row=2, column=0, pady=5)
-    ttk.Button(frame, text="Remover", command=lambda: remover_aluno(lb)).grid(row=2, column=1, pady=5)
+    botoes = ttk.Frame(frame)
+    botoes.grid(row=3, column=0, columnspan=2, pady=10)
+    ttk.Button(botoes, text="Detalhes", command=lambda: abrir_detalhes(lb)).pack(side="left", padx=5)
+    ttk.Button(botoes, text="Remover", command=lambda: remover_aluno(lb)).pack(side="left", padx=5)
 
+    frame.columnconfigure(0, weight=1)
     atualizar_lista(lb)
 
     app.mainloop()
