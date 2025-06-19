@@ -175,7 +175,11 @@ def criar_interface():
     detalhes.columnconfigure(1, weight=1)
 
     nome_var = tk.StringVar()
-    ttk.Label(detalhes, textvariable=nome_var, font=("Segoe UI", 11, "bold")).grid(row=0, column=0, columnspan=2, pady=(0,5))
+    ttk.Label(
+        detalhes,
+        textvariable=nome_var,
+        font=("Segoe UI", 11, "bold"),
+    ).grid(row=0, column=0, columnspan=2, pady=(0, 5))
 
     campos = {}
     labels = ["Plano", "Pagamento", "Dieta", "Treino"]
@@ -209,7 +213,8 @@ def criar_interface():
                 w.delete("1.0", tk.END)
                 w.insert("1.0", "")
         for child in detalhes.winfo_children():
-            child.configure(state="disabled")
+            if "state" in child.keys():
+                child.configure(state="disabled")
 
     def carregar_detalhes(event=None):
         selecionado = lb.curselection()
@@ -217,7 +222,8 @@ def criar_interface():
             limpar_campos()
             return
         for child in detalhes.winfo_children():
-            child.configure(state="normal")
+            if "state" in child.keys():
+                child.configure(state="normal")
         item = lb.get(selecionado[0])
         aluno_id = int(item.split(" - ")[0])
         dados = db.obter_aluno(aluno_id)
