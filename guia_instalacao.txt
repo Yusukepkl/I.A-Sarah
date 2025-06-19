@@ -1,9 +1,9 @@
 Passo a passo para instalar o Gestor de Alunos
 =============================================
 
-1. **Instalar o Python 3.13**
-   - Baixe o instalador do Python 3.13 para Windows no site oficial.
-   - Execute o instalador marcando a opção "Add Python to PATH".
+1. **Instalar o Python 3.11 ou superior**
+   - Baixe o instalador adequado para o seu sistema no site oficial do Python.
+   - Durante a instalação, marque a opção "Add Python to PATH" (Windows) ou verifique se o comando `python` está disponível.
 
 2. **Clonar o repositório**
    - Abra o `Prompt de Comando` ou `PowerShell`.
@@ -11,6 +11,7 @@ Passo a passo para instalar o Gestor de Alunos
    - Entre na pasta clonada: `cd I.A-Sarah`
 
 3. **Instalar dependências**
+   - (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
    - Ainda no terminal, execute:
      `pip install -r requirements.txt`
 

@@ -7,12 +7,13 @@ Os detalhes do aluno aparecem em um painel lateral integrado, e os PDFs
 gerados recebem o nome do aluno e o tipo (treino ou dieta).
 
 ## Requisitos
-- Python 3.13 para Windows
+- Python 3.11 ou superior
 - Dependências listadas em `requirements.txt`
 
 ## Como usar
-1. Instale o Python 3.13 em seu computador.
-2. Instale as dependências com `pip install -r requirements.txt`.
-3. Execute `python src/main.py` para abrir o sistema.
+1. Instale o Python 3.11 ou superior em seu computador.
+2. (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
+3. Instale as dependências com `pip install -r requirements.txt`.
+4. Execute `python src/main.py` para abrir o sistema.
 
 Todo o banco de dados fica salvo localmente em `alunos.db`.

@@ -1,2 +1,3 @@
-ttkbootstrap
-fpdf
+ttkbootstrap>=1.13
+fpdf>=1.7
+pillow>=10
