@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import ttkbootstrap as tb
 
 import db
-from pdf_utils import gerar_pdf
+from pdf_utils import gerar_pdf, sanitize_filename
 
 
 def atualizar_lista(lb):
@@ -21,11 +21,26 @@ def abrir_detalhes(lb):
     dados = db.obter_aluno(aluno_id)
     DetalhesWindow(aluno_id, dados)
 
+
+def atualizar_card(lb, widgets):
+    selecionado = lb.curselection()
+    if not selecionado:
+        widgets["nome"].config(text="")
+        widgets["progresso"].config(text="")
+        return
+    item = lb.get(selecionado[0])
+    aluno_id = int(item.split(" - ")[0])
+    dados = db.obter_aluno(aluno_id)
+    widgets["nome"].config(text=dados[1])
+    progresso = dados[4] if dados[4] else "0"
+    widgets["progresso"].config(text=f"Progresso: {progresso}%")
+
 class DetalhesWindow(tk.Toplevel):
     def __init__(self, aluno_id, dados):
         super().__init__()
         self.title(f"Detalhes do Aluno {dados[1]}")
         self.aluno_id = aluno_id
+        self.nome = dados[1]
         self.configure(padx=20, pady=20)
         self.campos = {}
 
@@ -86,14 +101,18 @@ class DetalhesWindow(tk.Toplevel):
         messagebox.showinfo("Salvo", "Dados atualizados")
 
     def gerar_treino_pdf(self):
-        treino = self.campos['treino'].get('1.0', tk.END)
-        gerar_pdf("Treino", treino, f"treino_{self.aluno_id}.pdf")
-        messagebox.showinfo("PDF", "Treino exportado")
+        treino = self.campos['treino'].get('1.0', tk.END).strip()
+        nome_file = sanitize_filename(self.nome)
+        caminho = f"treino_{nome_file}.pdf"
+        gerar_pdf(f"Treino de {self.nome}", treino, caminho)
+        messagebox.showinfo("PDF", f"Treino exportado como {caminho}")
 
     def gerar_dieta_pdf(self):
-        dieta = self.campos['dieta'].get('1.0', tk.END)
-        gerar_pdf("Dieta", dieta, f"dieta_{self.aluno_id}.pdf")
-        messagebox.showinfo("PDF", "Dieta exportada")
+        dieta = self.campos['dieta'].get('1.0', tk.END).strip()
+        nome_file = sanitize_filename(self.nome)
+        caminho = f"dieta_{nome_file}.pdf"
+        gerar_pdf(f"Dieta de {self.nome}", dieta, caminho)
+        messagebox.showinfo("PDF", f"Dieta exportada como {caminho}")
 
 
 def adicionar_aluno(lb, entrada):
@@ -135,7 +154,17 @@ def criar_interface():
     ttk.Label(frame, text="Alunos Cadastrados", font=("Segoe UI", 12, "bold")).grid(row=0, column=0, columnspan=2, pady=(0, 5))
 
     lb = tk.Listbox(frame, width=40, height=10, font=("Segoe UI", 10))
-    lb.grid(row=1, column=0, columnspan=2, pady=5)
+    lb.grid(row=1, column=0, columnspan=2, pady=5, sticky="nsew")
+
+    # card do aluno selecionado
+    card = ttk.LabelFrame(frame, text="Card do Aluno")
+    card.grid(row=1, column=2, rowspan=3, padx=(10, 0), sticky="nsew")
+    card_nome = ttk.Label(card, text="", font=("Segoe UI", 11, "bold"))
+    card_nome.pack(pady=(0, 5))
+    card_prog = ttk.Label(card, text="Progresso: -")
+    card_prog.pack()
+    card_widgets = {"nome": card_nome, "progresso": card_prog}
+
 
     entrada = ttk.Entry(frame, width=30)
     entrada.grid(row=2, column=0, pady=5, sticky="ew")
@@ -146,8 +175,10 @@ def criar_interface():
     ttk.Button(botoes, text="Remover", command=lambda: remover_aluno(lb)).pack(side="left", padx=5)
 
     lb.bind("<Double-1>", lambda e: abrir_detalhes(lb))
+    lb.bind("<<ListboxSelect>>", lambda e: atualizar_card(lb, card_widgets))
 
     frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(2, weight=1)
     atualizar_lista(lb)
 
     app.mainloop()
