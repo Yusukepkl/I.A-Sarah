@@ -9,7 +9,8 @@ from pdf_utils import gerar_pdf
 def atualizar_lista(lb):
     lb.delete(0, tk.END)
     for aluno in db.listar_alunos():
-        lb.insert(tk.END, f"{aluno[0]} - {aluno[1]}")
+        progresso = aluno[2] if aluno[2] else "0"
+        lb.insert(tk.END, f"{aluno[0]} - {aluno[1]} ({progresso}%)")
 
 def abrir_detalhes(lb):
     selecionado = lb.curselection()
@@ -26,15 +27,48 @@ class DetalhesWindow(tk.Toplevel):
         self.title(f"Detalhes do Aluno {dados[1]}")
         self.aluno_id = aluno_id
         self.configure(padx=20, pady=20)
-        labels = ["Plano", "Pagamento", "Progresso", "Dieta", "Treino"]
         self.campos = {}
-        for i, campo in enumerate(labels, start=2):
-            ttk.Label(self, text=campo, font=("Segoe UI", 10, "bold")).grid(row=i, column=0, sticky="w", pady=2)
+
+        labels = ["Plano", "Pagamento", "Dieta", "Treino"]
+        for offset, campo in enumerate(labels, start=2):
+            ttk.Label(self, text=campo, font=("Segoe UI", 10, "bold")).grid(
+                row=offset if campo != "Dieta" and campo != "Treino" else offset + 1,
+                column=0,
+                sticky="w",
+                pady=2,
+            )
             texto = tk.Text(self, width=45, height=3, font=("Segoe UI", 10))
-            texto.grid(row=i, column=1, pady=2)
-            valor = dados[i] if dados[i] else ""
+            texto.grid(row=offset if campo != "Dieta" and campo != "Treino" else offset + 1, column=1, pady=2)
+            idx = {
+                "Plano": 2,
+                "Pagamento": 3,
+                "Dieta": 5,
+                "Treino": 6,
+            }[campo]
+            valor = dados[idx] if dados[idx] else ""
             texto.insert("1.0", valor)
             self.campos[campo.lower()] = texto
+
+        # seção de progresso com barra
+        ttk.Label(self, text="Progresso", font=("Segoe UI", 10, "bold")).grid(
+            row=4, column=0, sticky="w", pady=2
+        )
+        prog_frame = ttk.Frame(self)
+        prog_frame.grid(row=4, column=1, pady=2, sticky="ew")
+        prog_frame.columnconfigure(0, weight=1)
+        self.progresso_var = tk.IntVar(
+            value=int(dados[4]) if dados[4] and str(dados[4]).isdigit() else 0
+        )
+        ttk.Progressbar(
+            prog_frame,
+            maximum=100,
+            variable=self.progresso_var,
+            length=200,
+        ).grid(row=0, column=0, sticky="ew")
+        ttk.Spinbox(
+            prog_frame, from_=0, to=100, textvariable=self.progresso_var, width=5
+        ).grid(row=0, column=1, padx=5)
+        self.campos["progresso"] = self.progresso_var
 
         botoes = ttk.Frame(self)
         botoes.grid(row=7, column=0, columnspan=2, pady=10)
@@ -44,7 +78,10 @@ class DetalhesWindow(tk.Toplevel):
 
     def salvar(self):
         for campo, widget in self.campos.items():
-            valor = widget.get('1.0', tk.END).strip()
+            if isinstance(widget, tk.IntVar):
+                valor = str(widget.get())
+            else:
+                valor = widget.get('1.0', tk.END).strip()
             db.atualizar_aluno(self.aluno_id, campo, valor)
         messagebox.showinfo("Salvo", "Dados atualizados")
 
@@ -82,8 +119,8 @@ def remover_aluno(lb):
 
 def criar_interface():
     db.init_db()
-    # tema mais claro e moderno para uma aparência revitalizada
-    app = tb.Window(themename="minty")
+    # tema mais moderno para uma aparência revitalizada
+    app = tb.Window(themename="flatly")
     app.title("Gestor de Alunos - Personal Trainer")
 
     # aplicação de fontes padronizadas para todos os widgets
@@ -106,8 +143,9 @@ def criar_interface():
 
     botoes = ttk.Frame(frame)
     botoes.grid(row=3, column=0, columnspan=2, pady=10)
-    ttk.Button(botoes, text="Detalhes", command=lambda: abrir_detalhes(lb)).pack(side="left", padx=5)
     ttk.Button(botoes, text="Remover", command=lambda: remover_aluno(lb)).pack(side="left", padx=5)
+
+    lb.bind("<Double-1>", lambda e: abrir_detalhes(lb))
 
     frame.columnconfigure(0, weight=1)
     atualizar_lista(lb)
