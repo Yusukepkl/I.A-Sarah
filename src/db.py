@@ -19,8 +19,11 @@ def init_db():
             """)
 
 def listar_alunos():
+    """Retorna id, nome e progresso de todos os alunos."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
-        cur = conn.execute("SELECT id, nome FROM alunos ORDER BY nome")
+        cur = conn.execute(
+            "SELECT id, nome, progresso FROM alunos ORDER BY nome"
+        )
         return cur.fetchall()
 
 def obter_aluno(aluno_id: int):
