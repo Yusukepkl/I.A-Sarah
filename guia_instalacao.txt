@@ -1,0 +1,30 @@
+Passo a passo para instalar o Gestor de Alunos
+=============================================
+
+1. **Instalar o Python 3.13**
+   - Baixe o instalador do Python 3.13 para Windows no site oficial.
+   - Execute o instalador marcando a opção "Add Python to PATH".
+
+2. **Clonar o repositório**
+   - Abra o `Prompt de Comando` ou `PowerShell`.
+   - Execute: `git clone <URL do seu repositorio>`
+   - Entre na pasta clonada: `cd I.A-Sarah`
+
+3. **Instalar dependências**
+   - Ainda no terminal, execute:
+     `pip install -r requirements.txt`
+
+4. **Executar a aplicação**
+   - No terminal, execute:
+     `python src/main.py`
+   - A janela principal será exibida com a lista de alunos.
+
+5. **Usar o sistema**
+   - Clique em "Adicionar" para registrar um novo aluno.
+   - Selecione um aluno e clique em "Detalhes" para inserir planos, pagamentos,
+     progresso, dieta e treino.
+   - Os botões "Treino PDF" e "Dieta PDF" exportam os textos para arquivos PDF
+     na mesma pasta.
+
+Todo o banco de dados é salvo no arquivo `alunos.db` e não necessita de conexão
+com a internet.
