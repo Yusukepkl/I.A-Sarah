@@ -3,7 +3,7 @@
 Aplicação simples para gerenciamento de alunos em academias ou atendimentos particulares.
 Permite registrar alunos, controlar planos, pagamentos, progresso, dietas e treinos, além de exportar
 informações em PDF. A interface foi renovada e utiliza `tkinter` com `ttkbootstrap` no tema `superhero`.
-Os detalhes do aluno aparecem em um painel lateral integrado, e os PDFs
+Os detalhes de cada aluno agora abrem em uma janela separada e os PDFs
 gerados recebem o nome do aluno e o tipo (treino ou dieta).
 
 ## Requisitos
