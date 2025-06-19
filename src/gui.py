@@ -209,7 +209,8 @@ def criar_interface():
                 w.delete("1.0", tk.END)
                 w.insert("1.0", "")
         for child in detalhes.winfo_children():
-            child.configure(state="disabled")
+            if "state" in child.keys():
+                child.configure(state="disabled")
 
     def carregar_detalhes(event=None):
         selecionado = lb.curselection()
@@ -217,7 +218,8 @@ def criar_interface():
             limpar_campos()
             return
         for child in detalhes.winfo_children():
-            child.configure(state="normal")
+            if "state" in child.keys():
+                child.configure(state="normal")
         item = lb.get(selecionado[0])
         aluno_id = int(item.split(" - ")[0])
         dados = db.obter_aluno(aluno_id)
