@@ -107,6 +107,16 @@ def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: s
             return cur.lastrowid
 
 
+def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str):
+    """Atualiza os dados de um plano de treino existente."""
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
+            conn.execute(
+                "UPDATE planos SET nome=?, descricao=?, exercicios=? WHERE id=?",
+                (nome, descricao, exercicios_json, plano_id),
+            )
+
+
 def remover_plano(plano_id: int):
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
