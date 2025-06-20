@@ -17,3 +17,22 @@ def gerar_pdf(titulo: str, conteudo: str, caminho: str):
     pdf.cell(200, 10, txt=titulo, ln=True, align='C')
     pdf.multi_cell(0, 10, txt=conteudo)
     pdf.output(caminho)
+
+
+def gerar_treino_pdf(titulo: str, exercicios: list[dict], caminho: str):
+    """Gera um PDF estruturado com a lista de exercicios do plano."""
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_title(titulo)
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt=titulo, ln=True, align="C")
+    for ex in exercicios:
+        linha = f"{ex.get('nome', '')} - {ex.get('series', '')}x{ex.get('reps', '')}"
+        if ex.get("peso"):
+            linha += f" {ex['peso']}"
+        if ex.get("descanso"):
+            linha += f" descanso {ex['descanso']}"
+        if ex.get("obs"):
+            linha += f" ({ex['obs']})"
+        pdf.multi_cell(0, 10, txt=linha)
+    pdf.output(caminho)

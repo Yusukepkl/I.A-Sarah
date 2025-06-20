@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox
 import ttkbootstrap as tb
 
 import db
+from pdf_utils import gerar_treino_pdf, sanitize_filename
 
 
 class ExercicioRow(ttk.Frame):
@@ -15,6 +16,7 @@ class ExercicioRow(ttk.Frame):
             'nome': tk.StringVar(),
             'series': tk.StringVar(),
             'reps': tk.StringVar(),
+            'peso': tk.StringVar(),
             'descanso': tk.StringVar(),
             'obs': tk.StringVar(),
         }
@@ -25,9 +27,10 @@ class ExercicioRow(ttk.Frame):
         ttk.Entry(self, textvariable=self.vars['nome'], width=15).grid(row=0, column=0, padx=2, pady=2)
         ttk.Entry(self, textvariable=self.vars['series'], width=5).grid(row=0, column=1, padx=2)
         ttk.Entry(self, textvariable=self.vars['reps'], width=5).grid(row=0, column=2, padx=2)
-        ttk.Entry(self, textvariable=self.vars['descanso'], width=8).grid(row=0, column=3, padx=2)
-        ttk.Entry(self, textvariable=self.vars['obs'], width=15).grid(row=0, column=4, padx=2)
-        ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=5, padx=2)
+        ttk.Entry(self, textvariable=self.vars['peso'], width=7).grid(row=0, column=3, padx=2)
+        ttk.Entry(self, textvariable=self.vars['descanso'], width=8).grid(row=0, column=4, padx=2)
+        ttk.Entry(self, textvariable=self.vars['obs'], width=15).grid(row=0, column=5, padx=2)
+        ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=6, padx=2)
 
     def get_data(self):
         data = {k: v.get().strip() for k, v in self.vars.items()}
@@ -39,7 +42,7 @@ class ExercicioRow(ttk.Frame):
 class PlanoModal(tb.Toplevel):
     def __init__(self, aluno_id, ao_salvar, plano=None):
         super().__init__()
-        self.geometry("600x400")
+        self.geometry("650x450")
         self.grab_set()
         self.aluno_id = aluno_id
         self.ao_salvar = ao_salvar
@@ -57,6 +60,12 @@ class PlanoModal(tb.Toplevel):
 
         area = ttk.Frame(self)
         area.pack(fill="both", expand=True, pady=10)
+
+        header = ttk.Frame(area)
+        header.pack(fill="x")
+        cols = ["Exercício", "Séries", "Reps", "Peso", "Descanso", "Obs"]
+        for i, t in enumerate(cols):
+            ttk.Label(header, text=t, font=("Segoe UI", 9, "bold")).grid(row=0, column=i, padx=2)
 
         def remover_row(row):
             row.destroy()
@@ -184,6 +193,8 @@ class DetalhesFrame(ttk.Frame):
                 exs = []
             for ex in exs:
                 info = f"{ex.get('nome','')} - {ex.get('series','')}x{ex.get('reps','')}"
+                if ex.get('peso'):
+                    info += f" {ex.get('peso')}"
                 if ex.get('descanso'):
                     info += f" descanso {ex.get('descanso')}"
                 if ex.get('obs'):
@@ -191,6 +202,7 @@ class DetalhesFrame(ttk.Frame):
                 ttk.Label(card, text=info).pack(anchor="w")
             btns = ttk.Frame(card)
             btns.pack(anchor="e", pady=(5,0))
+            ttk.Button(btns, text="PDF", command=lambda n=nome,e=exercicios: self.gerar_plano_pdf(n,e)).pack(side="right")
             ttk.Button(btns, text="Editar", command=lambda p=(pid,nome,descricao,exercicios): self.editar_plano(p)).pack(side="right")
             ttk.Button(btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)).pack(side="right")
 
@@ -205,6 +217,19 @@ class DetalhesFrame(ttk.Frame):
             'exercicios': plano[3],
         }
         PlanoModal(self.aluno_id, self.listar_planos, plano=p)
+
+    def gerar_plano_pdf(self, nome, exercicios_json):
+        try:
+            exs = json.loads(exercicios_json) if exercicios_json else []
+        except json.JSONDecodeError:
+            exs = []
+        if not exs:
+            messagebox.showwarning("Aviso", "Plano sem exercícios", parent=self)
+            return
+        file_name = sanitize_filename(f"{self.aluno_id}_{nome}")
+        path = f"treino_{file_name}.pdf"
+        gerar_treino_pdf(f"Treino - {nome}", exs, path)
+        messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
 
     def excluir_plano(self, plano_id):
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
