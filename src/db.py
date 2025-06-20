@@ -1,12 +1,15 @@
+"""Camada de acesso a dados utilizando SQLite."""
+
 import sqlite3
 from contextlib import closing
+from typing import Iterable, Optional
 
 DB_NAME = "alunos.db"
 
 # Allowed columns that can be updated via ``atualizar_aluno``. This helps avoid
 # SQL injection by validating user provided column names before composing the
 # query string.
-VALID_UPDATE_FIELDS = {
+VALID_UPDATE_FIELDS: set[str] = {
     "nome",
     "email",
     "data_inicio",
@@ -17,7 +20,8 @@ VALID_UPDATE_FIELDS = {
     "treino",
 }
 
-def init_db():
+def init_db() -> None:
+    """Cria as tabelas principais se ainda não existirem."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
         with conn:
@@ -59,15 +63,15 @@ def init_db():
             except sqlite3.OperationalError:
                 pass
 
-def listar_alunos():
-    """Retorna informacoes basicas de todos os alunos."""
+def listar_alunos() -> list[tuple]:
+    """Retorna informações básicas de todos os alunos."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.execute(
             "SELECT id, nome, email, data_inicio FROM alunos ORDER BY nome"
         )
         return cur.fetchall()
 
-def obter_aluno(aluno_id: int):
+def obter_aluno(aluno_id: int) -> Optional[tuple]:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.execute(
             "SELECT id, nome, email, data_inicio, plano, pagamento, progresso, dieta, treino FROM alunos WHERE id=?",
@@ -75,8 +79,8 @@ def obter_aluno(aluno_id: int):
         )
         return cur.fetchone()
 
-def adicionar_aluno(nome: str, email: str):
-    """Insere um novo aluno com a data atual."""
+def adicionar_aluno(nome: str, email: str) -> int:
+    """Insere um novo aluno com a data atual e retorna o ID gerado."""
     from datetime import datetime
 
     data_inicio = datetime.now().strftime("%Y-%m-%d")
@@ -88,7 +92,7 @@ def adicionar_aluno(nome: str, email: str):
             )
             return cur.lastrowid
 
-def atualizar_aluno(aluno_id: int, campo: str, valor: str):
+def atualizar_aluno(aluno_id: int, campo: str, valor: str) -> None:
     """Update a single column of an existing aluno.
 
     Parameters
@@ -113,14 +117,14 @@ def atualizar_aluno(aluno_id: int, campo: str, valor: str):
                 (valor, aluno_id),
             )
 
-def remover_aluno(aluno_id: int):
+def remover_aluno(aluno_id: int) -> None:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("DELETE FROM alunos WHERE id=?", (aluno_id,))
 
 # ----- Planos de treino -----
 
-def listar_planos(aluno_id: int):
+def listar_planos(aluno_id: int) -> list[tuple]:
     """Retorna todos os planos de treino de um aluno."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.execute(
@@ -130,7 +134,7 @@ def listar_planos(aluno_id: int):
         return cur.fetchall()
 
 
-def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str):
+def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str) -> int:
     """Adiciona um novo plano de treino."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
@@ -141,7 +145,7 @@ def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: s
             return cur.lastrowid
 
 
-def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str):
+def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str) -> None:
     """Atualiza os dados de um plano de treino existente."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
@@ -151,7 +155,8 @@ def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: s
             )
 
 
-def remover_plano(plano_id: int):
+def remover_plano(plano_id: int) -> None:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("DELETE FROM planos WHERE id=?", (plano_id,))
+

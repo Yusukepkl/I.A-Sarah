@@ -1,5 +1,8 @@
+"""Interface principal da aplicação."""
+
+from __future__ import annotations
+
 import json
-import os
 import tkinter as tk
 from tkinter import ttk, messagebox
 import ttkbootstrap as tb
@@ -7,112 +10,11 @@ import ttkbootstrap as tb
 import db
 from pdf_utils import gerar_treino_pdf, sanitize_filename
 from config_manager import load_theme, save_theme
+from widgets import PlanoModal
 
 
-class ExercicioRow(ttk.Frame):
-    def __init__(self, master, remover, dados=None):
-        super().__init__(master)
-        self.ex_id = None
-        self.vars = {
-            'nome': tk.StringVar(),
-            'series': tk.StringVar(),
-            'reps': tk.StringVar(),
-            'peso': tk.StringVar(),
-            'descanso': tk.StringVar(),
-            'obs': tk.StringVar(),
-        }
-        if dados:
-            self.ex_id = dados.get('id')
-            for k in self.vars:
-                self.vars[k].set(dados.get(k, ''))
-        ttk.Entry(self, textvariable=self.vars['nome'], width=15).grid(row=0, column=0, padx=2, pady=2)
-        ttk.Entry(self, textvariable=self.vars['series'], width=5).grid(row=0, column=1, padx=2)
-        ttk.Entry(self, textvariable=self.vars['reps'], width=5).grid(row=0, column=2, padx=2)
-        ttk.Entry(self, textvariable=self.vars['peso'], width=7).grid(row=0, column=3, padx=2)
-        ttk.Entry(self, textvariable=self.vars['descanso'], width=8).grid(row=0, column=4, padx=2)
-        ttk.Entry(self, textvariable=self.vars['obs'], width=15).grid(row=0, column=5, padx=2)
-        ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=6, padx=2)
-
-    def get_data(self):
-        data = {k: v.get().strip() for k, v in self.vars.items()}
-        if self.ex_id is not None:
-            data['id'] = self.ex_id
-        return data
-
-
-class PlanoModal(tb.Toplevel):
-    def __init__(self, aluno_id, ao_salvar, plano=None):
-        super().__init__()
-        self.geometry("650x450")
-        self.grab_set()
-        self.aluno_id = aluno_id
-        self.ao_salvar = ao_salvar
-        self.exercicios = []
-        self.plano_id = None
-
-        nome_var = tk.StringVar()
-        self.title("Novo Plano de Treino" if plano is None else "Editar Plano de Treino")
-        ttk.Label(self, text="Nome do Plano:").pack(anchor="w", padx=5, pady=5)
-        ttk.Entry(self, textvariable=nome_var, width=40).pack(anchor="w", padx=5)
-
-        ttk.Label(self, text="Descrição (opcional):").pack(anchor="w", padx=5, pady=(10,0))
-        desc = tk.Text(self, height=3, width=50)
-        desc.pack(anchor="w", padx=5)
-
-        area = ttk.Frame(self)
-        area.pack(fill="both", expand=True, pady=10)
-
-        header = ttk.Frame(area)
-        header.pack(fill="x")
-        cols = ["Exercício", "Séries", "Reps", "Peso", "Descanso", "Obs"]
-        for i, t in enumerate(cols):
-            ttk.Label(header, text=t, font=("Segoe UI", 9, "bold")).grid(row=0, column=i, padx=2)
-
-        def remover_row(row):
-            row.destroy()
-            self.exercicios.remove(row)
-
-        def add_row(dados=None):
-            row = ExercicioRow(area, remover_row, dados)
-            row.pack(fill="x", pady=2, padx=5)
-            self.exercicios.append(row)
-
-        ttk.Button(self, text="Adicionar Exercício", command=lambda: add_row()).pack(pady=5)
-
-        if plano:
-            self.plano_id = plano.get('id')
-            nome_var.set(plano.get('nome', ''))
-            desc.insert('1.0', plano.get('descricao', '') or '')
-            try:
-                exs = json.loads(plano.get('exercicios') or '[]')
-            except json.JSONDecodeError:
-                exs = []
-            if exs:
-                for ex in exs:
-                    add_row(ex)
-            else:
-                add_row()
-        else:
-            add_row()
-
-        def salvar():
-            nome = nome_var.get().strip()
-            if not nome:
-                messagebox.showwarning("Aviso", "Nome do plano obrigatório", parent=self)
-                return
-            descricao = desc.get("1.0", tk.END).strip()
-            dados = [r.get_data() for r in self.exercicios if r.get_data().get('nome')]
-            exercicios_json = json.dumps(dados, ensure_ascii=False)
-            if self.plano_id:
-                db.atualizar_plano(self.plano_id, nome, descricao, exercicios_json)
-            else:
-                db.adicionar_plano(self.aluno_id, nome, descricao, exercicios_json)
-            self.destroy()
-            self.ao_salvar()
-
-        ttk.Button(self, text="Salvar", command=salvar).pack(pady=5)
-
-def abrir_modal_adicionar(atualizar):
+def abrir_modal_adicionar(atualizar: callable) -> None:
+    """Mostra janela para adicionar um aluno."""
     win = tb.Toplevel()
     win.title("Adicionar Aluno")
     win.grab_set()
@@ -126,7 +28,7 @@ def abrir_modal_adicionar(atualizar):
     ttk.Label(win, text="Email:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
     ttk.Entry(win, textvariable=email_var, width=30).grid(row=1, column=1, padx=5, pady=5, sticky="ew")
 
-    def salvar():
+    def salvar() -> None:
         nome = nome_var.get().strip()
         email = email_var.get().strip()
         if not nome:
@@ -139,8 +41,11 @@ def abrir_modal_adicionar(atualizar):
 
     ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=10)
 
+
 class DetalhesFrame(ttk.Frame):
-    def __init__(self, master, dados, voltar, atualizar_lista):
+    """Mostra detalhes e planos de um aluno."""
+
+    def __init__(self, master: tk.Widget, dados: tuple, voltar: callable, atualizar_lista: callable) -> None:
         super().__init__(master)
         self.aluno_id = dados[0]
         self.voltar = voltar
@@ -162,7 +67,7 @@ class DetalhesFrame(ttk.Frame):
         self.listar_planos()
         ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
 
-    def listar_planos(self):
+    def listar_planos(self) -> None:
         for child in self.planos_frame.winfo_children():
             if getattr(child, "is_card", False):
                 child.destroy()
@@ -188,24 +93,26 @@ class DetalhesFrame(ttk.Frame):
                     info += f" ({ex.get('obs')})"
                 ttk.Label(card, text=info).pack(anchor="w")
             btns = ttk.Frame(card)
-            btns.pack(anchor="e", pady=(5,0))
-            ttk.Button(btns, text="PDF", command=lambda n=nome,e=exercicios: self.gerar_plano_pdf(n,e)).pack(side="right")
-            ttk.Button(btns, text="Editar", command=lambda p=(pid,nome,descricao,exercicios): self.editar_plano(p)).pack(side="right")
+            btns.pack(anchor="e", pady=(5, 0))
+            ttk.Button(btns, text="PDF", command=lambda n=nome, e=exercicios: self.gerar_plano_pdf(n, e)).pack(side="right")
+            ttk.Button(btns, text="Editar", command=lambda p=(pid, nome, descricao, exercicios): self.editar_plano(p)).pack(side="right")
             ttk.Button(btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)).pack(side="right")
 
-    def abrir_plano_modal(self):
-        PlanoModal(self.aluno_id, self.listar_planos)
+    def abrir_plano_modal(self) -> None:
+        PlanoModal(self.aluno_id, self._salvar_plano)
 
-    def editar_plano(self, plano):
-        p = {
-            'id': plano[0],
-            'nome': plano[1],
-            'descricao': plano[2],
-            'exercicios': plano[3],
-        }
-        PlanoModal(self.aluno_id, self.listar_planos, plano=p)
+    def editar_plano(self, plano: tuple) -> None:
+        p = {"id": plano[0], "nome": plano[1], "descricao": plano[2], "exercicios": plano[3]}
+        PlanoModal(self.aluno_id, self._salvar_plano, plano=p)
 
-    def gerar_plano_pdf(self, nome, exercicios_json):
+    def _salvar_plano(self, aluno_id: int, nome: str, descricao: str, exercicios_json: str, plano_id: int | None) -> None:
+        if plano_id:
+            db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
+        else:
+            db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
+        self.listar_planos()
+
+    def gerar_plano_pdf(self, nome: str, exercicios_json: str) -> None:
         try:
             exs = json.loads(exercicios_json) if exercicios_json else []
         except json.JSONDecodeError:
@@ -226,27 +133,28 @@ class DetalhesFrame(ttk.Frame):
             pb.destroy()
         messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
 
-    def excluir_plano(self, plano_id):
+    def excluir_plano(self, plano_id: int) -> None:
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
             db.remover_plano(plano_id)
             self.listar_planos()
             messagebox.showinfo("Sucesso", "Plano excluído", parent=self)
 
-    def excluir_aluno(self):
+    def excluir_aluno(self) -> None:
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
             db.remover_aluno(self.aluno_id)
             self.atualizar_lista()
             self.voltar()
             messagebox.showinfo("Sucesso", "Aluno excluído", parent=self)
 
-def criar_interface():
-    """Build and run the main GUI application."""
+
+def criar_interface() -> None:
+    """Cria e exibe a interface principal."""
     db.init_db()
     theme = load_theme()
     app = tb.Window(themename=theme)
     app.title("Gestor de Alunos")
 
-    def toggle_theme():
+    def toggle_theme() -> None:
         new_theme = "superhero" if theme_var.get() else "flatly"
         app.style.theme_use(new_theme)
         save_theme(new_theme)
@@ -254,7 +162,7 @@ def criar_interface():
     header = ttk.Frame(app, padding=10)
     header.pack(fill="x")
     ttk.Label(header, text="Gestor de Alunos", font=("Segoe UI", 14, "bold")).pack(side="left")
-    theme_var = tk.BooleanVar(value=theme=="superhero")
+    theme_var = tk.BooleanVar(value=theme == "superhero")
     tb.Checkbutton(
         header,
         text="Modo Escuro",
@@ -276,24 +184,25 @@ def criar_interface():
     canvas.pack(side="left", fill="both", expand=True)
 
     cards = ttk.Frame(canvas)
-    canvas.create_window((0,0), window=cards, anchor="nw")
+    canvas.create_window((0, 0), window=cards, anchor="nw")
 
     detail_container = ttk.Frame(main)
     detail_container.pack(fill="both", expand=True)
     detail_container.pack_forget()
 
-    def on_configure(event=None):
+    def on_configure(event=None) -> None:
         canvas.configure(scrollregion=canvas.bbox("all"))
+
     cards.bind("<Configure>", on_configure)
 
-    def show_list():
+    def show_list() -> None:
         for child in detail_container.winfo_children():
             child.destroy()
         detail_container.pack_forget()
         list_frame.pack(fill="both", expand=True)
         atualizar_cards()
 
-    def show_detail(aluno_id):
+    def show_detail(aluno_id: int) -> None:
         list_frame.pack_forget()
         for child in detail_container.winfo_children():
             child.destroy()
@@ -301,7 +210,7 @@ def criar_interface():
         DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(fill="both", expand=True)
         detail_container.pack(fill="both", expand=True)
 
-    def atualizar_cards():
+    def atualizar_cards() -> None:
         for child in cards.winfo_children():
             child.destroy()
         alunos = db.listar_alunos()
@@ -323,6 +232,7 @@ def criar_interface():
 
     atualizar_cards()
     app.mainloop()
+
 
 if __name__ == "__main__":
     criar_interface()

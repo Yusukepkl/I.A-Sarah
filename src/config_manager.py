@@ -1,3 +1,5 @@
+"""Gerencia configurações simples da aplicação."""
+
 import json
 import os
 
@@ -20,3 +22,4 @@ def save_theme(theme: str) -> None:
     """Persist the selected theme."""
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump({"theme": theme}, f)
+
