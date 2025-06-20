@@ -131,14 +131,15 @@ def abrir_modal_adicionar(atualizar):
     win = tb.Toplevel()
     win.title("Adicionar Aluno")
     win.grab_set()
+    win.grid_columnconfigure(1, weight=1)
 
     nome_var = tk.StringVar()
     email_var = tk.StringVar()
 
     ttk.Label(win, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    ttk.Entry(win, textvariable=nome_var, width=30).grid(row=0, column=1, padx=5, pady=5)
+    ttk.Entry(win, textvariable=nome_var, width=30).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
     ttk.Label(win, text="Email:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-    ttk.Entry(win, textvariable=email_var, width=30).grid(row=1, column=1, padx=5, pady=5)
+    ttk.Entry(win, textvariable=email_var, width=30).grid(row=1, column=1, padx=5, pady=5, sticky="ew")
 
     def salvar():
         nome = nome_var.get().strip()
