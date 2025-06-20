@@ -1,3 +1,5 @@
+"""Utility helpers for generating PDF documents."""
+
 from fpdf import FPDF
 import unicodedata
 
@@ -9,7 +11,9 @@ def sanitize_filename(nome: str) -> str:
     return "".join(c if c.isalnum() else "_" for c in ascii_only).lower()
 
 
-def gerar_pdf(titulo: str, conteudo: str, caminho: str):
+def gerar_pdf(titulo: str, conteudo: str, caminho: str) -> None:
+    """Create a simple PDF file with the provided text content."""
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_title(titulo)
@@ -19,8 +23,9 @@ def gerar_pdf(titulo: str, conteudo: str, caminho: str):
     pdf.output(caminho)
 
 
-def gerar_treino_pdf(titulo: str, exercicios: list[dict], caminho: str):
-    """Gera um PDF estruturado com a lista de exercicios do plano."""
+def gerar_treino_pdf(titulo: str, exercicios: list[dict], caminho: str) -> None:
+    """Generate a PDF summarizing a workout plan."""
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_title(titulo)

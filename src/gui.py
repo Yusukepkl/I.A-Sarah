@@ -1,3 +1,5 @@
+"""Legacy Tkinter GUI for managing students and their progress."""
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 import ttkbootstrap as tb
@@ -6,13 +8,16 @@ import db
 from pdf_utils import gerar_pdf, sanitize_filename
 
 
-def atualizar_lista(lb):
+def atualizar_lista(lb: tk.Listbox) -> None:
+    """Refresh the list of students shown in the given listbox."""
+
     lb.delete(0, tk.END)
     for aluno in db.listar_alunos():
         progresso = aluno[2] if aluno[2] else "0"
         lb.insert(tk.END, f"{aluno[0]} - {aluno[1]} ({progresso}%)")
 
-def abrir_detalhes(lb):
+def abrir_detalhes(lb: tk.Listbox) -> None:
+    """Open the detail window for the selected student."""
     selecionado = lb.curselection()
     if not selecionado:
         return
@@ -22,7 +27,8 @@ def abrir_detalhes(lb):
     DetalhesWindow(aluno_id, dados)
 
 
-def atualizar_card(lb, widgets):
+def atualizar_card(lb: tk.Listbox, widgets: dict) -> None:
+    """Update info card with data from the selected student."""
     selecionado = lb.curselection()
     if not selecionado:
         widgets["nome"].config(text="")
@@ -36,7 +42,9 @@ def atualizar_card(lb, widgets):
     widgets["progresso"].config(text=f"Progresso: {progresso}%")
 
 class DetalhesWindow(tk.Toplevel):
-    def __init__(self, aluno_id, dados):
+    """Popup window used to edit information about a single student."""
+
+    def __init__(self, aluno_id: int, dados: tuple) -> None:
         super().__init__()
         self.title(f"Detalhes do Aluno {dados[1]}")
         self.aluno_id = aluno_id
@@ -91,7 +99,8 @@ class DetalhesWindow(tk.Toplevel):
         ttk.Button(botoes, text="Treino PDF", command=self.gerar_treino_pdf).pack(side="left", padx=5)
         ttk.Button(botoes, text="Dieta PDF", command=self.gerar_dieta_pdf).pack(side="left", padx=5)
 
-    def salvar(self):
+    def salvar(self) -> None:
+        """Persist modifications made in the window."""
         for campo, widget in self.campos.items():
             if isinstance(widget, tk.IntVar):
                 valor = str(widget.get())
@@ -100,14 +109,14 @@ class DetalhesWindow(tk.Toplevel):
             db.atualizar_aluno(self.aluno_id, campo, valor)
         messagebox.showinfo("Salvo", "Dados atualizados")
 
-    def gerar_treino_pdf(self):
+    def gerar_treino_pdf(self) -> None:
         treino = self.campos['treino'].get('1.0', tk.END).strip()
         nome_file = sanitize_filename(self.nome)
         caminho = f"treino_{nome_file}.pdf"
         gerar_pdf(f"Treino de {self.nome}", treino, caminho)
         messagebox.showinfo("PDF", f"Treino exportado como {caminho}")
 
-    def gerar_dieta_pdf(self):
+    def gerar_dieta_pdf(self) -> None:
         dieta = self.campos['dieta'].get('1.0', tk.END).strip()
         nome_file = sanitize_filename(self.nome)
         caminho = f"dieta_{nome_file}.pdf"
@@ -115,7 +124,9 @@ class DetalhesWindow(tk.Toplevel):
         messagebox.showinfo("PDF", f"Dieta exportada como {caminho}")
 
 
-def adicionar_aluno(lb, entrada):
+def adicionar_aluno(lb: tk.Listbox, entrada: ttk.Entry) -> None:
+    """Insert a new student using the name entered in the entry widget."""
+
     nome = entrada.get().strip()
     if nome:
         db.adicionar_aluno(nome)
@@ -125,7 +136,8 @@ def adicionar_aluno(lb, entrada):
         messagebox.showwarning("Aviso", "Nome não pode ser vazio")
 
 
-def remover_aluno(lb):
+def remover_aluno(lb: tk.Listbox) -> None:
+    """Remove the currently selected student from the list."""
     selecionado = lb.curselection()
     if not selecionado:
         return
@@ -136,7 +148,8 @@ def remover_aluno(lb):
         atualizar_lista(lb)
 
 
-def criar_interface():
+def criar_interface() -> None:
+    """Launch the legacy GUI."""
     db.init_db()
 
     # tema inspirado em aplicativos modernos de treino

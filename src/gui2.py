@@ -1,7 +1,10 @@
+"""Modern ttkbootstrap-based GUI for managing students and workout plans."""
+
 import json
 import os
 import tkinter as tk
 from tkinter import ttk, messagebox
+from typing import Callable
 import ttkbootstrap as tb
 
 import db
@@ -9,7 +12,9 @@ from pdf_utils import gerar_treino_pdf, sanitize_filename
 
 
 class ExercicioRow(ttk.Frame):
-    def __init__(self, master, remover, dados=None):
+    """Widget row representing an exercise in the plan editor."""
+
+    def __init__(self, master: tk.Widget, remover, dados: dict | None = None) -> None:
         super().__init__(master)
         self.ex_id = None
         self.vars = {
@@ -32,7 +37,8 @@ class ExercicioRow(ttk.Frame):
         ttk.Entry(self, textvariable=self.vars['obs'], width=15).grid(row=0, column=5, padx=2)
         ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=6, padx=2)
 
-    def get_data(self):
+    def get_data(self) -> dict:
+        """Return the exercise information entered in this row."""
         data = {k: v.get().strip() for k, v in self.vars.items()}
         if self.ex_id is not None:
             data['id'] = self.ex_id
@@ -40,7 +46,22 @@ class ExercicioRow(ttk.Frame):
 
 
 class PlanoModal(tb.Toplevel):
-    def __init__(self, aluno_id, ao_salvar, plano=None):
+    """Modal window for creating or editing a training plan."""
+
+    def __init__(
+        self, aluno_id: int, ao_salvar: Callable[[], None], plano: dict | None = None
+    ) -> None:
+        """Construct the modal.
+
+        Parameters
+        ----------
+        aluno_id: int
+            Identifier of the student owning the plan.
+        ao_salvar: Callable
+            Callback executed after saving.
+        plano: dict | None
+            Existing plan data when editing.
+        """
         super().__init__()
         self.geometry("650x450")
         self.grab_set()
@@ -114,6 +135,8 @@ class PlanoModal(tb.Toplevel):
 CONFIG_FILE = "config.json"
 
 def load_theme():
+    """Load the saved UI theme from the configuration file."""
+
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -123,11 +146,15 @@ def load_theme():
             pass
     return "superhero"
 
-def save_theme(theme: str):
+def save_theme(theme: str) -> None:
+    """Persist the chosen UI theme to disk."""
+
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump({"theme": theme}, f)
 
-def abrir_modal_adicionar(atualizar):
+def abrir_modal_adicionar(atualizar: Callable[[], None]) -> None:
+    """Open modal to create a new student and refresh list on save."""
+
     win = tb.Toplevel()
     win.title("Adicionar Aluno")
     win.grab_set()
@@ -153,7 +180,28 @@ def abrir_modal_adicionar(atualizar):
     ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=10)
 
 class DetalhesFrame(ttk.Frame):
-    def __init__(self, master, dados, voltar, atualizar_lista):
+    """Panel showing detailed information about a student."""
+
+    def __init__(
+        self,
+        master: tk.Widget,
+        dados: tuple,
+        voltar: Callable[[], None],
+        atualizar_lista: Callable[[], None],
+    ) -> None:
+        """Create the frame.
+
+        Parameters
+        ----------
+        master: Widget
+            Parent container.
+        dados: tuple
+            Data returned from ``db.obter_aluno``.
+        voltar: Callable
+            Callback to return to the list view.
+        atualizar_lista: Callable
+            Function to refresh the list of students.
+        """
         super().__init__(master)
         self.aluno_id = dados[0]
         self.voltar = voltar
@@ -175,7 +223,8 @@ class DetalhesFrame(ttk.Frame):
         ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
         self.listar_planos()
 
-    def listar_planos(self):
+    def listar_planos(self) -> None:
+        """Refresh the list of workout plans for the student."""
         for child in self.planos_frame.winfo_children():
             if getattr(child, "is_card", False):
                 child.destroy()
@@ -206,10 +255,12 @@ class DetalhesFrame(ttk.Frame):
             ttk.Button(btns, text="Editar", command=lambda p=(pid,nome,descricao,exercicios): self.editar_plano(p)).pack(side="right")
             ttk.Button(btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)).pack(side="right")
 
-    def abrir_plano_modal(self):
+    def abrir_plano_modal(self) -> None:
+        """Open dialog to create a new plan."""
         PlanoModal(self.aluno_id, self.listar_planos)
 
-    def editar_plano(self, plano):
+    def editar_plano(self, plano: tuple) -> None:
+        """Open dialog to edit an existing plan."""
         p = {
             'id': plano[0],
             'nome': plano[1],
@@ -218,7 +269,8 @@ class DetalhesFrame(ttk.Frame):
         }
         PlanoModal(self.aluno_id, self.listar_planos, plano=p)
 
-    def gerar_plano_pdf(self, nome, exercicios_json):
+    def gerar_plano_pdf(self, nome: str, exercicios_json: str) -> None:
+        """Generate a PDF file for the given plan."""
         try:
             exs = json.loads(exercicios_json) if exercicios_json else []
         except json.JSONDecodeError:
@@ -231,18 +283,22 @@ class DetalhesFrame(ttk.Frame):
         gerar_treino_pdf(f"Treino - {nome}", exs, path)
         messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
 
-    def excluir_plano(self, plano_id):
+    def excluir_plano(self, plano_id: int) -> None:
+        """Delete a plan after confirmation."""
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
             db.remover_plano(plano_id)
             self.listar_planos()
 
-    def excluir_aluno(self):
+    def excluir_aluno(self) -> None:
+        """Remove this student from the database."""
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
             db.remover_aluno(self.aluno_id)
             self.atualizar_lista()
             self.voltar()
 
-def criar_interface():
+def criar_interface() -> None:
+    """Launch the main application window."""
+
     db.init_db()
     theme = load_theme()
     app = tb.Window(themename=theme)
