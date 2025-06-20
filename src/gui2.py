@@ -119,8 +119,8 @@ def load_theme():
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 return data.get("theme", "superhero")
-        except Exception:
-            pass
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"Erro ao carregar o tema: {e}")
     return "superhero"
 
 def save_theme(theme: str):
