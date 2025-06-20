@@ -3,6 +3,20 @@ from contextlib import closing
 
 DB_NAME = "alunos.db"
 
+# Allowed columns that can be updated via ``atualizar_aluno``. This helps avoid
+# SQL injection by validating user provided column names before composing the
+# query string.
+VALID_UPDATE_FIELDS = {
+    "nome",
+    "email",
+    "data_inicio",
+    "plano",
+    "pagamento",
+    "progresso",
+    "dieta",
+    "treino",
+}
+
 def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
@@ -75,9 +89,29 @@ def adicionar_aluno(nome: str, email: str):
             return cur.lastrowid
 
 def atualizar_aluno(aluno_id: int, campo: str, valor: str):
+    """Update a single column of an existing aluno.
+
+    Parameters
+    ----------
+    aluno_id : int
+        Identifier of the aluno to update.
+    campo : str
+        Column name to update. Must be one of ``VALID_UPDATE_FIELDS``.
+    valor : str
+        New value for the column.
+    """
+
+    if campo not in VALID_UPDATE_FIELDS:
+        raise ValueError(f"Invalid column name: {campo}")
+
+    campo_validado = campo  # alias to emphasize validation happened
+
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
-            conn.execute(f"UPDATE alunos SET {campo}=? WHERE id=?", (valor, aluno_id))
+            conn.execute(
+                f"UPDATE alunos SET {campo_validado}=? WHERE id=?",
+                (valor, aluno_id),
+            )
 
 def remover_aluno(aluno_id: int):
     with closing(sqlite3.connect(DB_NAME)) as conn:
