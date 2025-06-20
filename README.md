@@ -12,14 +12,14 @@ informações de forma estruturada.
 
 ## Requisitos
 - Python 3.11 ou superior
-- Dependências listadas em `requirements.txt`
+- `pip` recente para instalar o pacote
 
 ## Como usar
 1. Instale o Python 3.11 ou superior em seu computador.
 2. (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
-3. Instale as dependências com `pip install -r requirements.txt`.
-4. (Opcional) Rode os testes com `pytest` para garantir que tudo está funcionando.
-5. Execute `python src/main.py` para abrir o sistema.
+3. Instale o Gestor de Alunos executando `pip install .` dentro do diretório do projeto.
+4. (Opcional) Rode os testes com `pip install .[test]` e em seguida `pytest`.
+5. Após a instalação, rode `gestor-alunos` para abrir o sistema.
 
 Todo o banco de dados fica salvo localmente em `alunos.db`.
 
