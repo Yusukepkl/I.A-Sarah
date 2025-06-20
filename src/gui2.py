@@ -6,6 +6,7 @@ import ttkbootstrap as tb
 
 import db
 from pdf_utils import gerar_treino_pdf, sanitize_filename
+from config_manager import load_theme, save_theme
 
 
 class ExercicioRow(ttk.Frame):
@@ -111,22 +112,6 @@ class PlanoModal(tb.Toplevel):
 
         ttk.Button(self, text="Salvar", command=salvar).pack(pady=5)
 
-CONFIG_FILE = "config.json"
-
-def load_theme():
-    if os.path.exists(CONFIG_FILE):
-        try:
-            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data.get("theme", "superhero")
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"Erro ao carregar o tema: {e}")
-    return "superhero"
-
-def save_theme(theme: str):
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-        json.dump({"theme": theme}, f)
-
 def abrir_modal_adicionar(atualizar):
     win = tb.Toplevel()
     win.title("Adicionar Aluno")
@@ -148,6 +133,7 @@ def abrir_modal_adicionar(atualizar):
             messagebox.showwarning("Aviso", "Nome não pode ser vazio", parent=win)
             return
         db.adicionar_aluno(nome, email)
+        messagebox.showinfo("Sucesso", "Aluno adicionado com sucesso!", parent=win)
         win.destroy()
         atualizar()
 
@@ -229,21 +215,32 @@ class DetalhesFrame(ttk.Frame):
             return
         file_name = sanitize_filename(f"{self.aluno_id}_{nome}")
         path = f"treino_{file_name}.pdf"
-        gerar_treino_pdf(f"Treino - {nome}", exs, path)
+        pb = ttk.Progressbar(self, mode="indeterminate")
+        pb.pack(fill="x", pady=5)
+        pb.start()
+        self.update_idletasks()
+        try:
+            gerar_treino_pdf(f"Treino - {nome}", exs, path)
+        finally:
+            pb.stop()
+            pb.destroy()
         messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
 
     def excluir_plano(self, plano_id):
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
             db.remover_plano(plano_id)
             self.listar_planos()
+            messagebox.showinfo("Sucesso", "Plano excluído", parent=self)
 
     def excluir_aluno(self):
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
             db.remover_aluno(self.aluno_id)
             self.atualizar_lista()
             self.voltar()
+            messagebox.showinfo("Sucesso", "Aluno excluído", parent=self)
 
 def criar_interface():
+    """Build and run the main GUI application."""
     db.init_db()
     theme = load_theme()
     app = tb.Window(themename=theme)
