@@ -21,3 +21,8 @@ informações de forma estruturada.
 4. Execute `python src/main.py` para abrir o sistema.
 
 Todo o banco de dados fica salvo localmente em `alunos.db`.
+
+## Licença
+
+Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais
+informações.
