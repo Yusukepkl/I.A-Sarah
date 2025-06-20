@@ -72,7 +72,13 @@ def criar_interface():
     header.pack(fill="x")
     ttk.Label(header, text="Gestor de Alunos", font=("Segoe UI", 14, "bold")).pack(side="left")
     theme_var = tk.BooleanVar(value=theme=="superhero")
-    tb.Switch(header, text="Modo Escuro", variable=theme_var, command=toggle_theme).pack(side="right")
+    tb.Checkbutton(
+        header,
+        text="Modo Escuro",
+        variable=theme_var,
+        command=toggle_theme,
+        bootstyle="round-toggle",
+    ).pack(side="right")
 
     main = ttk.Frame(app, padding=10)
     main.pack(fill="both", expand=True)
