@@ -5,6 +5,7 @@ DB_NAME = "alunos.db"
 
 def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
         with conn:
             conn.execute(
                 """
@@ -26,6 +27,19 @@ def init_db():
                 conn.execute("ALTER TABLE alunos ADD COLUMN email TEXT")
             except sqlite3.OperationalError:
                 pass
+            # tabela de planos de treino
+            conn.execute(
+                """
+            CREATE TABLE IF NOT EXISTS planos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aluno_id INTEGER NOT NULL,
+                nome TEXT NOT NULL,
+                descricao TEXT,
+                exercicios TEXT,
+                FOREIGN KEY(aluno_id) REFERENCES alunos(id) ON DELETE CASCADE
+            )
+            """
+            )
             try:
                 conn.execute("ALTER TABLE alunos ADD COLUMN data_inicio TEXT")
             except sqlite3.OperationalError:
@@ -69,3 +83,31 @@ def remover_aluno(aluno_id: int):
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("DELETE FROM alunos WHERE id=?", (aluno_id,))
+
+# ----- Planos de treino -----
+
+def listar_planos(aluno_id: int):
+    """Retorna todos os planos de treino de um aluno."""
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        cur = conn.execute(
+            "SELECT id, nome, descricao, exercicios FROM planos WHERE aluno_id=? ORDER BY id",
+            (aluno_id,),
+        )
+        return cur.fetchall()
+
+
+def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str):
+    """Adiciona um novo plano de treino."""
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
+            cur = conn.execute(
+                "INSERT INTO planos (aluno_id, nome, descricao, exercicios) VALUES (?, ?, ?, ?)",
+                (aluno_id, nome, descricao, exercicios_json),
+            )
+            return cur.lastrowid
+
+
+def remover_plano(plano_id: int):
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
+            conn.execute("DELETE FROM planos WHERE id=?", (plano_id,))
