@@ -36,7 +36,23 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
         if not nome:
             messagebox.showwarning("Aviso", "Nome não pode ser vazio", parent=win)
             return
-        db.adicionar_aluno(nome, email)
+        pb = ttk.Progressbar(win, mode="indeterminate")
+        pb.grid(row=3, column=0, columnspan=2, pady=5, sticky="ew")
+        pb.start()
+        win.update_idletasks()
+        erro = None
+        try:
+            db.adicionar_aluno(nome, email)
+        except Exception as e:  # pragma: no cover - gui feedback
+            erro = e
+        finally:
+            pb.stop()
+            pb.destroy()
+        if erro:
+            messagebox.showerror(
+                "Erro", f"Falha ao adicionar aluno:\n{erro}", parent=win
+            )
+            return
         messagebox.showinfo("Sucesso", "Aluno adicionado com sucesso!", parent=win)
         win.destroy()
         atualizar()
@@ -108,11 +124,20 @@ class DetalhesFrame(ttk.Frame):
         PlanoModal(self.aluno_id, self._salvar_plano, plano=p)
 
     def _salvar_plano(self, aluno_id: int, nome: str, descricao: str, exercicios_json: str, plano_id: int | None) -> None:
-        if plano_id:
-            db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
+        erro = None
+        try:
+            if plano_id:
+                db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
+            else:
+                db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
+        except Exception as e:  # pragma: no cover - gui feedback
+            erro = e
+        if erro:
+            messagebox.showerror(
+                "Erro", f"Falha ao salvar plano:\n{erro}", parent=self
+            )
         else:
-            db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
-        self.listar_planos()
+            self.listar_planos()
 
     def gerar_plano_pdf(self, nome: str, exercicios_json: str) -> None:
         try:
@@ -128,22 +153,54 @@ class DetalhesFrame(ttk.Frame):
         pb.pack(fill="x", pady=5)
         pb.start()
         self.update_idletasks()
+        erro = None
         try:
             gerar_treino_pdf(f"Treino - {nome}", exs, path)
+        except Exception as e:  # pragma: no cover - gui feedback
+            erro = e
         finally:
             pb.stop()
             pb.destroy()
-        messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
+        if erro:
+            messagebox.showerror(
+                "Erro", f"Falha ao gerar PDF:\n{erro}", parent=self
+            )
+        else:
+            messagebox.showinfo(
+                "PDF", f"Treino exportado como {path}", parent=self
+            )
 
     def excluir_plano(self, plano_id: int) -> None:
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
-            db.remover_plano(plano_id)
-            self.listar_planos()
-            messagebox.showinfo("Sucesso", "Plano excluído", parent=self)
+            try:
+                db.remover_plano(plano_id)
+                self.listar_planos()
+            except Exception as e:  # pragma: no cover - gui feedback
+                messagebox.showerror(
+                    "Erro", f"Falha ao excluir plano:\n{e}", parent=self
+                )
+            else:
+                messagebox.showinfo("Sucesso", "Plano excluído", parent=self)
 
     def excluir_aluno(self) -> None:
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
-            db.remover_aluno(self.aluno_id)
+            pb = ttk.Progressbar(self, mode="indeterminate")
+            pb.pack(fill="x", pady=5)
+            pb.start()
+            self.update_idletasks()
+            erro = None
+            try:
+                db.remover_aluno(self.aluno_id)
+            except Exception as e:  # pragma: no cover - gui feedback
+                erro = e
+            finally:
+                pb.stop()
+                pb.destroy()
+            if erro:
+                messagebox.showerror(
+                    "Erro", f"Falha ao excluir aluno:\n{erro}", parent=self
+                )
+                return
             self.atualizar_lista()
             self.voltar()
             messagebox.showinfo("Sucesso", "Aluno excluído", parent=self)
