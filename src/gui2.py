@@ -173,8 +173,8 @@ class DetalhesFrame(ttk.Frame):
         self.planos_frame = ttk.Labelframe(self, text="Planos de Treino")
         self.planos_frame.pack(fill="both", expand=True, pady=10)
 
-        ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
         self.listar_planos()
+        ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
 
     def listar_planos(self):
         for child in self.planos_frame.winfo_children():
