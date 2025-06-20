@@ -12,6 +12,8 @@ from pdf_utils import gerar_treino_pdf, sanitize_filename
 from config_manager import load_theme, save_theme
 from widgets import PlanoModal
 
+DEFAULT_PAD = 10
+
 
 def abrir_modal_adicionar(atualizar: callable) -> None:
     """Mostra janela para adicionar um aluno."""
@@ -39,7 +41,7 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
         win.destroy()
         atualizar()
 
-    ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=10)
+    ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=DEFAULT_PAD)
 
 
 class DetalhesFrame(ttk.Frame):
@@ -50,22 +52,22 @@ class DetalhesFrame(ttk.Frame):
         self.aluno_id = dados[0]
         self.voltar = voltar
         self.atualizar_lista = atualizar_lista
-        self.configure(padding=20)
+        self.configure(padding=DEFAULT_PAD)
 
         ttk.Button(self, text="Voltar", command=self.voltar).pack(anchor="w")
-        ttk.Label(self, text=dados[1], font=("Segoe UI", 12, "bold")).pack(anchor="w")
+        ttk.Label(self, text=dados[1], style="Header.TLabel").pack(anchor="w")
         ttk.Label(self, text=dados[2] or "-").pack(anchor="w")
-        ttk.Label(self, text=f"Início: {dados[3]}").pack(anchor="w", pady=(0, 10))
+        ttk.Label(self, text=f"Início: {dados[3]}").pack(anchor="w", pady=(0, DEFAULT_PAD))
 
-        botoes = ttk.Frame(self)
-        botoes.pack(fill="x", pady=5)
+        botoes = ttk.Frame(self, padding=DEFAULT_PAD)
+        botoes.pack(fill="x", pady=DEFAULT_PAD)
         ttk.Button(botoes, text="Excluir Aluno", command=self.excluir_aluno).pack(side="right")
 
         self.planos_frame = ttk.Labelframe(self, text="Planos de Treino")
-        self.planos_frame.pack(fill="both", expand=True, pady=10)
+        self.planos_frame.pack(fill="both", expand=True, pady=DEFAULT_PAD)
 
         self.listar_planos()
-        ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
+        ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=DEFAULT_PAD)
 
     def listar_planos(self) -> None:
         for child in self.planos_frame.winfo_children():
@@ -76,7 +78,7 @@ class DetalhesFrame(ttk.Frame):
             card = ttk.Frame(self.planos_frame, padding=10, relief="ridge")
             card.is_card = True
             card.pack(fill="x", pady=5)
-            ttk.Label(card, text=nome, font=("Segoe UI", 10, "bold")).pack(anchor="w")
+            ttk.Label(card, text=nome, style="CardTitle.TLabel").pack(anchor="w")
             if descricao:
                 ttk.Label(card, text=descricao).pack(anchor="w")
             try:
@@ -92,7 +94,7 @@ class DetalhesFrame(ttk.Frame):
                 if ex.get('obs'):
                     info += f" ({ex.get('obs')})"
                 ttk.Label(card, text=info).pack(anchor="w")
-            btns = ttk.Frame(card)
+            btns = ttk.Frame(card, padding=DEFAULT_PAD)
             btns.pack(anchor="e", pady=(5, 0))
             ttk.Button(btns, text="PDF", command=lambda n=nome, e=exercicios: self.gerar_plano_pdf(n, e)).pack(side="right")
             ttk.Button(btns, text="Editar", command=lambda p=(pid, nome, descricao, exercicios): self.editar_plano(p)).pack(side="right")
@@ -154,14 +156,24 @@ def criar_interface() -> None:
     app = tb.Window(themename=theme)
     app.title("Gestor de Alunos")
 
+    style = app.style
+    style.configure("TLabel", font=("Segoe UI", 10))
+    style.configure("TButton", font=("Segoe UI", 10))
+    style.configure("Title.TLabel", font=("Segoe UI", 14, "bold"))
+    style.configure("Header.TLabel", font=("Segoe UI", 12, "bold"))
+    style.configure("CardTitle.TLabel", font=("Segoe UI", 11, "bold"))
+
     def toggle_theme() -> None:
         new_theme = "superhero" if theme_var.get() else "flatly"
         app.style.theme_use(new_theme)
         save_theme(new_theme)
 
-    header = ttk.Frame(app, padding=10)
-    header.pack(fill="x")
-    ttk.Label(header, text="Gestor de Alunos", font=("Segoe UI", 14, "bold")).pack(side="left")
+    app.columnconfigure(0, weight=1)
+    app.rowconfigure(1, weight=1)
+
+    header = ttk.Frame(app, padding=DEFAULT_PAD)
+    header.grid(row=0, column=0, sticky="ew")
+    ttk.Label(header, text="Gestor de Alunos", style="Title.TLabel").pack(side="left")
     theme_var = tk.BooleanVar(value=theme == "superhero")
     tb.Checkbutton(
         header,
@@ -171,24 +183,28 @@ def criar_interface() -> None:
         bootstyle="round-toggle",
     ).pack(side="right")
 
-    main = ttk.Frame(app, padding=10)
-    main.pack(fill="both", expand=True)
+    main = ttk.Frame(app, padding=DEFAULT_PAD)
+    main.grid(row=1, column=0, sticky="nsew")
+    main.columnconfigure(0, weight=1)
+    main.rowconfigure(0, weight=1)
 
-    list_frame = ttk.Frame(main)
-    list_frame.pack(fill="both", expand=True)
+    list_frame = ttk.Frame(main, padding=DEFAULT_PAD)
+    list_frame.grid(row=0, column=0, sticky="nsew")
+    list_frame.columnconfigure(0, weight=1)
+    list_frame.rowconfigure(0, weight=1)
 
     canvas = tk.Canvas(list_frame)
     scroll = ttk.Scrollbar(list_frame, orient="vertical", command=canvas.yview)
     canvas.configure(yscrollcommand=scroll.set)
-    scroll.pack(side="right", fill="y")
-    canvas.pack(side="left", fill="both", expand=True)
+    scroll.grid(row=0, column=1, sticky="ns")
+    canvas.grid(row=0, column=0, sticky="nsew")
 
-    cards = ttk.Frame(canvas)
+    cards = ttk.Frame(canvas, padding=DEFAULT_PAD)
     canvas.create_window((0, 0), window=cards, anchor="nw")
 
-    detail_container = ttk.Frame(main)
-    detail_container.pack(fill="both", expand=True)
-    detail_container.pack_forget()
+    detail_container = ttk.Frame(main, padding=DEFAULT_PAD)
+    detail_container.grid(row=0, column=0, sticky="nsew")
+    detail_container.grid_remove()
 
     def on_configure(event=None) -> None:
         canvas.configure(scrollregion=canvas.bbox("all"))
@@ -198,17 +214,17 @@ def criar_interface() -> None:
     def show_list() -> None:
         for child in detail_container.winfo_children():
             child.destroy()
-        detail_container.pack_forget()
-        list_frame.pack(fill="both", expand=True)
+        detail_container.grid_remove()
+        list_frame.grid()
         atualizar_cards()
 
     def show_detail(aluno_id: int) -> None:
-        list_frame.pack_forget()
+        list_frame.grid_remove()
         for child in detail_container.winfo_children():
             child.destroy()
         dados = db.obter_aluno(aluno_id)
         DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(fill="both", expand=True)
-        detail_container.pack(fill="both", expand=True)
+        detail_container.grid()
 
     def atualizar_cards() -> None:
         for child in cards.winfo_children():
@@ -219,15 +235,15 @@ def criar_interface() -> None:
         for aid, nome, email, data_inicio in alunos:
             card = ttk.Frame(cards, padding=10, relief="ridge", borderwidth=1)
             card.pack(fill="x", pady=5)
-            ttk.Label(card, text=nome, font=("Segoe UI", 11, "bold")).pack(anchor="w")
+            ttk.Label(card, text=nome, style="CardTitle.TLabel").pack(anchor="w")
             ttk.Label(card, text=email or "-").pack(anchor="w")
             ttk.Label(card, text=f"Desde {data_inicio}").pack(anchor="w")
             card.bind("<Button-1>", lambda e, i=aid: show_detail(i))
             for w in card.winfo_children():
                 w.bind("<Button-1>", lambda e, i=aid: show_detail(i))
 
-    botoes = ttk.Frame(app, padding=10)
-    botoes.pack(fill="x")
+    botoes = ttk.Frame(app, padding=DEFAULT_PAD)
+    botoes.grid(row=2, column=0, sticky="ew")
     ttk.Button(botoes, text="Adicionar Aluno", command=lambda: abrir_modal_adicionar(atualizar_cards)).pack()
 
     atualizar_cards()
