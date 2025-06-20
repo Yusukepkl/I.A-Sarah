@@ -144,7 +144,7 @@ def abrir_modal_adicionar(atualizar):
         nome = nome_var.get().strip()
         email = email_var.get().strip()
         if not nome:
-            messagebox.showwarning("Aviso", "Nome nao pode ser vazio", parent=win)
+            messagebox.showwarning("Aviso", "Nome não pode ser vazio", parent=win)
             return
         db.adicionar_aluno(nome, email)
         win.destroy()
