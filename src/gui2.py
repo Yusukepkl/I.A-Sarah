@@ -8,8 +8,9 @@ import db
 
 
 class ExercicioRow(ttk.Frame):
-    def __init__(self, master, remover):
+    def __init__(self, master, remover, dados=None):
         super().__init__(master)
+        self.ex_id = None
         self.vars = {
             'nome': tk.StringVar(),
             'series': tk.StringVar(),
@@ -17,6 +18,10 @@ class ExercicioRow(ttk.Frame):
             'descanso': tk.StringVar(),
             'obs': tk.StringVar(),
         }
+        if dados:
+            self.ex_id = dados.get('id')
+            for k in self.vars:
+                self.vars[k].set(dados.get(k, ''))
         ttk.Entry(self, textvariable=self.vars['nome'], width=15).grid(row=0, column=0, padx=2, pady=2)
         ttk.Entry(self, textvariable=self.vars['series'], width=5).grid(row=0, column=1, padx=2)
         ttk.Entry(self, textvariable=self.vars['reps'], width=5).grid(row=0, column=2, padx=2)
@@ -25,20 +30,24 @@ class ExercicioRow(ttk.Frame):
         ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=5, padx=2)
 
     def get_data(self):
-        return {k: v.get().strip() for k, v in self.vars.items()}
+        data = {k: v.get().strip() for k, v in self.vars.items()}
+        if self.ex_id is not None:
+            data['id'] = self.ex_id
+        return data
 
 
 class PlanoModal(tb.Toplevel):
-    def __init__(self, aluno_id, ao_salvar):
+    def __init__(self, aluno_id, ao_salvar, plano=None):
         super().__init__()
-        self.title("Novo Plano de Treino")
         self.geometry("600x400")
         self.grab_set()
         self.aluno_id = aluno_id
         self.ao_salvar = ao_salvar
         self.exercicios = []
+        self.plano_id = None
 
         nome_var = tk.StringVar()
+        self.title("Novo Plano de Treino" if plano is None else "Editar Plano de Treino")
         ttk.Label(self, text="Nome do Plano:").pack(anchor="w", padx=5, pady=5)
         ttk.Entry(self, textvariable=nome_var, width=40).pack(anchor="w", padx=5)
 
@@ -53,13 +62,28 @@ class PlanoModal(tb.Toplevel):
             row.destroy()
             self.exercicios.remove(row)
 
-        def add_row():
-            row = ExercicioRow(area, remover_row)
+        def add_row(dados=None):
+            row = ExercicioRow(area, remover_row, dados)
             row.pack(fill="x", pady=2, padx=5)
             self.exercicios.append(row)
 
-        ttk.Button(self, text="Adicionar Exercício", command=add_row).pack(pady=5)
-        add_row()
+        ttk.Button(self, text="Adicionar Exercício", command=lambda: add_row()).pack(pady=5)
+
+        if plano:
+            self.plano_id = plano.get('id')
+            nome_var.set(plano.get('nome', ''))
+            desc.insert('1.0', plano.get('descricao', '') or '')
+            try:
+                exs = json.loads(plano.get('exercicios') or '[]')
+            except json.JSONDecodeError:
+                exs = []
+            if exs:
+                for ex in exs:
+                    add_row(ex)
+            else:
+                add_row()
+        else:
+            add_row()
 
         def salvar():
             nome = nome_var.get().strip()
@@ -69,7 +93,10 @@ class PlanoModal(tb.Toplevel):
             descricao = desc.get("1.0", tk.END).strip()
             dados = [r.get_data() for r in self.exercicios if r.get_data().get('nome')]
             exercicios_json = json.dumps(dados, ensure_ascii=False)
-            db.adicionar_plano(self.aluno_id, nome, descricao, exercicios_json)
+            if self.plano_id:
+                db.atualizar_plano(self.plano_id, nome, descricao, exercicios_json)
+            else:
+                db.adicionar_plano(self.aluno_id, nome, descricao, exercicios_json)
             self.destroy()
             self.ao_salvar()
 
@@ -165,10 +192,20 @@ class DetalhesWindow(tb.Toplevel):
                 ttk.Label(card, text=info).pack(anchor="w")
             btns = ttk.Frame(card)
             btns.pack(anchor="e", pady=(5,0))
+            ttk.Button(btns, text="Editar", command=lambda p=(pid,nome,descricao,exercicios): self.editar_plano(p)).pack(side="right")
             ttk.Button(btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)).pack(side="right")
 
     def abrir_plano_modal(self):
         PlanoModal(self.aluno_id, self.listar_planos)
+
+    def editar_plano(self, plano):
+        p = {
+            'id': plano[0],
+            'nome': plano[1],
+            'descricao': plano[2],
+            'exercicios': plano[3],
+        }
+        PlanoModal(self.aluno_id, self.listar_planos, plano=p)
 
     def excluir_plano(self, plano_id):
         if messagebox.askyesno("Confirmar", "Excluir plano?", parent=self):
