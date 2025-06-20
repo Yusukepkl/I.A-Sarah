@@ -18,7 +18,8 @@ informações de forma estruturada.
 1. Instale o Python 3.11 ou superior em seu computador.
 2. (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
 3. Instale as dependências com `pip install -r requirements.txt`.
-4. Execute `python src/main.py` para abrir o sistema.
+4. (Opcional) Rode os testes com `pytest` para garantir que tudo está funcionando.
+5. Execute `python src/main.py` para abrir o sistema.
 
 Todo o banco de dados fica salvo localmente em `alunos.db`.
 
