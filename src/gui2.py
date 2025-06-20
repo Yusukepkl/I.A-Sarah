@@ -143,14 +143,15 @@ def abrir_modal_adicionar(atualizar):
 
     ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=10)
 
-class DetalhesWindow(tb.Toplevel):
-    def __init__(self, dados, atualizar_lista):
-        super().__init__()
-        self.title("Detalhes do Aluno")
+class DetalhesFrame(ttk.Frame):
+    def __init__(self, master, dados, voltar, atualizar_lista):
+        super().__init__(master)
         self.aluno_id = dados[0]
+        self.voltar = voltar
         self.atualizar_lista = atualizar_lista
-        self.configure(padx=20, pady=20)
+        self.configure(padding=20)
 
+        ttk.Button(self, text="Voltar", command=self.voltar).pack(anchor="w")
         ttk.Label(self, text=dados[1], font=("Segoe UI", 12, "bold")).pack(anchor="w")
         ttk.Label(self, text=dados[2] or "-").pack(anchor="w")
         ttk.Label(self, text=f"Inicio: {dados[3]}").pack(anchor="w", pady=(0, 10))
@@ -164,8 +165,6 @@ class DetalhesWindow(tb.Toplevel):
 
         ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=5)
         self.listar_planos()
-
-        ttk.Button(self, text="Fechar", command=self.destroy).pack(pady=5)
 
     def listar_planos(self):
         for child in self.planos_frame.winfo_children():
@@ -216,7 +215,7 @@ class DetalhesWindow(tb.Toplevel):
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
             db.remover_aluno(self.aluno_id)
             self.atualizar_lista()
-            self.destroy()
+            self.voltar()
 
 def criar_interface():
     db.init_db()
@@ -244,8 +243,11 @@ def criar_interface():
     main = ttk.Frame(app, padding=10)
     main.pack(fill="both", expand=True)
 
-    canvas = tk.Canvas(main)
-    scroll = ttk.Scrollbar(main, orient="vertical", command=canvas.yview)
+    list_frame = ttk.Frame(main)
+    list_frame.pack(fill="both", expand=True)
+
+    canvas = tk.Canvas(list_frame)
+    scroll = ttk.Scrollbar(list_frame, orient="vertical", command=canvas.yview)
     canvas.configure(yscrollcommand=scroll.set)
     scroll.pack(side="right", fill="y")
     canvas.pack(side="left", fill="both", expand=True)
@@ -253,13 +255,28 @@ def criar_interface():
     cards = ttk.Frame(canvas)
     canvas.create_window((0,0), window=cards, anchor="nw")
 
+    detail_container = ttk.Frame(main)
+    detail_container.pack(fill="both", expand=True)
+    detail_container.pack_forget()
+
     def on_configure(event=None):
         canvas.configure(scrollregion=canvas.bbox("all"))
     cards.bind("<Configure>", on_configure)
 
-    def abrir_detalhes(aluno_id):
+    def show_list():
+        for child in detail_container.winfo_children():
+            child.destroy()
+        detail_container.pack_forget()
+        list_frame.pack(fill="both", expand=True)
+        atualizar_cards()
+
+    def show_detail(aluno_id):
+        list_frame.pack_forget()
+        for child in detail_container.winfo_children():
+            child.destroy()
         dados = db.obter_aluno(aluno_id)
-        DetalhesWindow(dados, atualizar_cards)
+        DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(fill="both", expand=True)
+        detail_container.pack(fill="both", expand=True)
 
     def atualizar_cards():
         for child in cards.winfo_children():
@@ -273,9 +290,9 @@ def criar_interface():
             ttk.Label(card, text=nome, font=("Segoe UI", 11, "bold")).pack(anchor="w")
             ttk.Label(card, text=email or "-").pack(anchor="w")
             ttk.Label(card, text=f"Desde {data_inicio}").pack(anchor="w")
-            card.bind("<Button-1>", lambda e, i=aid: abrir_detalhes(i))
+            card.bind("<Button-1>", lambda e, i=aid: show_detail(i))
             for w in card.winfo_children():
-                w.bind("<Button-1>", lambda e, i=aid: abrir_detalhes(i))
+                w.bind("<Button-1>", lambda e, i=aid: show_detail(i))
 
     botoes = ttk.Frame(app, padding=10)
     botoes.pack(fill="x")
