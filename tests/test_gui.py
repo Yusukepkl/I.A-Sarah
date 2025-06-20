@@ -7,12 +7,15 @@ import tkinter as tk
 from unittest import mock
 import pytest
 from pyvirtualdisplay import Display
+import shutil
 
 import gui
 
 
 @pytest.fixture(scope="module", autouse=True)
 def _display():
+    if shutil.which("Xvfb") is None:
+        pytest.skip("Xvfb not available")
     disp = Display(visible=0, size=(800, 600))
     disp.start()
     yield

@@ -34,5 +34,5 @@ py-modules = [
 ]
 
 [tool.setuptools.data-files]
-"" = ["config.json"]
+"" = ["src/config.json"]
 
