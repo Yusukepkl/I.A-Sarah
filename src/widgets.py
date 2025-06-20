@@ -7,6 +7,28 @@ from typing import Callable, Optional
 import ttkbootstrap as tb
 
 
+def _fade_in(win: tk.Toplevel, step: float = 0.1) -> None:
+    """Increase window opacity until fully visible."""
+    alpha = win.attributes("-alpha") or 0
+    alpha += step
+    if alpha >= 1:
+        win.attributes("-alpha", 1.0)
+    else:
+        win.attributes("-alpha", alpha)
+        win.after(20, _fade_in, win, step)
+
+
+def _fade_out_destroy(win: tk.Toplevel, step: float = 0.1) -> None:
+    """Fade out the window and destroy it."""
+    alpha = win.attributes("-alpha") or 1
+    alpha -= step
+    if alpha <= 0:
+        win.destroy()
+    else:
+        win.attributes("-alpha", alpha)
+        win.after(20, _fade_out_destroy, win, step)
+
+
 class ExercicioRow(ttk.Frame):
     """Linha de entrada para um exercício do plano."""
 
@@ -47,6 +69,9 @@ class PlanoModal(tb.Toplevel):
     def __init__(self, aluno_id: int, salvar: Callable[[int, str, str, str, Optional[int]], None], plano: Optional[dict] = None) -> None:
         super().__init__()
         self.geometry("650x450")
+        self.attributes("-alpha", 0.0)
+        _fade_in(self)
+        self.protocol("WM_DELETE_WINDOW", lambda: _fade_out_destroy(self))
         self.grab_set()
         self.aluno_id = aluno_id
         self.salvar = salvar
@@ -107,7 +132,7 @@ class PlanoModal(tb.Toplevel):
             dados = [r.get_data() for r in self.exercicios if r.get_data().get("nome")]
             exercicios_json = json.dumps(dados, ensure_ascii=False)
             self.salvar(self.aluno_id, nome, descricao, exercicios_json, self.plano_id)
-            self.destroy()
+            _fade_out_destroy(self)
 
         ttk.Button(self, text="Salvar", command=salvar_click).pack(pady=5)
 

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import json
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, PhotoImage
 import ttkbootstrap as tb
+from ttkbootstrap.icons import Icon
 
 import db
 from pdf_utils import gerar_treino_pdf, sanitize_filename
@@ -15,10 +16,70 @@ from widgets import PlanoModal
 DEFAULT_PAD = 10
 
 
+def _fade_in(win: tk.Toplevel, step: float = 0.1) -> None:
+    """Increase window opacity until fully visible."""
+    alpha = win.attributes("-alpha") or 0
+    alpha += step
+    if alpha >= 1:
+        win.attributes("-alpha", 1.0)
+    else:
+        win.attributes("-alpha", alpha)
+        win.after(20, _fade_in, win, step)
+
+
+def _fade_out_destroy(win: tk.Toplevel, step: float = 0.1) -> None:
+    """Fade out the window and destroy it."""
+    alpha = win.attributes("-alpha") or 1
+    alpha -= step
+    if alpha <= 0:
+        win.destroy()
+    else:
+        win.attributes("-alpha", alpha)
+        win.after(20, _fade_out_destroy, win, step)
+
+
+def _add_hover_animation(frame: ttk.Frame, hover_color: str = "#f0f0f0") -> None:
+    """Add simple hover animation on the given frame."""
+
+    normal = frame.cget("background")
+    job = {"id": None}
+
+    def fade(start: str, end: str, i: int = 0, steps: int = 5) -> None:
+        r1, g1, b1 = frame.winfo_rgb(start)
+        r2, g2, b2 = frame.winfo_rgb(end)
+        r = int(r1 + (r2 - r1) * i / steps)
+        g = int(g1 + (g2 - g1) * i / steps)
+        b = int(b1 + (b2 - b1) * i / steps)
+        frame.configure(background=f"#{r>>8:02x}{g>>8:02x}{b>>8:02x}")
+        if i < steps:
+            job["id"] = frame.after(20, fade, start, end, i + 1, steps)
+        else:
+            job["id"] = None
+
+    def on_enter(_event) -> None:
+        if job["id"]:
+            frame.after_cancel(job["id"])
+        frame.configure(relief="raised")
+        fade(frame.cget("background"), hover_color)
+
+    def on_leave(_event) -> None:
+        if job["id"]:
+            frame.after_cancel(job["id"])
+        frame.configure(relief="solid")
+        fade(frame.cget("background"), normal)
+
+    for w in [frame] + list(frame.winfo_children()):
+        w.bind("<Enter>", on_enter)
+        w.bind("<Leave>", on_leave)
+
+
 def abrir_modal_adicionar(atualizar: callable) -> None:
     """Mostra janela para adicionar um aluno."""
     win = tb.Toplevel()
     win.title("Adicionar Aluno")
+    win.attributes("-alpha", 0.0)
+    _fade_in(win)
+    win.protocol("WM_DELETE_WINDOW", lambda: _fade_out_destroy(win))
     win.grab_set()
     win.grid_columnconfigure(1, weight=1)
 
@@ -54,7 +115,7 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
             )
             return
         messagebox.showinfo("Sucesso", "Aluno adicionado com sucesso!", parent=win)
-        win.destroy()
+        _fade_out_destroy(win)
         atualizar()
 
     ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=DEFAULT_PAD)
@@ -91,7 +152,7 @@ class DetalhesFrame(ttk.Frame):
                 child.destroy()
         planos = db.listar_planos(self.aluno_id)
         for pid, nome, descricao, exercicios in planos:
-            card = ttk.Frame(self.planos_frame, padding=10, relief="ridge")
+            card = tb.Frame(self.planos_frame, padding=10, bootstyle="card")
             card.is_card = True
             card.pack(fill="x", pady=5)
             ttk.Label(card, text=nome, style="CardTitle.TLabel").pack(anchor="w")
@@ -213,12 +274,15 @@ def criar_interface() -> None:
     app = tb.Window(themename=theme)
     app.title("Gestor de Alunos")
 
+    person_img = PhotoImage(data=Icon.icon, master=app)
+
     style = app.style
     style.configure("TLabel", font=("Segoe UI", 10))
     style.configure("TButton", font=("Segoe UI", 10))
     style.configure("Title.TLabel", font=("Segoe UI", 14, "bold"))
     style.configure("Header.TLabel", font=("Segoe UI", 12, "bold"))
     style.configure("CardTitle.TLabel", font=("Segoe UI", 11, "bold"))
+    style.configure("Card.TFrame", borderwidth=1, relief="solid")
 
     def toggle_theme() -> None:
         new_theme = "superhero" if theme_var.get() else "flatly"
@@ -290,14 +354,21 @@ def criar_interface() -> None:
         if not alunos:
             ttk.Label(cards, text="Nenhum aluno cadastrado").pack(pady=20)
         for aid, nome, email, data_inicio in alunos:
-            card = ttk.Frame(cards, padding=10, relief="ridge", borderwidth=1)
+            card = tb.Frame(cards, padding=10, bootstyle="card")
             card.pack(fill="x", pady=5)
-            ttk.Label(card, text=nome, style="CardTitle.TLabel").pack(anchor="w")
+            ttk.Label(
+                card,
+                text=nome,
+                image=person_img,
+                compound="left",
+                style="CardTitle.TLabel",
+            ).pack(anchor="w")
             ttk.Label(card, text=email or "-").pack(anchor="w")
             ttk.Label(card, text=f"Desde {data_inicio}").pack(anchor="w")
             card.bind("<Button-1>", lambda e, i=aid: show_detail(i))
             for w in card.winfo_children():
                 w.bind("<Button-1>", lambda e, i=aid: show_detail(i))
+            _add_hover_animation(card)
 
     botoes = ttk.Frame(app, padding=DEFAULT_PAD)
     botoes.grid(row=2, column=0, sticky="ew")
