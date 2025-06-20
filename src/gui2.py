@@ -164,7 +164,7 @@ class DetalhesFrame(ttk.Frame):
         ttk.Button(self, text="Voltar", command=self.voltar).pack(anchor="w")
         ttk.Label(self, text=dados[1], font=("Segoe UI", 12, "bold")).pack(anchor="w")
         ttk.Label(self, text=dados[2] or "-").pack(anchor="w")
-        ttk.Label(self, text=f"Inicio: {dados[3]}").pack(anchor="w", pady=(0, 10))
+        ttk.Label(self, text=f"Início: {dados[3]}").pack(anchor="w", pady=(0, 10))
 
         botoes = ttk.Frame(self)
         botoes.pack(fill="x", pady=5)
