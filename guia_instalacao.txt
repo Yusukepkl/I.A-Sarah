@@ -10,14 +10,14 @@ Passo a passo para instalar o Gestor de Alunos
    - Execute: `git clone <URL do seu repositorio>`
    - Entre na pasta clonada: `cd I.A-Sarah`
 
-3. **Instalar dependências**
+3. **Instalar o programa**
    - (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
    - Ainda no terminal, execute:
-     `pip install -r requirements.txt`
+     `pip install .`
 
 4. **Executar a aplicação**
-   - No terminal, execute:
-     `python src/main.py`
+   - Após a instalação, execute o comando:
+     `gestor-alunos`
    - A janela principal será exibida com a lista de alunos.
 
 5. **Usar o sistema**

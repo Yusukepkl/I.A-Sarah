@@ -1,14 +1,14 @@
 """Gerencia configurações simples da aplicação."""
 
 import json
-import os
+from pathlib import Path
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE = Path(__file__).with_name("config.json")
 
 
 def load_theme() -> str:
     """Return the saved theme name or a default."""
-    if os.path.exists(CONFIG_FILE):
+    if CONFIG_FILE.exists():
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gestor-alunos"
+version = "0.1.0"
+description = "Gestor de Alunos para Personal Trainer"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+dependencies = [
+    "ttkbootstrap>=1.13",
+    "fpdf>=1.7",
+    "pillow>=10"
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7", "pyvirtualdisplay"]
+
+[project.scripts]
+gestor-alunos = "main:criar_interface"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = [
+    "background",
+    "config_manager",
+    "db",
+    "gui",
+    "main",
+    "pdf_utils",
+    "widgets"
+]
+
+[tool.setuptools.data-files]
+"" = ["config.json"]
+
