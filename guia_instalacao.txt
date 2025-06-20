@@ -21,12 +21,12 @@ Passo a passo para instalar o Gestor de Alunos
    - A janela principal será exibida com a lista de alunos.
 
 5. **Usar o sistema**
-   - Clique em "Adicionar" para registrar um novo aluno.
-   - Dê duplo clique no nome ou utilize o botão "Detalhes" para abrir a ficha
-     do aluno em uma nova janela. Lá é possível criar planos de treino com
-     exercício, séries, repetições, peso, descanso e observações.
+   - Clique em "Adicionar Aluno" para registrar um novo aluno.
+   - Clique em um cartão para visualizar e gerenciar os planos de treino
+     desse aluno. Em cada plano é possível definir exercícios, séries,
+     repetições, peso, descanso e observações.
    - Cada plano possui opção para exportar um PDF resumindo todos os
-     exercícios. Também é possível exportar a dieta em PDF na mesma pasta.
+     exercícios.
 
 Todo o banco de dados é salvo no arquivo `alunos.db` e não necessita de conexão
 com a internet.
