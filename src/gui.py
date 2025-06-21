@@ -40,18 +40,31 @@ def _fade_out_destroy(win: tk.Toplevel, step: float = 0.1) -> None:
 
 
 def _add_hover_animation(frame: ttk.Frame, hover_color: str = "#f0f0f0") -> None:
-    """Add simple hover animation on the given frame."""
+    """Add simple hover animation on the given frame.
 
-    normal = frame.cget("background")
+    Some themed ``ttk`` widgets (like ``ttkbootstrap.Frame``) do not support the
+    ``background`` option. In that case the animation falls back to simply
+    changing the relief without colour fading.
+    """
+
+    try:
+        normal = frame.cget("background")
+    except tk.TclError:
+        normal = None
     job = {"id": None}
 
     def fade(start: str, end: str, i: int = 0, steps: int = 5) -> None:
+        if start is None or end is None:
+            return
         r1, g1, b1 = frame.winfo_rgb(start)
         r2, g2, b2 = frame.winfo_rgb(end)
         r = int(r1 + (r2 - r1) * i / steps)
         g = int(g1 + (g2 - g1) * i / steps)
         b = int(b1 + (b2 - b1) * i / steps)
-        frame.configure(background=f"#{r>>8:02x}{g>>8:02x}{b>>8:02x}")
+        try:
+            frame.configure(background=f"#{r>>8:02x}{g>>8:02x}{b>>8:02x}")
+        except tk.TclError:
+            return
         if i < steps:
             job["id"] = frame.after(20, fade, start, end, i + 1, steps)
         else:
@@ -61,13 +74,21 @@ def _add_hover_animation(frame: ttk.Frame, hover_color: str = "#f0f0f0") -> None
         if job["id"]:
             frame.after_cancel(job["id"])
         frame.configure(relief="raised")
-        fade(frame.cget("background"), hover_color)
+        try:
+            current = frame.cget("background")
+        except tk.TclError:
+            current = None
+        fade(current, hover_color)
 
     def on_leave(_event) -> None:
         if job["id"]:
             frame.after_cancel(job["id"])
         frame.configure(relief="solid")
-        fade(frame.cget("background"), normal)
+        try:
+            current = frame.cget("background")
+        except tk.TclError:
+            current = None
+        fade(current, normal)
 
     for w in [frame] + list(frame.winfo_children()):
         w.bind("<Enter>", on_enter)
