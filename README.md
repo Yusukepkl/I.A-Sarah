@@ -29,3 +29,20 @@ em diretórios diferentes.
 
 Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais
 informações.
+
+## Gerar executável e instalador
+
+Para distribuir o programa como aplicativo de desktop, você pode gerar um
+executável único e um instalador simples. Siga estes passos:
+
+1. Instale o PyInstaller com `pip install pyinstaller`.
+2. Execute o script `scripts/build_exe.ps1` no PowerShell para criar o
+   executável em `dist/gestor-alunos.exe`.
+3. Opcionalmente, utilize o script `installer/installer.iss` com o Inno Setup
+   para montar um instalador. Esse instalador inclui o executável e rodará o
+   script `setup_data.ps1` na primeira execução, baixando os dados mais recentes
+   do repositório.
+
+O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
+repositório via `git`, garantindo que o usuário receba os arquivos atuais ao
+instalar o aplicativo.
