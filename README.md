@@ -21,7 +21,9 @@ informações de forma estruturada.
 4. (Opcional) Rode os testes com `pip install .[test]` e em seguida `pytest`.
 5. Após a instalação, rode `gestor-alunos` para abrir o sistema.
 
-Todo o banco de dados fica salvo localmente em `alunos.db`.
+O banco de dados agora fica salvo em `~/.gestor_alunos/alunos.db`,
+garantindo que os dados permaneçam mesmo ao executar o programa
+em diretórios diferentes.
 
 ## Licença
 

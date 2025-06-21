@@ -2,9 +2,12 @@
 
 import sqlite3
 from contextlib import closing
+from pathlib import Path
 from typing import Iterable, Optional
 
-DB_NAME = "alunos.db"
+DB_DIR = Path.home() / ".gestor_alunos"
+DB_DIR.mkdir(parents=True, exist_ok=True)
+DB_NAME = str(DB_DIR / "alunos.db")
 
 # Allowed columns that can be updated via ``atualizar_aluno``. This helps avoid
 # SQL injection by validating user provided column names before composing the
