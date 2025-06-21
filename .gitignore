@@ -341,3 +341,7 @@ healthchecksdb
 
 # Ignore Windows executables
 *.exe
+
+# PyInstaller artifacts
+build/
+dist/
