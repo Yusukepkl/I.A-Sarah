@@ -7,7 +7,10 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 
-import sentry_sdk
+try:
+    import sentry_sdk  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    sentry_sdk = None
 from prometheus_client import CollectorRegistry, Counter, generate_latest
 
 logger = logging.getLogger(__name__)
@@ -29,9 +32,11 @@ class MetricsHandler(BaseHTTPRequestHandler):
 def init() -> None:
     """Initialize Sentry and start metrics server."""
     dsn = os.getenv("SENTRY_DSN")
-    if dsn:
+    if dsn and sentry_sdk is not None:
         sentry_sdk.init(dsn=dsn)
         logger.info("Sentry enabled")
+    elif dsn:
+        logger.warning("SENTRY_DSN set but sentry_sdk not installed")
 
     def run_server() -> None:
         httpd = HTTPServer(("0.0.0.0", 8000), MetricsHandler)
