@@ -153,5 +153,11 @@ pyinstaller gestor_exetavel.py -n iasarah
 ```
 O binário ficará em `dist/iasarah`.
 
+## Visual Studio Code
+Arquivos de configuração em `.vscode/` permitem rodar a aplicação e os testes
+diretamente do editor. Use o menu de tarefas para **Rodar aplicacao** ou
+**Testes rapidos**. A depuração está disponível pelo launcher
+**Python: Gestor de Alunos**.
+
 ## Licença
 Distribuído sob a Licença MIT em português. Veja o arquivo [LICENSE](LICENSE).

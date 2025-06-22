@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Rodar aplicacao",
+            "type": "shell",
+            "command": "python gestor_exetavel.py",
+            "group": "build",
+            "presentation": {"reveal": "always"}
+        },
+        {
+            "label": "Testes rapidos",
+            "type": "shell",
+            "command": "pytest -q",
+            "group": "test",
+            "presentation": {"reveal": "always"}
+        }
+    ]
+}

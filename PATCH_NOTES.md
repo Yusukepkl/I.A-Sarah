@@ -109,3 +109,7 @@
 - Função `obter_estatisticas` adicionada aos `controllers`.
 - Frontend web exibe estatísticas através do novo botão.
 
+## Versão 3.7 - Integração com VS Code
+- Configurações de tarefas e depuração adicionadas em `.vscode/`.
+- README atualizado com instruções de uso no Visual Studio Code.
+
