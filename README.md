@@ -8,6 +8,7 @@ Aplicação em Python para organizar alunos de academias ou atendimentos particu
 ## Funcionalidades
 - Cadastro de alunos com nome e e‑mail
 - Criação de planos de treino com lista de exercícios
+- Edição dos planos associados a cada aluno
 - Exportação de planos em PDF
 - Interface gráfica com tema claro/escuro
 - Plugins de exportação carregados dinamicamente
