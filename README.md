@@ -65,5 +65,6 @@ executável único e um instalador para Windows.
    para `ISCC.exe`.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
-repositório via `git`, garantindo que o usuário receba os arquivos atuais ao
-instalar o aplicativo.
+repositório via `git`. Caso deseje utilizar um fork, informe a URL com o
+parâmetro opcional `-RepoUrl` ao executar o script. Assim o instalador baixará
+os arquivos do repositório desejado.
