@@ -16,4 +16,4 @@ Source: "{#SourceRoot}\dist\gestor-alunos.exe"; DestDir: "{app}"; Flags: ignorev
 Source: "{#SourceRoot}\scripts\setup_data.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Run]
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File \"{app}\setup_data.ps1\""; Flags: runhidden
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\setup_data.ps1"""; Flags: runhidden
