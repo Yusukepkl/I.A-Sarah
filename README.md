@@ -23,6 +23,14 @@ from ia_sarah.core.use_cases import controllers
 print(controllers.listar_exportadores())
 ```
 
+Se novos plugins forem instalados em tempo de execução, é possível atualizar
+a lista utilizando:
+
+```python
+from ia_sarah.core import plugin_loader
+plugin_loader.reload_entrypoints("ia_sarah.exporters")
+```
+
 Por padrão estão incluídos os formatos `pdf`, `csv` e `xlsx`.
 
 ## Estrutura do Projeto

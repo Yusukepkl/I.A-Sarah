@@ -38,3 +38,10 @@ def load_entrypoints(group: str, callback: Callable[[str, Type], None]) -> None:
         _CACHE[group] = registry
     for name, obj in _CACHE[group].items():
         callback(name, obj)
+
+
+def reload_entrypoints(group: str) -> None:
+    """Reload plugins for ``group`` ignoring any cached values."""
+
+    _CACHE.pop(group, None)
+    load_entrypoints(group, lambda *_: None)
