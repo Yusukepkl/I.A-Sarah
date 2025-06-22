@@ -54,3 +54,7 @@
 ## Versão 2.3 - Gestão de planos aprimorada
 - Nova página para criar e editar planos de treino por aluno.
 - Teste automatizado para a interface de planos.
+
+## Versão 2.4 - Exportadores de treino
+- Opções na interface para exportar planos.
+- Suporte a formatos PDF, CSV e XLSX através de exportadores registrados.
