@@ -104,3 +104,8 @@
 ## Versão 3.5 - Orientação de testes
 - README atualizado com seção explicando como instalar dependências de teste usando `pip install -r requirements.txt`.
 
+## Versão 3.6 - Estatísticas da API
+- Novo endpoint `/stats` retorna total de alunos e planos recentes.
+- Função `obter_estatisticas` adicionada aos `controllers`.
+- Frontend web exibe estatísticas através do novo botão.
+

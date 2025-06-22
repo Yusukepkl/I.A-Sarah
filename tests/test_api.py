@@ -60,3 +60,8 @@ async def test_config_api(tmp_path):
         resp = await client.post("/config", json={"foo": "bar"})
         assert resp.status_code == 204
         assert cm.load_config()["foo"] == "bar"
+
+        resp = await client.get("/stats")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "total_alunos" in data

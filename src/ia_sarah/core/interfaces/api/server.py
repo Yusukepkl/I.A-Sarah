@@ -87,6 +87,12 @@ async def update_config(config: Dict[str, Any]):
     controllers.update_config(config)
 
 
+@app.get("/stats")
+async def get_stats(limit: int = 5):
+    """Return basic application statistics."""
+    return controllers.obter_estatisticas(limit)
+
+
 def main() -> None:
     import uvicorn
 
