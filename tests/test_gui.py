@@ -27,7 +27,9 @@ def _setup_frame(monkeypatch):
     monkeypatch.setattr(gui.db, "listar_planos", lambda _id: [])
     root = tk.Tk()
     root.withdraw()
-    frame = gui.DetalhesFrame(root, (1, "Nome", "email", "2023-01-01"), lambda: None, lambda: None)
+    frame = gui.DetalhesFrame(
+        root, (1, "Nome", "email", "2023-01-01"), lambda: None, lambda: None
+    )
     return frame, root
 
 

@@ -23,6 +23,7 @@ VALID_UPDATE_FIELDS: set[str] = {
     "treino",
 }
 
+
 def init_db() -> None:
     """Cria as tabelas principais se ainda não existirem."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
@@ -66,6 +67,7 @@ def init_db() -> None:
             except sqlite3.OperationalError:
                 pass
 
+
 def listar_alunos() -> list[tuple]:
     """Retorna informações básicas de todos os alunos."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
@@ -74,13 +76,15 @@ def listar_alunos() -> list[tuple]:
         )
         return cur.fetchall()
 
+
 def obter_aluno(aluno_id: int) -> Optional[tuple]:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.execute(
             "SELECT id, nome, email, data_inicio, plano, pagamento, progresso, dieta, treino FROM alunos WHERE id=?",
-            (aluno_id,)
+            (aluno_id,),
         )
         return cur.fetchone()
+
 
 def adicionar_aluno(nome: str, email: str) -> int:
     """Insere um novo aluno com a data atual e retorna o ID gerado."""
@@ -94,6 +98,7 @@ def adicionar_aluno(nome: str, email: str) -> int:
                 (nome, email, data_inicio),
             )
             return cur.lastrowid
+
 
 def atualizar_aluno(aluno_id: int, campo: str, valor: str) -> None:
     """Update a single column of an existing aluno.
@@ -120,12 +125,15 @@ def atualizar_aluno(aluno_id: int, campo: str, valor: str) -> None:
                 (valor, aluno_id),
             )
 
+
 def remover_aluno(aluno_id: int) -> None:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("DELETE FROM alunos WHERE id=?", (aluno_id,))
 
+
 # ----- Planos de treino -----
+
 
 def listar_planos(aluno_id: int) -> list[tuple]:
     """Retorna todos os planos de treino de um aluno."""
@@ -137,7 +145,9 @@ def listar_planos(aluno_id: int) -> list[tuple]:
         return cur.fetchall()
 
 
-def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str) -> int:
+def adicionar_plano(
+    aluno_id: int, nome: str, descricao: str, exercicios_json: str
+) -> int:
     """Adiciona um novo plano de treino."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
@@ -148,7 +158,9 @@ def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: s
             return cur.lastrowid
 
 
-def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str) -> None:
+def atualizar_plano(
+    plano_id: int, nome: str, descricao: str, exercicios_json: str
+) -> None:
     """Atualiza os dados de um plano de treino existente."""
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
@@ -162,4 +174,3 @@ def remover_plano(plano_id: int) -> None:
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("DELETE FROM planos WHERE id=?", (plano_id,))
-

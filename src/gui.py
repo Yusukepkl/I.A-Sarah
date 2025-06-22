@@ -109,9 +109,13 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
     email_var = tk.StringVar()
 
     ttk.Label(win, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    ttk.Entry(win, textvariable=nome_var, width=30).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+    ttk.Entry(win, textvariable=nome_var, width=30).grid(
+        row=0, column=1, padx=5, pady=5, sticky="ew"
+    )
     ttk.Label(win, text="Email:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-    ttk.Entry(win, textvariable=email_var, width=30).grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+    ttk.Entry(win, textvariable=email_var, width=30).grid(
+        row=1, column=1, padx=5, pady=5, sticky="ew"
+    )
 
     def salvar() -> None:
         nome = nome_var.get().strip()
@@ -140,13 +144,21 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
 
         run_task(win, lambda: db.adicionar_aluno(nome, email), on_success, on_error)
 
-    ttk.Button(win, text="Salvar", command=salvar).grid(row=2, column=0, columnspan=2, pady=DEFAULT_PAD)
+    ttk.Button(win, text="Salvar", command=salvar).grid(
+        row=2, column=0, columnspan=2, pady=DEFAULT_PAD
+    )
 
 
 class DetalhesFrame(ttk.Frame):
     """Mostra detalhes e planos de um aluno."""
 
-    def __init__(self, master: tk.Widget, dados: tuple, voltar: callable, atualizar_lista: callable) -> None:
+    def __init__(
+        self,
+        master: tk.Widget,
+        dados: tuple,
+        voltar: callable,
+        atualizar_lista: callable,
+    ) -> None:
         super().__init__(master)
         self.aluno_id = dados[0]
         self.voltar = voltar
@@ -156,17 +168,23 @@ class DetalhesFrame(ttk.Frame):
         ttk.Button(self, text="Voltar", command=self.voltar).pack(anchor="w")
         ttk.Label(self, text=dados[1], style="Header.TLabel").pack(anchor="w")
         ttk.Label(self, text=dados[2] or "-").pack(anchor="w")
-        ttk.Label(self, text=f"Início: {dados[3]}").pack(anchor="w", pady=(0, DEFAULT_PAD))
+        ttk.Label(self, text=f"Início: {dados[3]}").pack(
+            anchor="w", pady=(0, DEFAULT_PAD)
+        )
 
         botoes = ttk.Frame(self, padding=DEFAULT_PAD)
         botoes.pack(fill="x", pady=DEFAULT_PAD)
-        ttk.Button(botoes, text="Excluir Aluno", command=self.excluir_aluno).pack(side="right")
+        ttk.Button(botoes, text="Excluir Aluno", command=self.excluir_aluno).pack(
+            side="right"
+        )
 
         self.planos_frame = ttk.Labelframe(self, text="Planos de Treino")
         self.planos_frame.pack(fill="both", expand=True, pady=DEFAULT_PAD)
 
         self.listar_planos()
-        ttk.Button(self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal).pack(pady=DEFAULT_PAD)
+        ttk.Button(
+            self.planos_frame, text="Adicionar Plano", command=self.abrir_plano_modal
+        ).pack(pady=DEFAULT_PAD)
 
     def listar_planos(self) -> None:
         for child in self.planos_frame.winfo_children():
@@ -185,28 +203,54 @@ class DetalhesFrame(ttk.Frame):
             except json.JSONDecodeError:
                 exs = []
             for ex in exs:
-                info = f"{ex.get('nome','')} - {ex.get('series','')}x{ex.get('reps','')}"
-                if ex.get('peso'):
+                info = (
+                    f"{ex.get('nome','')} - {ex.get('series','')}x{ex.get('reps','')}"
+                )
+                if ex.get("peso"):
                     info += f" {ex.get('peso')}"
-                if ex.get('descanso'):
+                if ex.get("descanso"):
                     info += f" descanso {ex.get('descanso')}"
-                if ex.get('obs'):
+                if ex.get("obs"):
                     info += f" ({ex.get('obs')})"
                 ttk.Label(card, text=info).pack(anchor="w")
             btns = ttk.Frame(card, padding=DEFAULT_PAD)
             btns.pack(anchor="e", pady=(5, 0))
-            ttk.Button(btns, text="PDF", command=lambda n=nome, e=exercicios: self.gerar_plano_pdf(n, e)).pack(side="right")
-            ttk.Button(btns, text="Editar", command=lambda p=(pid, nome, descricao, exercicios): self.editar_plano(p)).pack(side="right")
-            ttk.Button(btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)).pack(side="right")
+            ttk.Button(
+                btns,
+                text="PDF",
+                command=lambda n=nome, e=exercicios: self.gerar_plano_pdf(n, e),
+            ).pack(side="right")
+            ttk.Button(
+                btns,
+                text="Editar",
+                command=lambda p=(pid, nome, descricao, exercicios): self.editar_plano(
+                    p
+                ),
+            ).pack(side="right")
+            ttk.Button(
+                btns, text="Excluir", command=lambda i=pid: self.excluir_plano(i)
+            ).pack(side="right")
 
     def abrir_plano_modal(self) -> None:
         PlanoModal(self.aluno_id, self._salvar_plano)
 
     def editar_plano(self, plano: tuple) -> None:
-        p = {"id": plano[0], "nome": plano[1], "descricao": plano[2], "exercicios": plano[3]}
+        p = {
+            "id": plano[0],
+            "nome": plano[1],
+            "descricao": plano[2],
+            "exercicios": plano[3],
+        }
         PlanoModal(self.aluno_id, self._salvar_plano, plano=p)
 
-    def _salvar_plano(self, aluno_id: int, nome: str, descricao: str, exercicios_json: str, plano_id: int | None) -> None:
+    def _salvar_plano(
+        self,
+        aluno_id: int,
+        nome: str,
+        descricao: str,
+        exercicios_json: str,
+        plano_id: int | None,
+    ) -> None:
         def do_save() -> None:
             if plano_id:
                 db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
@@ -217,9 +261,7 @@ class DetalhesFrame(ttk.Frame):
             self.listar_planos()
 
         def on_error(err: Exception) -> None:  # pragma: no cover - gui feedback
-            messagebox.showerror(
-                "Erro", f"Falha ao salvar plano:\n{err}", parent=self
-            )
+            messagebox.showerror("Erro", f"Falha ao salvar plano:\n{err}", parent=self)
 
         run_task(self, do_save, on_success, on_error)
 
@@ -241,16 +283,12 @@ class DetalhesFrame(ttk.Frame):
         def on_success(_res: object | None = None) -> None:
             pb.stop()
             pb.destroy()
-            messagebox.showinfo(
-                "PDF", f"Treino exportado como {path}", parent=self
-            )
+            messagebox.showinfo("PDF", f"Treino exportado como {path}", parent=self)
 
         def on_error(err: Exception) -> None:  # pragma: no cover - gui feedback
             pb.stop()
             pb.destroy()
-            messagebox.showerror(
-                "Erro", f"Falha ao gerar PDF:\n{err}", parent=self
-            )
+            messagebox.showerror("Erro", f"Falha ao gerar PDF:\n{err}", parent=self)
 
         run_task(
             self,
@@ -302,7 +340,9 @@ class DetalhesFrame(ttk.Frame):
                     "Erro", f"Falha ao excluir aluno:\n{err}", parent=self
                 )
 
-            run_task(self, lambda: db.remover_aluno(self.aluno_id), on_success, on_error)
+            run_task(
+                self, lambda: db.remover_aluno(self.aluno_id), on_success, on_error
+            )
 
 
 def criar_interface() -> None:
@@ -382,7 +422,9 @@ def criar_interface() -> None:
         for child in detail_container.winfo_children():
             child.destroy()
         dados = db.obter_aluno(aluno_id)
-        DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(fill="both", expand=True)
+        DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(
+            fill="both", expand=True
+        )
         detail_container.grid()
 
     def atualizar_cards() -> None:
@@ -410,7 +452,11 @@ def criar_interface() -> None:
 
     botoes = ttk.Frame(app, padding=DEFAULT_PAD)
     botoes.grid(row=2, column=0, sticky="ew")
-    ttk.Button(botoes, text="Adicionar Aluno", command=lambda: abrir_modal_adicionar(atualizar_cards)).pack()
+    ttk.Button(
+        botoes,
+        text="Adicionar Aluno",
+        command=lambda: abrir_modal_adicionar(atualizar_cards),
+    ).pack()
 
     atualizar_cards()
     app.mainloop()

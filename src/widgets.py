@@ -32,7 +32,12 @@ def _fade_out_destroy(win: tk.Toplevel, step: float = 0.1) -> None:
 class ExercicioRow(ttk.Frame):
     """Linha de entrada para um exercício do plano."""
 
-    def __init__(self, master: tk.Widget, remover: Callable[["ExercicioRow"], None], dados: Optional[dict] = None) -> None:
+    def __init__(
+        self,
+        master: tk.Widget,
+        remover: Callable[["ExercicioRow"], None],
+        dados: Optional[dict] = None,
+    ) -> None:
         super().__init__(master)
         self.ex_id: Optional[int] = None
         self.vars = {
@@ -47,13 +52,27 @@ class ExercicioRow(ttk.Frame):
             self.ex_id = dados.get("id")
             for k in self.vars:
                 self.vars[k].set(dados.get(k, ""))
-        ttk.Entry(self, textvariable=self.vars["nome"], width=15).grid(row=0, column=0, padx=2, pady=2)
-        ttk.Entry(self, textvariable=self.vars["series"], width=5).grid(row=0, column=1, padx=2)
-        ttk.Entry(self, textvariable=self.vars["reps"], width=5).grid(row=0, column=2, padx=2)
-        ttk.Entry(self, textvariable=self.vars["peso"], width=7).grid(row=0, column=3, padx=2)
-        ttk.Entry(self, textvariable=self.vars["descanso"], width=8).grid(row=0, column=4, padx=2)
-        ttk.Entry(self, textvariable=self.vars["obs"], width=15).grid(row=0, column=5, padx=2)
-        ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(row=0, column=6, padx=2)
+        ttk.Entry(self, textvariable=self.vars["nome"], width=15).grid(
+            row=0, column=0, padx=2, pady=2
+        )
+        ttk.Entry(self, textvariable=self.vars["series"], width=5).grid(
+            row=0, column=1, padx=2
+        )
+        ttk.Entry(self, textvariable=self.vars["reps"], width=5).grid(
+            row=0, column=2, padx=2
+        )
+        ttk.Entry(self, textvariable=self.vars["peso"], width=7).grid(
+            row=0, column=3, padx=2
+        )
+        ttk.Entry(self, textvariable=self.vars["descanso"], width=8).grid(
+            row=0, column=4, padx=2
+        )
+        ttk.Entry(self, textvariable=self.vars["obs"], width=15).grid(
+            row=0, column=5, padx=2
+        )
+        ttk.Button(self, text="X", width=2, command=lambda: remover(self)).grid(
+            row=0, column=6, padx=2
+        )
 
     def get_data(self) -> dict:
         """Retorna os dados preenchidos."""
@@ -66,7 +85,12 @@ class ExercicioRow(ttk.Frame):
 class PlanoModal(tb.Toplevel):
     """Janela para criação ou edição de planos de treino."""
 
-    def __init__(self, aluno_id: int, salvar: Callable[[int, str, str, str, Optional[int]], None], plano: Optional[dict] = None) -> None:
+    def __init__(
+        self,
+        aluno_id: int,
+        salvar: Callable[[int, str, str, str, Optional[int]], None],
+        plano: Optional[dict] = None,
+    ) -> None:
         super().__init__()
         self.geometry("650x450")
         self.attributes("-alpha", 0.0)
@@ -79,11 +103,15 @@ class PlanoModal(tb.Toplevel):
         self.plano_id: Optional[int] = None
 
         nome_var = tk.StringVar()
-        self.title("Novo Plano de Treino" if plano is None else "Editar Plano de Treino")
+        self.title(
+            "Novo Plano de Treino" if plano is None else "Editar Plano de Treino"
+        )
         ttk.Label(self, text="Nome do Plano:").pack(anchor="w", padx=5, pady=5)
         ttk.Entry(self, textvariable=nome_var, width=40).pack(anchor="w", padx=5)
 
-        ttk.Label(self, text="Descrição (opcional):").pack(anchor="w", padx=5, pady=(10, 0))
+        ttk.Label(self, text="Descrição (opcional):").pack(
+            anchor="w", padx=5, pady=(10, 0)
+        )
         desc = tk.Text(self, height=3, width=50)
         desc.pack(anchor="w", padx=5)
 
@@ -94,7 +122,9 @@ class PlanoModal(tb.Toplevel):
         header.pack(fill="x")
         cols = ["Exercício", "Séries", "Reps", "Peso", "Descanso", "Obs"]
         for i, t in enumerate(cols):
-            ttk.Label(header, text=t, font=("Segoe UI", 9, "bold")).grid(row=0, column=i, padx=2)
+            ttk.Label(header, text=t, font=("Segoe UI", 9, "bold")).grid(
+                row=0, column=i, padx=2
+            )
 
         def remover_row(row: ExercicioRow) -> None:
             row.destroy()
@@ -105,7 +135,9 @@ class PlanoModal(tb.Toplevel):
             row.pack(fill="x", pady=2, padx=5)
             self.exercicios.append(row)
 
-        ttk.Button(self, text="Adicionar Exercício", command=lambda: add_row()).pack(pady=5)
+        ttk.Button(self, text="Adicionar Exercício", command=lambda: add_row()).pack(
+            pady=5
+        )
 
         if plano:
             self.plano_id = plano.get("id")
@@ -126,7 +158,9 @@ class PlanoModal(tb.Toplevel):
         def salvar_click() -> None:
             nome = nome_var.get().strip()
             if not nome:
-                messagebox.showwarning("Aviso", "Nome do plano obrigatório", parent=self)
+                messagebox.showwarning(
+                    "Aviso", "Nome do plano obrigatório", parent=self
+                )
                 return
             descricao = desc.get("1.0", tk.END).strip()
             dados = [r.get_data() for r in self.exercicios if r.get_data().get("nome")]
@@ -135,5 +169,3 @@ class PlanoModal(tb.Toplevel):
             _fade_out_destroy(self)
 
         ttk.Button(self, text="Salvar", command=salvar_click).pack(pady=5)
-
-
