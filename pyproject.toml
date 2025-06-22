@@ -25,6 +25,16 @@ coverage = "^7.4"
 pytest-cov = "^4.1"
 httpx = "^0.27"
 
+[tool.poetry.extras]
+test = [
+    "pytest",
+    "pyvirtualdisplay",
+    "pytest-xdist",
+    "coverage",
+    "pytest-cov",
+    "httpx",
+]
+
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
