@@ -125,9 +125,10 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
   iasarah-cli listar
   ```
 8. Com a API em execução, abra o arquivo `web/index.html` em seu navegador
-   e utilize os botões para listar alunos. O cadastro e a edição são
-   realizados em um modal acessado por **Novo aluno** ou **Editar**,
-   interagindo com os endpoints `/students`, `/theme` e `/config`.
+   e utilize os botões para listar ou excluir alunos. Todas as ações
+   exibem modais de confirmação e feedback. O tema claro/escuro pode
+   ser escolhido em um menu suspenso, interagindo com os endpoints
+   `/students`, `/theme` e `/config`.
 
 ### Variáveis de ambiente importantes
 * `CONFIG_FILE` - caminho opcional para o arquivo de configuração.
