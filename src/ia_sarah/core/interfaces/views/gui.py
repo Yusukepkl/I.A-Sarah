@@ -14,6 +14,7 @@ from ...use_cases.controllers import (
     adicionar_aluno,
     atualizar_plano,
     gerar_treino_pdf,
+    init_app,
     listar_alunos,
     listar_planos,
     load_theme,
