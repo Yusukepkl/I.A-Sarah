@@ -5,7 +5,6 @@ from PySide6.QtGui import QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QPushButton,
     QSplashScreen,
     QStackedWidget,
     QToolBar,
@@ -15,7 +14,8 @@ from PySide6.QtWidgets import (
 
 from ia_sarah.core.use_cases import controllers
 
-from .theme import Palette
+from .theme import Palette, STYLESHEET
+from .widgets_qt import AnimatedButton, Card
 
 
 class MainWindow(QMainWindow):
@@ -30,20 +30,32 @@ class MainWindow(QMainWindow):
         self.pages: dict[str, QWidget] = {}
         self._init_toolbar()
         self._init_pages()
+        self.setStyleSheet(STYLESHEET)
 
     def _init_toolbar(self) -> None:
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
-        btn_dashboard = QPushButton("Dashboard")
+        btn_dashboard = AnimatedButton("Dashboard")
         btn_dashboard.clicked.connect(lambda: self.show_page("dashboard"))
         toolbar.addWidget(btn_dashboard)
+        btn_config = AnimatedButton("Config")
+        btn_config.clicked.connect(lambda: self.show_page("config"))
+        toolbar.addWidget(btn_config)
 
     def _init_pages(self) -> None:
         dashboard = QWidget()
-        dashboard.setLayout(QVBoxLayout())
+        dash_layout = QVBoxLayout(dashboard)
+        card = Card()
+        card.setLayout(QVBoxLayout())
+        dash_layout.addWidget(card)
         self.pages["dashboard"] = dashboard
         self.stack.addWidget(dashboard)
+
+        config = QWidget()
+        config.setLayout(QVBoxLayout())
+        self.pages["config"] = config
+        self.stack.addWidget(config)
 
     def show_page(self, name: str) -> None:
         widget = self.pages.get(name)
@@ -94,6 +106,7 @@ def criar_interface() -> None:
     app = QApplication([])
     _show_splash(app)
     window = MainWindow()
+    app.setStyleSheet(STYLESHEET)
     window.show()
     app.exec()
 

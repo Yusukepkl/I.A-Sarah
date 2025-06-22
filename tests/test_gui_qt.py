@@ -10,9 +10,11 @@ sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 def test_import_qt_interface():
     try:
         gui_qt = import_module("ia_sarah.core.interfaces.views.gui_qt")
+        widgets_qt = import_module("ia_sarah.core.interfaces.views.widgets_qt")
     except Exception as exc:  # pragma: no cover - env issues
         pytest.skip(f"PySide6 not available: {exc}")
     assert hasattr(gui_qt, "criar_interface")
+    assert hasattr(widgets_qt, "AnimatedButton")
 
 
 
