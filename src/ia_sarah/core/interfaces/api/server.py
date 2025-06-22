@@ -19,80 +19,70 @@ class ThemeIn(BaseModel):
 
 
 @app.on_event("startup")
-def startup() -> None:
+async def startup() -> None:
     controllers.init_app()
 
 
 @app.get("/students")
-def list_students():
+async def list_students():
     alunos = controllers.listar_alunos()
     return [
-        {"id": a[0], "nome": a[1], "email": a[2], "data_inicio": a[3]} for a in alunos
+        {
+            "id": a.id,
+            "nome": a.nome,
+            "email": a.email,
+            "data_inicio": a.data_inicio,
+        }
+        for a in alunos
     ]
 
 
 @app.get("/students/{aluno_id}")
-def get_student(aluno_id: int):
+async def get_student(aluno_id: int):
     aluno = controllers.obter_aluno(aluno_id)
     if not aluno:
         raise HTTPException(status_code=404, detail="Aluno not found")
-    (
-        _id,
-        nome,
-        email,
-        data_inicio,
-        plano,
-        pagamento,
-        progresso,
-        dieta,
-        treino,
-    ) = aluno
     return {
-        "id": _id,
-        "nome": nome,
-        "email": email,
-        "data_inicio": data_inicio,
-        "plano": plano,
-        "pagamento": pagamento,
-        "progresso": progresso,
-        "dieta": dieta,
-        "treino": treino,
+        "id": aluno.id,
+        "nome": aluno.nome,
+        "email": aluno.email,
+        "data_inicio": aluno.data_inicio,
     }
 
 
 @app.post("/students", status_code=201)
-def create_student(student: StudentIn):
+async def create_student(student: StudentIn):
     aluno_id = controllers.adicionar_aluno(student.nome, student.email)
     return {"id": aluno_id}
 
 
 @app.delete("/students/{aluno_id}", status_code=204)
-def delete_student(aluno_id: int):
+async def delete_student(aluno_id: int):
     if controllers.obter_aluno(aluno_id) is None:
         raise HTTPException(status_code=404, detail="Aluno not found")
     controllers.remover_aluno(aluno_id)
 
 
 @app.get("/theme")
-def get_theme():
+async def get_theme():
     """Return saved theme."""
     return {"theme": controllers.load_theme()}
 
 
 @app.post("/theme", status_code=204)
-def set_theme(data: ThemeIn):
+async def set_theme(data: ThemeIn):
     """Persist theme selection."""
     controllers.save_theme(data.theme)
 
 
 @app.get("/config")
-def get_config() -> Dict[str, Any]:
+async def get_config() -> Dict[str, Any]:
     """Return application configuration."""
     return controllers.load_config()
 
 
 @app.post("/config", status_code=204)
-def update_config(config: Dict[str, Any]):
+async def update_config(config: Dict[str, Any]):
     """Update and persist configuration values."""
     controllers.update_config(config)
 

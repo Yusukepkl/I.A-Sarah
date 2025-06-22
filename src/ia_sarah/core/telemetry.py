@@ -7,6 +7,8 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 
+from ia_sarah.core.adapters.utils import config_manager as cm
+
 try:
     import sentry_sdk  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
@@ -31,7 +33,8 @@ class MetricsHandler(BaseHTTPRequestHandler):
 
 def init() -> None:
     """Initialize Sentry and start metrics server."""
-    dsn = os.getenv("SENTRY_DSN")
+    config = cm.load_config()
+    dsn = os.getenv("SENTRY_DSN") or config.get("sentry_dsn")
     if dsn and sentry_sdk is not None:
         sentry_sdk.init(dsn=dsn)
         logger.info("Sentry enabled")
@@ -39,7 +42,8 @@ def init() -> None:
         logger.warning("SENTRY_DSN set but sentry_sdk not installed")
 
     def run_server() -> None:
-        httpd = HTTPServer(("0.0.0.0", 8000), MetricsHandler)
+        port = int(os.getenv("METRICS_PORT") or config.get("metrics_port", 8000))
+        httpd = HTTPServer(("0.0.0.0", port), MetricsHandler)
         httpd.serve_forever()
 
     Thread(target=run_server, daemon=True).start()
