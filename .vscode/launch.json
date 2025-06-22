@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Gestor de Alunos",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/gestor_exetavel.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
