@@ -30,3 +30,9 @@ Passo a passo para instalar o Gestor de Alunos
 
 Todo o banco de dados é salvo no arquivo `alunos.db` e não necessita de conexão
 com a internet.
+
+Para criar um instalador do programa no Windows, execute o script
+`installer\build_installer.ps1`. Caso o PowerShell informe que a execução está
+bloqueada pelas políticas `Restricted` ou `AllSigned`, utilize:
+`powershell -ExecutionPolicy Bypass -File installer\build_installer.ps1` ou
+defina a política como `RemoteSigned` com `Set-ExecutionPolicy`.
