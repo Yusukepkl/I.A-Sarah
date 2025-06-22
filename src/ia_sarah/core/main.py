@@ -2,8 +2,8 @@
 
 import logging
 
-from telemetry import init as init_telemetry
-from views.gui import criar_interface
+from .telemetry import init as init_telemetry
+from .interfaces.views.gui import criar_interface
 
 
 def main() -> None:

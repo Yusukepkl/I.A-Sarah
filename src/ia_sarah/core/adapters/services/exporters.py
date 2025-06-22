@@ -11,7 +11,7 @@ from typing import Iterable
 import openpyxl
 from fpdf import FPDF
 
-from plugin_loader import load_entrypoints
+from ...plugin_loader import load_entrypoints
 
 logger = logging.getLogger(__name__)
 
@@ -108,4 +108,4 @@ register_exporter("csv", CSVExporter)
 register_exporter("xlsx", ExcelExporter)
 
 # Load external exporter plugins
-load_entrypoints("gestor_alunos.exporters", register_exporter)
+load_entrypoints("ia_sarah.exporters", register_exporter)
