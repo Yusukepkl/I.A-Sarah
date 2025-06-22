@@ -159,5 +159,11 @@ diretamente do editor. Use o menu de tarefas para **Rodar aplicacao** ou
 **Testes rapidos**. A depuração está disponível pelo launcher
 **Python: Gestor de Alunos**.
 
+Para isolar o ambiente de desenvolvimento use a extensão **Dev Containers**.
+Abra o repositório no VS Code e escolha **Reabrir em Contêiner**. A
+configuração em `.devcontainer/` utiliza o `Dockerfile` do projeto e instala as
+dependências automaticamente. Após a criação do contêiner, os comandos de
+tarefas e depuração funcionam normalmente.
+
 ## Licença
 Distribuído sob a Licença MIT em português. Veja o arquivo [LICENSE](LICENSE).

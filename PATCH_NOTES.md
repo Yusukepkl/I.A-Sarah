@@ -113,3 +113,7 @@
 - Configurações de tarefas e depuração adicionadas em `.vscode/`.
 - README atualizado com instruções de uso no Visual Studio Code.
 
+## Versão 3.8 - Dev container
+- Diretório `.devcontainer/` permite abrir o projeto em contêiner no VS Code.
+- README detalha como utilizar a extensão **Dev Containers**.
+
