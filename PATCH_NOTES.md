@@ -45,3 +45,8 @@
 - Remoção de arquivos antigos de interfaces e pontos de entrada.
 - Criação do arquivo `requirements.txt` para facilitar a instalação.
 - Documentação revisada no `README` e novo `AGENTS.md` com instruções de contribuição.
+
+## Versão 2.2 - Interface Qt unificada
+- Removidos módulos da interface Tkinter considerados legados.
+- Dependências e testes relacionados ao Tkinter foram excluídos.
+- Novo script `gestor_exetavel.py` simplifica a execução da aplicação.

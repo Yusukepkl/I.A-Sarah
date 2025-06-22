@@ -3,7 +3,6 @@ fpdf==1.7.2
 openpyxl==3.1.5
 pillow==10.4.0
 PySide6==6.9.1
-ttkbootstrap==1.13.11
 uvicorn==0.29.0
 # Test dependencies
 coverage==7.9.1
@@ -11,4 +10,3 @@ httpx==0.28.1
 pytest==8.3.5
 pytest-cov==6.2.1
 pytest-xdist==3.7.0
-PyVirtualDisplay==3.0
