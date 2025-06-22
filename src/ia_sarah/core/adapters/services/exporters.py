@@ -11,7 +11,7 @@ from typing import Iterable
 import openpyxl
 from fpdf import FPDF
 
-from ...plugin_loader import load_entrypoints
+from ia_sarah.core.plugin_loader import load_entrypoints
 
 logger = logging.getLogger(__name__)
 

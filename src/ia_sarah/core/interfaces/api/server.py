@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from ...use_cases import controllers
+from ia_sarah.core.use_cases import controllers
 
 app = FastAPI(title="I.A-Sarah API")
 
