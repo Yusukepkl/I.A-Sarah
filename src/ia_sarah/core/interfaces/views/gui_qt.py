@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import json
+
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QPoint
 from PySide6.QtGui import QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
+    QFileDialog,
     QFormLayout,
     QHBoxLayout,
+    QInputDialog,
     QLineEdit,
     QMainWindow,
     QPushButton,
@@ -185,14 +189,17 @@ class PlanosPage(QWidget):
         self.add_btn = QPushButton("Adicionar")
         self.edit_btn = QPushButton("Editar")
         self.del_btn = QPushButton("Excluir")
+        self.export_btn = QPushButton("Exportar")
         btn_layout.addWidget(self.add_btn)
         btn_layout.addWidget(self.edit_btn)
         btn_layout.addWidget(self.del_btn)
+        btn_layout.addWidget(self.export_btn)
         layout.addLayout(btn_layout)
 
         self.add_btn.clicked.connect(self.adicionar)
         self.edit_btn.clicked.connect(self.editar)
         self.del_btn.clicked.connect(self.excluir)
+        self.export_btn.clicked.connect(self.exportar)
         self.table.itemDoubleClicked.connect(lambda *_: self.editar())
 
         self.load_data()
@@ -247,6 +254,31 @@ class PlanosPage(QWidget):
             return
         controllers.remover_plano(plano_id)
         self.load_data()
+
+    def exportar(self) -> None:
+        plano_id = self._selected_id()
+        if plano_id is None:
+            return
+        plano = self._get_plano(plano_id)
+        if plano is None:
+            return
+        try:
+            exercicios = json.loads(plano[3] or "[]")
+            if not isinstance(exercicios, list):
+                exercicios = []
+        except Exception:
+            exercicios = []
+        formatos = ["pdf", "csv", "xlsx"]
+        fmt, ok = QInputDialog.getItem(
+            self, "Formato", "Escolha o formato:", formatos, 0, False
+        )
+        if not ok or not fmt:
+            return
+        default_name = controllers.sanitize_filename(plano[1]) + f".{fmt}"
+        path, _ = QFileDialog.getSaveFileName(self, "Exportar", default_name, f"*.{fmt}")
+        if not path:
+            return
+        controllers.exportar_treino(fmt, plano[1], exercicios, path)
 
 
 class MainWindow(QMainWindow):

@@ -3,13 +3,13 @@
 ![CI](https://github.com/unknown/I.A-Sarah/actions/workflows/ci.yml/badge.svg)
 ![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)
 
-Aplicação em Python para organizar alunos de academias ou atendimentos particulares. Cada aluno pode possuir diversos planos de treino e esses planos podem ser exportados em PDF.
+Aplicação em Python para organizar alunos de academias ou atendimentos particulares. Cada aluno pode possuir diversos planos de treino e esses planos podem ser exportados em PDF, CSV ou Excel.
 
 ## Funcionalidades
 - Cadastro de alunos com nome e e‑mail
 - Criação de planos de treino com lista de exercícios
 - Edição dos planos associados a cada aluno
-- Exportação de planos em PDF
+- Exportação de planos em PDF/CSV/XLSX
 - Interface gráfica com tema claro/escuro
 - Plugins de exportação carregados dinamicamente
 
