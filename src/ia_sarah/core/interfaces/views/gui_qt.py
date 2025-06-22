@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QPoint
 from PySide6.QtGui import QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
