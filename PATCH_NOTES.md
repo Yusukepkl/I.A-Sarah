@@ -50,3 +50,7 @@
 - Removidos módulos da interface Tkinter considerados legados.
 - Dependências e testes relacionados ao Tkinter foram excluídos.
 - Novo script `gestor_exetavel.py` simplifica a execução da aplicação.
+
+## Versão 2.3 - Gestão de planos aprimorada
+- Nova página para criar e editar planos de treino por aluno.
+- Teste automatizado para a interface de planos.
