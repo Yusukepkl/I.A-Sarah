@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Any
 import json
 
 from ia_sarah.core.adapters.repositories import db
@@ -320,6 +320,26 @@ def backup_dados(dest: str | Path) -> None:
     """Create a copy of the database at ``dest``."""
 
     db.backup_database(dest)
+
+
+def obter_estatisticas(limit: int = 5) -> dict[str, Any]:
+    """Retornar contagem de alunos e planos recentes.
+
+    Parameters
+    ----------
+    limit:
+        Quantidade máxima de planos recentes.
+
+    Returns
+    -------
+    dict[str, Any]
+        Dicionário com ``total_alunos`` e ``planos_recentes``.
+    """
+
+    return {
+        "total_alunos": contar_alunos(),
+        "planos_recentes": listar_planos_recentes(limit),
+    }
 
 
 def listar_exportadores() -> list[str]:

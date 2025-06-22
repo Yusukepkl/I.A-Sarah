@@ -67,6 +67,16 @@ aluno_id, plano_id = controllers.adicionar_aluno_com_plano_pdf(
 )
 ```
 
+### Estatísticas da aplicação
+
+Para saber quantos alunos existem e quais são os planos mais recentes:
+
+```python
+print(controllers.obter_estatisticas())
+```
+
+A mesma informação está disponível na API pelo endpoint `/stats`.
+
 ## Estrutura do Projeto
 ```
 src/

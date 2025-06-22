@@ -43,6 +43,12 @@
         <pre id="config-output"></pre>
     </section>
 
+    <section>
+        <h2>Estatísticas</h2>
+        <button id="load-stats">Carregar estatísticas</button>
+        <pre id="stats-output"></pre>
+    </section>
+
 <script>
 const API = 'http://localhost:8001';
 
@@ -115,6 +121,14 @@ document.getElementById('update-config-form').addEventListener('submit', async (
         alert('JSON inválido');
     }
 });
+
+async function loadStats() {
+    const res = await fetch(`${API}/stats`);
+    const data = await res.json();
+    document.getElementById('stats-output').textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById('load-stats').addEventListener('click', loadStats);
 </script>
 </body>
 </html>
