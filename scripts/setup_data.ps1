@@ -1,6 +1,7 @@
 param(
     [string]$Destination = "$PSScriptRoot\dados",
-    [string]$RepoUrl = "https://github.com/usuario/I.A-Sarah.git"
+    # URL do repositório com os dados mais recentes do Gestor de Alunos
+    [string]$RepoUrl = "https://github.com/Yusukepkl/I.A-Sarah.git"
 )
 
 if (Test-Path $Destination) {
