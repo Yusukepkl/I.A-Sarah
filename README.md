@@ -65,6 +65,15 @@ executável único e um instalador para Windows.
    `Program Files (x86)` antes de gerar o executável com o PyInstaller e o
    instalador com o Inno Setup. Caso o Inno Setup esteja em outro local,
    informe o caminho completo usando o parâmetro opcional `-InnoPath`.
+3. Se o PowerShell bloquear a execução do script (políticas `Restricted` ou
+   `AllSigned`), execute-o com:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File installer\build_installer.ps1
+   ```
+   ou defina a política para `RemoteSigned` com:
+   ```powershell
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`. Caso deseje utilizar um fork, informe a URL com o
