@@ -141,4 +141,8 @@
 - Navegação SPA por `QStackedWidget` com transições de fade e slide.
 - Paleta centralizada em `theme.py` utilizando cores vibrantes.
 - Seções em formato de cartão com sombra suave.
-- Splash screen com animação de entrada e saída.
+
+## Versão 4.4 - Estilo web modernizado
+- Novo arquivo `web/style.css` aplica tema escuro detalhado.
+- `index.html` reorganizado com containers e rodapé.
+

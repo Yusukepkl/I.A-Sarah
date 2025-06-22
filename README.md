@@ -129,7 +129,8 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    e utilize os botões para listar ou excluir alunos. Todas as ações
    exibem modais de confirmação e feedback. O tema claro/escuro pode
    ser escolhido em um menu suspenso, interagindo com os endpoints
-   `/students`, `/theme` e `/config`.
+   `/students`, `/theme` e `/config`. O layout utiliza o arquivo
+   `web/style.css` para um visual moderno baseado em tema escuro.
 
 ### Variáveis de ambiente importantes
 * `CONFIG_FILE` - caminho opcional para o arquivo de configuração.
