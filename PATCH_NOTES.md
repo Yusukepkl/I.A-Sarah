@@ -40,3 +40,8 @@
 - Reestruturação completa com carregamento dinâmico.
 - Inclusão de servidor FastAPI para a API.
 
+
+## Versão 2.1 - Limpeza e organização
+- Remoção de arquivos antigos de interfaces e pontos de entrada.
+- Criação do arquivo `requirements.txt` para facilitar a instalação.
+- Documentação revisada no `README` e novo `AGENTS.md` com instruções de contribuição.

@@ -4,6 +4,6 @@ services:
     build: .
     volumes:
       - .:/app
-    command: poetry run python run.py
+    command: poetry run iasarah
     environment:
       - SENTRY_DSN=
