@@ -1,10 +1,11 @@
 # Gestor de Alunos para Personal Trainer
 
-Aplicação simples para gerenciamento de alunos em academias ou atendimentos particulares.
-Permite registrar alunos e gerenciar planos de treino completos, exportando
-as informações em PDF. A interface usa `tkinter` com `ttkbootstrap` e conta com
-alternância de tema (claro ou escuro) e exibe os alunos em cartões. Os detalhes
-de cada aluno são mostrados na própria janela principal e os PDFs.
+Aplicação simples para gerenciamento de alunos em academias ou atendimentos
+particulares. Permite registrar alunos e gerenciar planos de treino completos,
+exportando as informações em PDF. A interface usa `tkinter` com o plugin de
+temas `ttkbootstrap`, permitindo alternância entre modo claro e escuro. Cada
+aluno é exibido em cartões, e seus detalhes aparecem na janela principal e nos
+PDFs gerados.
 
 O módulo de treinos foi ampliado para aceitar detalhes de cada exercício, como séries, repetições,
 peso, tempo de descanso e observações. Cada plano pode ser exportado em PDF mostrando essas
@@ -13,6 +14,8 @@ informações de forma estruturada.
 ## Requisitos
 - Python 3.11 ou superior
 - `git` para clonar o repositório
+- Ambiente com suporte a interface gráfica (para testes em servidores sem
+  interface utilize `PyVirtualDisplay`)
 
 ## Instalação
 1. Instale o Python 3.11 ou superior e verifique se o comando `python` está disponível em seu terminal.
@@ -29,9 +32,12 @@ informações de forma estruturada.
    # Windows
    venv\Scripts\activate
    ```
-4. Instale o aplicativo e suas dependências:
+4. Instale o aplicativo e suas dependências. Caso prefira instalar
+   manualmente, utilize o arquivo `requirements.txt`:
    ```bash
    pip install .
+   # ou
+   pip install -r requirements.txt
    ```
 5. Para executar o programa use:
    ```bash
@@ -74,6 +80,9 @@ executável único e um instalador para Windows.
    ```powershell
    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
+
+É possível personalizar o tema da interface editando o arquivo
+`src/config.json` ou utilizando a opção de troca de tema na própria aplicação.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`. Caso deseje utilizar um fork, informe a URL com o
