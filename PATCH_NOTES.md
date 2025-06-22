@@ -133,3 +133,5 @@
 ## Versão 4.1 - Conformidade flake8
 - Correções de estilo e criação do arquivo `.flake8`.
 
+\n## Versão 4.2 - Correção de animações
+- Transições entre abas mantêm referências das animações para evitar tela branca.

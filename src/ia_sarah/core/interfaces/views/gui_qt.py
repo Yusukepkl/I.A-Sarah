@@ -492,6 +492,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stack)
         self.pages: dict[str, QWidget] = {}
         self.dark = False
+        self._animations: list[QPropertyAnimation] = []
         self._init_toolbar()
         self._init_pages()
 
@@ -554,31 +555,41 @@ class MainWindow(QMainWindow):
         if current is widget:
             return
         if current:
-            out_anim = QPropertyAnimation(current, b"pos")
+            out_anim = QPropertyAnimation(current, b"pos", self)
             out_anim.setDuration(300)
             out_anim.setStartValue(current.pos())
             out_anim.setEndValue(current.pos() - QPoint(self.width(), 0))
             out_anim.setEasingCurve(QEasingCurve.InOutQuad)
+            out_anim.finished.connect(lambda a=out_anim: self._animations.remove(a))
+            self._animations.append(out_anim)
             out_anim.start()
-            fade_out = QPropertyAnimation(current, b"windowOpacity")
+            fade_out = QPropertyAnimation(current, b"windowOpacity", self)
             fade_out.setDuration(300)
             fade_out.setStartValue(1.0)
             fade_out.setEndValue(0.0)
             fade_out.setEasingCurve(QEasingCurve.InOutQuad)
+            fade_out.finished.connect(
+                lambda a=fade_out: self._animations.remove(a)
+            )
+            self._animations.append(fade_out)
             fade_out.start()
         self.stack.setCurrentWidget(widget)
         widget.move(self.width(), 0)
-        in_anim = QPropertyAnimation(widget, b"pos")
+        in_anim = QPropertyAnimation(widget, b"pos", self)
         in_anim.setDuration(300)
         in_anim.setStartValue(widget.pos())
         in_anim.setEndValue(QPoint(0, 0))
         in_anim.setEasingCurve(QEasingCurve.InOutQuad)
+        in_anim.finished.connect(lambda a=in_anim: self._animations.remove(a))
+        self._animations.append(in_anim)
         in_anim.start()
-        fade_in = QPropertyAnimation(widget, b"windowOpacity")
+        fade_in = QPropertyAnimation(widget, b"windowOpacity", self)
         fade_in.setDuration(300)
         fade_in.setStartValue(0.0)
         fade_in.setEndValue(1.0)
         fade_in.setEasingCurve(QEasingCurve.InOutQuad)
+        fade_in.finished.connect(lambda a=fade_in: self._animations.remove(a))
+        self._animations.append(fade_in)
         fade_in.start()
 
 
