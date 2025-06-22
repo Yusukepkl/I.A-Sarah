@@ -87,3 +87,6 @@
 - Novo diálogo de aluno permite preencher plano e pagamento com validação.
 - Funções `adicionar_aluno_completo` e `backup_dados` expostas em `controllers`.
 - Página de configurações oferece seleção de tema, notificações e backup.
+
+## Versão 3.1 - Repaginação visual
+- Tema Qt modernizado com novos estilos para botões e tabelas.

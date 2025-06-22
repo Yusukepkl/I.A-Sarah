@@ -10,7 +10,7 @@ Aplicação em Python para organizar alunos de academias ou atendimentos particu
 - Criação de planos de treino com lista de exercícios
 - Edição dos planos associados a cada aluno
 - Exportação de planos em PDF/CSV/XLSX
-- Interface gráfica com tema claro/escuro
+- Interface gráfica modernizada com seleção de tema claro ou escuro
 - Plugins de exportação carregados dinamicamente
 
 ### Plugins de exportação
