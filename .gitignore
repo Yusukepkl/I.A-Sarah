@@ -345,3 +345,8 @@ healthchecksdb
 # PyInstaller artifacts
 build/
 dist/
+
+# Python virtual environments
+venv/
+.env/
+
