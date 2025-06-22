@@ -100,3 +100,7 @@
 
 ## Versão 3.4 - Frontend web
 - Adicionada página `web/index.html` para testar a API.
+
+## Versão 3.5 - Orientação de testes
+- README atualizado com seção explicando como instalar dependências de teste usando `pip install -r requirements.txt`.
+
