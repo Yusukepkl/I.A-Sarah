@@ -135,3 +135,6 @@
 
 \n## Versão 4.2 - Correção de animações
 - Transições entre abas mantêm referências das animações para evitar tela branca.
+
+## Versão 4.3 - Ajuste de opacidade
+- Uso de `QGraphicsOpacityEffect` para que telas não fiquem brancas ao retornar do menu de alunos.

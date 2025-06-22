@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QWidget,
+    QGraphicsOpacityEffect,
 )
 
 from ia_sarah.core.use_cases import controllers
@@ -493,9 +494,10 @@ class MainWindow(QMainWindow):
         self.pages: dict[str, QWidget] = {}
         self.dark = False
         self._animations: list[QPropertyAnimation] = []
+        self._effects: dict[QWidget, QGraphicsOpacityEffect] = {}
         self._init_toolbar()
         self._init_pages()
-
+        
     def _init_toolbar(self) -> None:
         toolbar = QToolBar()
         toolbar.setMovable(False)
@@ -563,7 +565,13 @@ class MainWindow(QMainWindow):
             out_anim.finished.connect(lambda a=out_anim: self._animations.remove(a))
             self._animations.append(out_anim)
             out_anim.start()
-            fade_out = QPropertyAnimation(current, b"windowOpacity", self)
+
+            effect = self._effects.get(current)
+            if effect is None:
+                effect = QGraphicsOpacityEffect(current)
+                current.setGraphicsEffect(effect)
+                self._effects[current] = effect
+            fade_out = QPropertyAnimation(effect, b"opacity", self)
             fade_out.setDuration(300)
             fade_out.setStartValue(1.0)
             fade_out.setEndValue(0.0)
@@ -583,7 +591,14 @@ class MainWindow(QMainWindow):
         in_anim.finished.connect(lambda a=in_anim: self._animations.remove(a))
         self._animations.append(in_anim)
         in_anim.start()
-        fade_in = QPropertyAnimation(widget, b"windowOpacity", self)
+
+        effect = self._effects.get(widget)
+        if effect is None:
+            effect = QGraphicsOpacityEffect(widget)
+            widget.setGraphicsEffect(effect)
+            self._effects[widget] = effect
+            effect.setOpacity(0.0)
+        fade_in = QPropertyAnimation(effect, b"opacity", self)
         fade_in.setDuration(300)
         fade_in.setStartValue(0.0)
         fade_in.setEndValue(1.0)
