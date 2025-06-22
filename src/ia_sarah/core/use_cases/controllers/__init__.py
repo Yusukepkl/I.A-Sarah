@@ -11,6 +11,8 @@ from ia_sarah.core.adapters.services import pdf_utils
 from ia_sarah.core.adapters.services.exporters import get_exporter
 from ia_sarah.core.adapters.utils.config_manager import load_theme as _load_theme
 from ia_sarah.core.adapters.utils.config_manager import save_theme as _save_theme
+from ia_sarah.core.adapters.utils.config_manager import load_config as _load_config
+from ia_sarah.core.adapters.utils.config_manager import update_config as _update_config
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,16 @@ def load_theme() -> str:
 def save_theme(theme: str) -> None:
     """Persist theme selection."""
     _save_theme(theme)
+
+
+def load_config() -> dict:
+    """Return entire configuration."""
+    return _load_config()
+
+
+def update_config(data: dict) -> None:
+    """Merge and persist configuration data."""
+    _update_config(data)
 
 
 # ----- Alunos -----
