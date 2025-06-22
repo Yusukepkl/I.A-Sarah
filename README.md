@@ -46,6 +46,10 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    ```bash
    iasarah
    ```
+6. Para rodar a API FastAPI:
+   ```bash
+   iasarah-api
+   ```
 
 ### Testes
 Para executar os testes:
