@@ -16,6 +16,7 @@ pillow = "^10"
 openpyxl = "^3.1"
 fastapi = "^0.110"
 uvicorn = "^0.29"
+typer = "^0.12"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7"
@@ -45,6 +46,7 @@ pre-commit = "^3.5"
 [tool.poetry.scripts]
 iasarah = "ia_sarah.core.main:main"
 iasarah-api = "ia_sarah.core.interfaces.api.server:main"
+iasarah-cli = "ia_sarah.core.cli:main"
 
 [tool.poetry.plugins."ia_sarah.exporters"]
 pdf = "ia_sarah.core.adapters.services.exporters:PDFExporter"
