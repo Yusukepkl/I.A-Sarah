@@ -44,6 +44,10 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    ```
 5. Inicie a aplicação com:
    ```bash
+   python gestor_exetavel.py
+   ```
+   ou utilize o script instalado via Poetry:
+   ```bash
    iasarah
    ```
 6. Para rodar a API FastAPI:

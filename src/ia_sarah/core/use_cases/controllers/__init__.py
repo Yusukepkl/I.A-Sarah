@@ -99,14 +99,7 @@ def exportar_treino(
     exporter.export(titulo, exercicios, Path(caminho))
 
 
-# ----- PDF compatibilidade -----
-
-
-def gerar_treino_pdf(
-    titulo: str, exercicios: Iterable[dict], caminho: Path | str
-) -> None:
-    """Generate training plan PDF (legacy function)."""
-    exportar_treino("pdf", titulo, exercicios, caminho)
+# ----- PDF Utils -----
 
 
 def sanitize_filename(nome: str) -> str:
