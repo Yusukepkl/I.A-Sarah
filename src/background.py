@@ -1,6 +1,10 @@
+"""Helpers for running functions in background threads."""
+
+from __future__ import annotations
+
 import threading
 import tkinter as tk
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional
 
 
 def run_task(

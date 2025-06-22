@@ -24,7 +24,7 @@ def _display():
 
 def _setup_frame(monkeypatch):
     """Create DetalhesFrame with patched dependencies."""
-    monkeypatch.setattr(gui.db, "listar_planos", lambda _id: [])
+    monkeypatch.setattr(gui.controllers, "listar_planos", lambda _id: [])
     root = tk.Tk()
     root.withdraw()
     frame = gui.DetalhesFrame(
@@ -36,7 +36,7 @@ def _setup_frame(monkeypatch):
 def test_excluir_aluno_chama_remover(monkeypatch):
     frame, root = _setup_frame(monkeypatch)
     remover_mock = mock.MagicMock()
-    monkeypatch.setattr(gui.db, "remover_aluno", remover_mock)
+    monkeypatch.setattr(gui.controllers, "remover_aluno", remover_mock)
     monkeypatch.setattr(gui.messagebox, "askyesno", lambda *a, **k: True)
     monkeypatch.setattr(gui.messagebox, "showinfo", lambda *a, **k: None)
 
@@ -59,7 +59,7 @@ def test_excluir_aluno_chama_remover(monkeypatch):
 def test_excluir_plano_chama_remover(monkeypatch):
     frame, root = _setup_frame(monkeypatch)
     remover_mock = mock.MagicMock()
-    monkeypatch.setattr(gui.db, "remover_plano", remover_mock)
+    monkeypatch.setattr(gui.controllers, "remover_plano", remover_mock)
     monkeypatch.setattr(gui.messagebox, "askyesno", lambda *a, **k: True)
     monkeypatch.setattr(gui.messagebox, "showinfo", lambda *a, **k: None)
 

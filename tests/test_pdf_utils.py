@@ -13,7 +13,7 @@ def test_sanitize_filename():
 
 def test_gerar_pdf(tmp_path):
     caminho = tmp_path / "out.pdf"
-    pdf_utils.gerar_pdf("Titulo", "Conteudo", str(caminho))
+    pdf_utils.gerar_pdf("Titulo", "Conteudo", caminho)
     assert caminho.exists()
     assert caminho.stat().st_size > 0
 
@@ -21,6 +21,6 @@ def test_gerar_pdf(tmp_path):
 def test_gerar_treino_pdf(tmp_path):
     caminho = tmp_path / "treino.pdf"
     exercicios = [{"nome": "Supino", "series": "3", "reps": "10", "peso": "20kg"}]
-    pdf_utils.gerar_treino_pdf("Treino", exercicios, str(caminho))
+    pdf_utils.gerar_treino_pdf("Treino", exercicios, caminho)
     assert caminho.exists()
     assert caminho.stat().st_size > 0

@@ -4,14 +4,26 @@ from __future__ import annotations
 
 import json
 import tkinter as tk
-from tkinter import ttk, messagebox, PhotoImage
+from tkinter import PhotoImage, messagebox, ttk
+
 import ttkbootstrap as tb
 from ttkbootstrap.icons import Icon
 
-import db
-from pdf_utils import gerar_treino_pdf, sanitize_filename
 from background import run_task
-from config_manager import load_theme, save_theme
+import controllers
+from controllers import (
+    adicionar_aluno,
+    atualizar_plano,
+    gerar_treino_pdf,
+    listar_alunos,
+    listar_planos,
+    load_theme,
+    obter_aluno,
+    remover_aluno,
+    remover_plano,
+    sanitize_filename,
+    save_theme,
+)
 from widgets import PlanoModal
 
 DEFAULT_PAD = 10
@@ -142,7 +154,7 @@ def abrir_modal_adicionar(atualizar: callable) -> None:
                 "Erro", f"Falha ao adicionar aluno:\n{err}", parent=win
             )
 
-        run_task(win, lambda: db.adicionar_aluno(nome, email), on_success, on_error)
+        run_task(win, lambda: adicionar_aluno(nome, email), on_success, on_error)
 
     ttk.Button(win, text="Salvar", command=salvar).grid(
         row=2, column=0, columnspan=2, pady=DEFAULT_PAD
@@ -190,7 +202,7 @@ class DetalhesFrame(ttk.Frame):
         for child in self.planos_frame.winfo_children():
             if getattr(child, "is_card", False):
                 child.destroy()
-        planos = db.listar_planos(self.aluno_id)
+        planos = listar_planos(self.aluno_id)
         for pid, nome, descricao, exercicios in planos:
             card = tb.Frame(self.planos_frame, padding=10, bootstyle="card")
             card.is_card = True
@@ -253,9 +265,9 @@ class DetalhesFrame(ttk.Frame):
     ) -> None:
         def do_save() -> None:
             if plano_id:
-                db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
+                atualizar_plano(plano_id, nome, descricao, exercicios_json)
             else:
-                db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
+                adicionar_plano(aluno_id, nome, descricao, exercicios_json)
 
         def on_success(_res: object | None = None) -> None:
             self.listar_planos()
@@ -317,7 +329,7 @@ class DetalhesFrame(ttk.Frame):
                     "Erro", f"Falha ao excluir plano:\n{err}", parent=self
                 )
 
-            run_task(self, lambda: db.remover_plano(plano_id), on_success, on_error)
+            run_task(self, lambda: remover_plano(plano_id), on_success, on_error)
 
     def excluir_aluno(self) -> None:
         if messagebox.askyesno("Confirmar", "Excluir aluno?", parent=self):
@@ -341,13 +353,13 @@ class DetalhesFrame(ttk.Frame):
                 )
 
             run_task(
-                self, lambda: db.remover_aluno(self.aluno_id), on_success, on_error
+                self, lambda: remover_aluno(self.aluno_id), on_success, on_error
             )
 
 
 def criar_interface() -> None:
     """Cria e exibe a interface principal."""
-    db.init_db()
+    init_app()
     theme = load_theme()
     app = tb.Window(themename=theme)
     app.title("Gestor de Alunos")
@@ -421,7 +433,7 @@ def criar_interface() -> None:
         list_frame.grid_remove()
         for child in detail_container.winfo_children():
             child.destroy()
-        dados = db.obter_aluno(aluno_id)
+        dados = obter_aluno(aluno_id)
         DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(
             fill="both", expand=True
         )
@@ -430,7 +442,7 @@ def criar_interface() -> None:
     def atualizar_cards() -> None:
         for child in cards.winfo_children():
             child.destroy()
-        alunos = db.listar_alunos()
+        alunos = listar_alunos()
         if not alunos:
             ttk.Label(cards, text="Nenhum aluno cadastrado").pack(pady=20)
         for aid, nome, email, data_inicio in alunos:
