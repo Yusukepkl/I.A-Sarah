@@ -1,5 +1,8 @@
 # Gestor de Alunos
 
+![CI](https://github.com/unknown/I.A-Sarah/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)
+
 Aplicação em Python para organizar alunos de academias ou atendimentos particulares. Cada aluno pode possuir diversos planos de treino e esses planos podem ser exportados em PDF.
 
 ## Funcionalidades
@@ -7,10 +10,16 @@ Aplicação em Python para organizar alunos de academias ou atendimentos particu
 - Criação de planos de treino com lista de exercícios
 - Exportação de planos em PDF
 - Interface gráfica com tema claro/escuro
+- Plugins de exportação carregados dinamicamente
 
 ## Estrutura do Projeto
 ```
-src/              Código-fonte principal
+src/
+  controllers/    Camada de controle e lógica de apresentação
+  services/       Serviços de negócio e plugins
+  repositories/   Acesso a dados
+  views/          Interfaces gráficas
+  utils/          Utilidades e helpers
 scripts/          Scripts para gerar executável e baixar dados
 installer/        Arquivos do instalador para Windows
 tests/            Testes automatizados com pytest

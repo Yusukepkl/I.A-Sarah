@@ -1,21 +1,26 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - uses: abatilo/actions-poetry@v2
-      - name: Install deps
-        run: poetry install --with test
-      - name: Lint
-        run: |
-          poetry run flake8 src tests
-          poetry run black --check src tests
-      - name: Test
-        run: poetry run pytest
+      - run: pip install poetry
+      - run: poetry install --with test,dev
+      - run: poetry run black --check src tests
+      - run: poetry run isort --check src tests
+      - run: poetry run flake8 src tests
+      - run: poetry run bandit -r src
+      - run: poetry run mypy src
+      - run: poetry run pytest -n auto --cov=src --cov-report=xml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage.xml

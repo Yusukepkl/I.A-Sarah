@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
-import config_manager as cm
+import utils.config_manager as cm
 
 
 def test_config_crud(tmp_path):

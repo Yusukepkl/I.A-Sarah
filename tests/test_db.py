@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
-import db
+import repositories.db as db
 
 
 def test_add_update_delete_aluno(tmp_path):

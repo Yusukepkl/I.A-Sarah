@@ -6,16 +6,17 @@ import logging
 from pathlib import Path
 from typing import Iterable
 
-from exporters import get_exporter
-
-import db
-import pdf_utils
-from config_manager import load_theme as _load_theme, save_theme as _save_theme
+from repositories import db
+from services import pdf_utils
+from services.exporters import get_exporter
+from utils.config_manager import load_theme as _load_theme
+from utils.config_manager import save_theme as _save_theme
 
 logger = logging.getLogger(__name__)
 
 
 # ----- Config -----
+
 
 def load_theme() -> str:
     """Load theme from configuration."""
@@ -28,6 +29,7 @@ def save_theme(theme: str) -> None:
 
 
 # ----- Alunos -----
+
 
 def init_app() -> None:
     """Initialize application database."""
@@ -61,17 +63,22 @@ def remover_aluno(aluno_id: int) -> None:
 
 # ----- Planos -----
 
+
 def listar_planos(aluno_id: int) -> list[tuple]:
     """Return plans for a student."""
     return db.listar_planos(aluno_id)
 
 
-def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str) -> int:
+def adicionar_plano(
+    aluno_id: int, nome: str, descricao: str, exercicios_json: str
+) -> int:
     """Create a new plan."""
     return db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
 
 
-def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str) -> None:
+def atualizar_plano(
+    plano_id: int, nome: str, descricao: str, exercicios_json: str
+) -> None:
     """Update an existing plan."""
     db.atualizar_plano(plano_id, nome, descricao, exercicios_json)
 
@@ -83,6 +90,7 @@ def remover_plano(plano_id: int) -> None:
 
 # ----- Exportação -----
 
+
 def exportar_treino(
     fmt: str, titulo: str, exercicios: Iterable[dict], caminho: Path | str
 ) -> None:
@@ -93,7 +101,10 @@ def exportar_treino(
 
 # ----- PDF compatibilidade -----
 
-def gerar_treino_pdf(titulo: str, exercicios: Iterable[dict], caminho: Path | str) -> None:
+
+def gerar_treino_pdf(
+    titulo: str, exercicios: Iterable[dict], caminho: Path | str
+) -> None:
     """Generate training plan PDF (legacy function)."""
     exportar_treino("pdf", titulo, exercicios, caminho)
 

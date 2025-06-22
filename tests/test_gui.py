@@ -3,13 +3,14 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
+import shutil
 import tkinter as tk
 from unittest import mock
+
 import pytest
 from pyvirtualdisplay import Display
-import shutil
 
-import gui
+import views.gui as gui
 
 
 @pytest.fixture(scope="module", autouse=True)

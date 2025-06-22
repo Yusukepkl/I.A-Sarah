@@ -6,6 +6,11 @@ Gestor de Alunos
 
    tutorial
 
+Diagrama
+--------
+
+.. image:: architecture.mmd
+
 API Reference
 -------------
 

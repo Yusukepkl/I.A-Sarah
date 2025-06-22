@@ -162,7 +162,9 @@ def listar_planos(aluno_id: int) -> list[tuple]:
         raise
 
 
-def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: str) -> int:
+def adicionar_plano(
+    aluno_id: int, nome: str, descricao: str, exercicios_json: str
+) -> int:
     """Add a new training plan."""
     try:
         with closing(sqlite3.connect(DB_NAME)) as conn:
@@ -177,7 +179,9 @@ def adicionar_plano(aluno_id: int, nome: str, descricao: str, exercicios_json: s
         raise
 
 
-def atualizar_plano(plano_id: int, nome: str, descricao: str, exercicios_json: str) -> None:
+def atualizar_plano(
+    plano_id: int, nome: str, descricao: str, exercicios_json: str
+) -> None:
     """Update an existing training plan."""
     try:
         with closing(sqlite3.connect(DB_NAME)) as conn:

@@ -18,14 +18,26 @@ openpyxl = "^3.1"
 [tool.poetry.group.test.dependencies]
 pytest = "^7"
 pyvirtualdisplay = "^3"
+pytest-xdist = "^3.5"
+coverage = "^7.4"
+pytest-cov = "^4.1"
 
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
 black = "^25.1.0"
+isort = "^5.13.2"
+bandit = "^1.7.7"
+mypy = "^1.8"
+pre-commit = "^3.5"
 
 [tool.poetry.scripts]
 gestor-alunos = "main:criar_interface"
+
+[tool.poetry.plugins."gestor_alunos.exporters"]
+pdf = "services.exporters:PDFExporter"
+csv = "services.exporters:CSVExporter"
+xlsx = "services.exporters:ExcelExporter"
 
 [build-system]
 requires = ["poetry-core"]
