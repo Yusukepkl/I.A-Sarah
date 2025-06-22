@@ -52,9 +52,18 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    iasarah
    ```
 6. Para rodar a API FastAPI:
-   ```bash
-   iasarah-api
-   ```
+ ```bash
+  iasarah-api
+  ```
+7. Utilize o novo CLI para comandos rápidos:
+  ```bash
+  iasarah-cli listar
+  ```
+
+### Variáveis de ambiente importantes
+* `CONFIG_FILE` - caminho opcional para o arquivo de configuração.
+* `METRICS_PORT` - porta utilizada pelo servidor de métricas.
+* `DISABLED_PLUGINS` - lista de plugins separados por vírgula a serem ignorados.
 
 ### Testes
 Para executar os testes:
@@ -62,9 +71,19 @@ Para executar os testes:
 pip install -r requirements.txt
 pytest -q
 ```
+Para garantir o estilo de código, instale os hooks do pre-commit:
+```bash
+pre-commit install
+pre-commit run --all-files
+```
 
 ## Gerar Instalador
 Consulte `installer/build_installer.ps1` para criar um executável único e o instalador para Windows.
+Para Linux e macOS recomenda-se utilizar `pyinstaller`:
+```bash
+pyinstaller gestor_exetavel.py -n iasarah
+```
+O binário ficará em `dist/iasarah`.
 
 ## Licença
 Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).

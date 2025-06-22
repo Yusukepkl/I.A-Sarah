@@ -26,7 +26,14 @@ Passo a passo para instalar o Gestor de Alunos
      desse aluno. Em cada plano é possível definir exercícios, séries,
      repetições, peso, descanso e observações.
    - Cada plano possui opção para exportar um PDF resumindo todos os
-     exercícios.
+    exercícios.
+6. **Utilizar o CLI opcional**
+   - Para operações rápidas sem interface, use `iasarah-cli`.
+
+Variáveis de ambiente úteis:
+`CONFIG_FILE` define o caminho do arquivo de configuração,
+`METRICS_PORT` escolhe a porta de métricas e `DISABLED_PLUGINS`
+controla plugins desabilitados.
 
 Todo o banco de dados é salvo no arquivo `alunos.db` e não necessita de conexão
 com a internet.
