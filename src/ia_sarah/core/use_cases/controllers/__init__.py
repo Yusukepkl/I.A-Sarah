@@ -9,7 +9,7 @@ from typing import Iterable
 from ia_sarah.core.adapters.repositories import db
 from ia_sarah.core.entities.models import Student, TrainingPlan
 from ia_sarah.core.adapters.services import pdf_utils
-from ia_sarah.core.adapters.services.exporters import get_exporter
+from ia_sarah.core.adapters.services.exporters import get_exporter, _REGISTRY
 from ia_sarah.core.adapters.utils.config_manager import load_theme as _load_theme
 from ia_sarah.core.adapters.utils.config_manager import save_theme as _save_theme
 from ia_sarah.core.adapters.utils.config_manager import load_config as _load_config
@@ -253,6 +253,12 @@ def listar_planos_recentes(limit: int = 5) -> list[tuple]:
         Recent plan data.
     """
     return db.listar_planos_recentes(limit)
+
+
+def listar_exportadores() -> list[str]:
+    """Listar formatos de exportação disponíveis."""
+
+    return list(_REGISTRY.keys())
 
 
 # ----- Exportação -----

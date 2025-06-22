@@ -8,3 +8,4 @@
 - Mantenha `requirements.txt` sincronizado com o `pyproject.toml`.
 - Atualize `README.md`, `LICENSE` e `guia_instalacao.txt` sempre que necessário.
 - Preserve o código limpo e livre de duplicações.
+- Documente no README cada nova função pública adicionada ao projeto.

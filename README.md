@@ -13,6 +13,18 @@ Aplicação em Python para organizar alunos de academias ou atendimentos particu
 - Interface gráfica com tema claro/escuro
 - Plugins de exportação carregados dinamicamente
 
+### Plugins de exportação
+
+Os formatos disponíveis podem variar conforme plugins instalados. Para listar os
+formatos atuais diretamente no Python:
+
+```python
+from ia_sarah.core.use_cases import controllers
+print(controllers.listar_exportadores())
+```
+
+Por padrão estão incluídos os formatos `pdf`, `csv` e `xlsx`.
+
 ## Estrutura do Projeto
 ```
 src/
