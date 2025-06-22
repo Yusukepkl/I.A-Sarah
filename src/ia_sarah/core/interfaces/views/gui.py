@@ -9,12 +9,21 @@ from tkinter import PhotoImage, messagebox, ttk
 import ttkbootstrap as tb
 from ttkbootstrap.icons import Icon
 
-import controllers
-from controllers import (adicionar_aluno, atualizar_plano, gerar_treino_pdf,
-                         listar_alunos, listar_planos, load_theme, obter_aluno,
-                         remover_aluno, remover_plano, sanitize_filename,
-                         save_theme)
-from utils.background import run_task
+from ...use_cases import controllers
+from ...use_cases.controllers import (
+    adicionar_aluno,
+    atualizar_plano,
+    gerar_treino_pdf,
+    listar_alunos,
+    listar_planos,
+    load_theme,
+    obter_aluno,
+    remover_aluno,
+    remover_plano,
+    sanitize_filename,
+    save_theme,
+)
+from ...adapters.utils.background import run_task
 
 from .widgets import PlanoModal
 

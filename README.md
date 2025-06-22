@@ -44,7 +44,7 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    ```
 5. Inicie a aplicação com:
    ```bash
-   gestor-alunos
+   iasarah
    ```
 
 ### Testes

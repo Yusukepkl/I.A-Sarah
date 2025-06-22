@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
-from plugin_loader import load_entrypoints
+from ia_sarah.core.plugin_loader import load_entrypoints
 
 
 class Dummy:

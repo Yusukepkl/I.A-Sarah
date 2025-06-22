@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "gestor-alunos"
+name = "ia-sarah"
 version = "0.1.0"
 description = "Gestor de Alunos para Personal Trainer"
 readme = "README.md"
 license = "MIT"
 authors = ["Unknown <unknown@example.com>"]
-packages = [{ include = "*", from = "src" }]
-include = ["src/config.json"]
+packages = [{ include = "ia_sarah", from = "src" }]
+include = ["src/ia_sarah/core/config.json"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -32,12 +32,12 @@ mypy = "^1.8"
 pre-commit = "^3.5"
 
 [tool.poetry.scripts]
-gestor-alunos = "main:criar_interface"
+iasarah = "ia_sarah.core.main:main"
 
-[tool.poetry.plugins."gestor_alunos.exporters"]
-pdf = "services.exporters:PDFExporter"
-csv = "services.exporters:CSVExporter"
-xlsx = "services.exporters:ExcelExporter"
+[tool.poetry.plugins."ia_sarah.exporters"]
+pdf = "ia_sarah.core.adapters.services.exporters:PDFExporter"
+csv = "ia_sarah.core.adapters.services.exporters:CSVExporter"
+xlsx = "ia_sarah.core.adapters.services.exporters:ExcelExporter"
 
 [build-system]
 requires = ["poetry-core"]

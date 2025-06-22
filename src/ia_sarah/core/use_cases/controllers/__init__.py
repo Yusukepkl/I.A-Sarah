@@ -6,11 +6,11 @@ import logging
 from pathlib import Path
 from typing import Iterable
 
-from repositories import db
-from services import pdf_utils
-from services.exporters import get_exporter
-from utils.config_manager import load_theme as _load_theme
-from utils.config_manager import save_theme as _save_theme
+from ...adapters.repositories import db
+from ...adapters.services import pdf_utils
+from ...adapters.services.exporters import get_exporter
+from ...adapters.utils.config_manager import load_theme as _load_theme
+from ...adapters.utils.config_manager import save_theme as _save_theme
 
 logger = logging.getLogger(__name__)
 

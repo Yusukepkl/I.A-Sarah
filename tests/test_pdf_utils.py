@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
-import services.pdf_utils as pdf_utils
+import ia_sarah.core.adapters.services.pdf_utils as pdf_utils
 
 
 def test_sanitize_filename():

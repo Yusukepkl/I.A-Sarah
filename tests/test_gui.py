@@ -10,7 +10,7 @@ from unittest import mock
 import pytest
 from pyvirtualdisplay import Display
 
-import views.gui as gui
+import ia_sarah.core.interfaces.views.gui as gui
 
 
 @pytest.fixture(scope="module", autouse=True)

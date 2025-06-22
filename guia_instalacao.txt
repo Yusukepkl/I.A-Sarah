@@ -17,7 +17,7 @@ Passo a passo para instalar o Gestor de Alunos
 
 4. **Executar a aplicação**
    - Após a instalação, execute o comando:
-     `gestor-alunos`
+     `iasarah`
    - A janela principal será exibida com a lista de alunos.
 
 5. **Usar o sistema**

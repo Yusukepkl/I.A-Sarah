@@ -9,7 +9,7 @@ from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
-CONFIG_FILE: Path = Path(__file__).with_name("config.json")
+CONFIG_FILE: Path = Path(__file__).resolve().parents[2] / "config.json"
 
 
 def load_config() -> Dict[str, Any]:
