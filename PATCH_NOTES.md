@@ -76,3 +76,9 @@
 ## Versão 2.8 - Recarga de plugins
 - Função `reload_entrypoints` adicionada para atualizar plugins dinâmicos.
 - README demonstra como utilizá-la para recarregar exportadores.
+
+## Versão 2.9 - Melhorias de infraestrutura
+- Descoberta automática de plugins na pasta interna.
+- Configuração padrão gerada quando ausente e fallback de valores.
+- Banco de dados usa `data/db.sqlite` com migrações simples.
+- Interface Qt agora exibe erro se inicialização falhar.

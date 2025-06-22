@@ -28,10 +28,10 @@ from PySide6.QtWidgets import (
 )
 
 from ia_sarah.core.use_cases import controllers
-from ia_sarah.core.entities.models import TrainingPlan, Student
+from ia_sarah.core.entities.models import TrainingPlan
 
-from .theme import Palette, stylesheet
-from .widgets_qt import AnimatedButton, CardFrame
+from ia_sarah.core.interfaces.views.theme import Palette, stylesheet
+from ia_sarah.core.interfaces.views.widgets_qt import AnimatedButton, CardFrame
 
 
 def show_feedback(parent: QWidget, message: str, error: bool = False) -> None:
@@ -477,16 +477,18 @@ def _show_splash(app: QApplication) -> None:
 
 def criar_interface() -> None:
     """Launch the PySide6 interface."""
-
-    controllers.init_app()
-    app = QApplication([])
-    app.setStyleSheet(stylesheet())
-    _show_splash(app)
-    window = MainWindow()
-    window.show()
-    app.exec()
+    try:
+        controllers.init_app()
+        app = QApplication([])
+        app.setStyleSheet(stylesheet())
+        _show_splash(app)
+        window = MainWindow()
+        window.show()
+        app.exec()
+    except Exception as exc:  # pragma: no cover - runtime errors
+        app = QApplication.instance() or QApplication([])
+        QMessageBox.critical(None, "Erro", f"Falha ao iniciar interface:\n{exc}")
 
 
 if __name__ == "__main__":
     criar_interface()
-

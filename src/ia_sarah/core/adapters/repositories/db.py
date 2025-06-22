@@ -9,9 +9,35 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-DB_DIR: Path = Path.home() / ".gestor_alunos"
+DB_DIR: Path = Path(__file__).resolve().parents[5] / "data"
 DB_DIR.mkdir(parents=True, exist_ok=True)
-DB_NAME: str = str(DB_DIR / "alunos.db")
+DB_NAME: str = str(DB_DIR / "db.sqlite")
+
+MIGRATIONS: list[str] = [
+    """
+    CREATE TABLE IF NOT EXISTS alunos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT,
+        data_inicio TEXT,
+        plano TEXT,
+        pagamento TEXT,
+        progresso TEXT,
+        dieta TEXT,
+        treino TEXT
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS planos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        aluno_id INTEGER NOT NULL,
+        nome TEXT NOT NULL,
+        descricao TEXT,
+        exercicios TEXT,
+        FOREIGN KEY(aluno_id) REFERENCES alunos(id) ON DELETE CASCADE
+    );
+    """,
+]
 
 # Allowed columns that can be updated via ``atualizar_aluno``.
 VALID_UPDATE_FIELDS: set[str] = {
@@ -27,45 +53,16 @@ VALID_UPDATE_FIELDS: set[str] = {
 
 
 def init_db() -> None:
-    """Create database tables if they do not exist."""
+    """Create or upgrade database schema."""
     try:
         with sqlite3.connect(DB_NAME) as conn:
             conn.execute("PRAGMA foreign_keys = ON")
-            conn.execute(
-                """
-            CREATE TABLE IF NOT EXISTS alunos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT NOT NULL,
-                email TEXT,
-                data_inicio TEXT,
-                plano TEXT,
-                pagamento TEXT,
-                progresso TEXT,
-                dieta TEXT,
-                treino TEXT
-            )
-            """
-            )
-            try:
-                conn.execute("ALTER TABLE alunos ADD COLUMN email TEXT")
-            except sqlite3.OperationalError:
-                pass
-            conn.execute(
-                """
-            CREATE TABLE IF NOT EXISTS planos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                aluno_id INTEGER NOT NULL,
-                nome TEXT NOT NULL,
-                descricao TEXT,
-                exercicios TEXT,
-                FOREIGN KEY(aluno_id) REFERENCES alunos(id) ON DELETE CASCADE
-            )
-            """
-            )
-            try:
-                conn.execute("ALTER TABLE alunos ADD COLUMN data_inicio TEXT")
-            except sqlite3.OperationalError:
-                pass
+            cur = conn.execute("PRAGMA user_version")
+            (version,) = cur.fetchone()
+            for idx, script in enumerate(MIGRATIONS, start=1):
+                if idx > version:
+                    conn.executescript(script)
+                    conn.execute(f"PRAGMA user_version = {idx}")
     except sqlite3.Error as exc:  # pragma: no cover - database errors
         logger.error("Erro ao inicializar banco: %s", exc)
         raise

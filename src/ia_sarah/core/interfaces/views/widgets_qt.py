@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QEasingCurve, QPoint, QPropertyAnimation
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation
 from PySide6.QtWidgets import (
     QPushButton,
     QFrame,
     QGraphicsDropShadowEffect,
 )
 
-from .theme import Palette
+from ia_sarah.core.interfaces.views.theme import Palette
 
 
 class AnimatedButton(QPushButton):
@@ -42,7 +42,11 @@ class AnimatedButton(QPushButton):
 
     def _animate_hover(self, entering: bool) -> None:
         start = self.geometry()
-        end = start.adjusted(-2, -2, 2, 2) if entering else (self._base_geom or start)
+        end = (
+            start.adjusted(-2, -2, 2, 2)
+            if entering
+            else (self._base_geom or start)
+        )
         self._hover_anim = QPropertyAnimation(self, b"geometry")
         self._hover_anim.setDuration(150)
         self._hover_anim.setStartValue(start)
@@ -50,7 +54,8 @@ class AnimatedButton(QPushButton):
         self._hover_anim.setEasingCurve(QEasingCurve.OutQuad)
         self._hover_anim.start()
         if entering:
-            self.setStyleSheet(f"background-color: {Palette.vivid_orange.name()};")
+            color = Palette.vivid_orange.name()
+            self.setStyleSheet(f"background-color: {color};")
         else:
             self.setStyleSheet("")
 
