@@ -38,15 +38,19 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    python -m venv venv
    source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
-4. Instale o programa:
+4. Para testar sem instalar o pacote, execute:
+   ```bash
+   python run.py
+   ```
+5. Instale o programa:
    ```bash
    pip install .
    ```
-5. Inicie a aplicação com:
+6. Inicie a aplicação com:
    ```bash
    iasarah
    ```
-6. Para rodar a API FastAPI:
+7. Para rodar a API FastAPI:
    ```bash
    iasarah-api
    ```
