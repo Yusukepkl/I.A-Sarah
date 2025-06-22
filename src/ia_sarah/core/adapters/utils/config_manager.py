@@ -58,9 +58,15 @@ def load_theme() -> str:
     return config.get("theme", "superhero")
 
 
+def update_config(updates: Dict[str, Any]) -> None:
+    """Merge and persist configuration updates."""
+
+    config = load_config()
+    config.update(updates)
+    save_config(config)
+
+
 def save_theme(theme: str) -> None:
     """Persist the selected theme."""
 
-    config = load_config()
-    config["theme"] = theme
-    save_config(config)
+    update_config({"theme": theme})
