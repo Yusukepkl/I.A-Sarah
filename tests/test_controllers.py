@@ -16,7 +16,11 @@ def test_listar_exportadores():
 def test_adicionar_completo_e_backup(tmp_path):
     controllers.db.DB_NAME = str(tmp_path / "test.db")
     controllers.init_app()
-    aluno_id = controllers.adicionar_aluno_completo("Eva", "eva@test.com", plano="Especial")
+    aluno_id = controllers.adicionar_aluno_completo(
+        "Eva",
+        "eva@test.com",
+        plano="Especial",
+    )
     from ia_sarah.core.adapters.repositories import db
 
     dados = db.obter_aluno(aluno_id)

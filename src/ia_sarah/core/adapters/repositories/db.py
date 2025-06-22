@@ -87,7 +87,10 @@ def obter_aluno(aluno_id: int) -> Optional[tuple]:
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cur = conn.execute(
-                "SELECT id, nome, email, data_inicio, plano, pagamento, progresso, dieta, treino FROM alunos WHERE id=?",
+                (
+                    "SELECT id, nome, email, data_inicio, plano, pagamento, "
+                    "progresso, dieta, treino FROM alunos WHERE id=?"
+                ),
                 (aluno_id,),
             )
             return cur.fetchone()
@@ -178,7 +181,8 @@ def listar_planos(aluno_id: int) -> list[tuple]:
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cur = conn.execute(
-                "SELECT id, nome, descricao, exercicios FROM planos WHERE aluno_id=? ORDER BY id",
+                "SELECT id, nome, descricao, exercicios FROM planos "
+                "WHERE aluno_id=? ORDER BY id",
                 (aluno_id,),
             )
             return cur.fetchall()
@@ -194,7 +198,8 @@ def adicionar_plano(
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cur = conn.execute(
-                "INSERT INTO planos (aluno_id, nome, descricao, exercicios) VALUES (?, ?, ?, ?)",
+                "INSERT INTO planos (aluno_id, nome, descricao, exercicios)"
+                " VALUES (?, ?, ?, ?)",
                 (aluno_id, nome, descricao, exercicios_json),
             )
             return cur.lastrowid

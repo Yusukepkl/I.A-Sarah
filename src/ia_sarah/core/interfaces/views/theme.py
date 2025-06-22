@@ -60,4 +60,3 @@ def stylesheet(dark: bool = False) -> str:
         border: none;
     }}
     """
-
