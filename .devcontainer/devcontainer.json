@@ -1,0 +1,11 @@
+{
+    "name": "ia-sarah-dev",
+    "dockerFile": "../Dockerfile",
+    "context": "..",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "mounts": ["source=${localWorkspaceFolder},target=/workspace/I.A-Sarah,type=bind,consistency=cached"],
+    "postCreateCommand": "pip install -r requirements.txt",
+    "extensions": ["ms-python.python"]
+}
