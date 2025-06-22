@@ -42,7 +42,7 @@ executável único e um instalador simples. Siga estes passos:
    para montar um instalador. Esse instalador inclui o executável e rodará o
    script `setup_data.ps1` na primeira execução, baixando os dados mais recentes
    do repositório.
-4. Execute `installer\build_installer.ps1` para gerar o instalador configurado para `C:\Users\jhona\Documents\GitHub\I.A-Sarah`.
+4. Execute `installer\build_installer.ps1` para gerar o instalador apontando para o caminho onde o repositório está clonado.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`, garantindo que o usuário receba os arquivos atuais ao
