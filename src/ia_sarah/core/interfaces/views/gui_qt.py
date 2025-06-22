@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
+    QMessageBox,
     QLabel,
     QListWidget,
     QFileDialog,
@@ -30,6 +31,15 @@ from ia_sarah.core.use_cases import controllers
 
 from .theme import Palette, stylesheet
 from .widgets_qt import AnimatedButton, CardFrame
+
+
+def show_feedback(parent: QWidget, message: str, error: bool = False) -> None:
+    """Display success or error notification."""
+
+    if error:
+        QMessageBox.critical(parent, "Erro", message)
+    else:
+        QMessageBox.information(parent, "Sucesso", message)
 
 
 class StudentDialog(QDialog):
@@ -166,8 +176,13 @@ class AlunosPage(QWidget):
         if dlg.exec() == QDialog.Accepted:
             nome, email = dlg.get_data()
             if nome:
-                controllers.adicionar_aluno(nome, email)
-                self.load_data()
+                try:
+                    controllers.adicionar_aluno(nome, email)
+                except Exception as exc:  # pragma: no cover - runtime errors
+                    show_feedback(self, f"Erro ao adicionar aluno: {exc}", True)
+                else:
+                    show_feedback(self, "Aluno adicionado com sucesso!")
+                    self.load_data()
 
     def editar(self) -> None:
         aluno_id = self._selected_id()
@@ -179,16 +194,26 @@ class AlunosPage(QWidget):
         dlg = StudentDialog(aluno[1], aluno[2] or "", self)
         if dlg.exec() == QDialog.Accepted:
             nome, email = dlg.get_data()
-            controllers.atualizar_aluno(aluno_id, "nome", nome)
-            controllers.atualizar_aluno(aluno_id, "email", email)
-            self.load_data()
+            try:
+                controllers.atualizar_aluno(aluno_id, "nome", nome)
+                controllers.atualizar_aluno(aluno_id, "email", email)
+            except Exception as exc:  # pragma: no cover - runtime errors
+                show_feedback(self, f"Erro ao atualizar aluno: {exc}", True)
+            else:
+                show_feedback(self, "Aluno atualizado com sucesso!")
+                self.load_data()
 
     def excluir(self) -> None:
         aluno_id = self._selected_id()
         if aluno_id is None:
             return
-        controllers.remover_aluno(aluno_id)
-        self.load_data()
+        try:
+            controllers.remover_aluno(aluno_id)
+        except Exception as exc:  # pragma: no cover - runtime errors
+            show_feedback(self, f"Erro ao remover aluno: {exc}", True)
+        else:
+            show_feedback(self, "Aluno removido com sucesso!")
+            self.load_data()
 
     def abrir_planos(self) -> None:
         aluno_id = self._selected_id()
@@ -264,8 +289,13 @@ class PlanosPage(QWidget):
         if dlg.exec() == QDialog.Accepted:
             nome, desc, ex = dlg.get_data()
             if nome:
-                controllers.adicionar_plano(self.aluno_id, nome, desc, ex)
-                self.load_data()
+                try:
+                    controllers.adicionar_plano(self.aluno_id, nome, desc, ex)
+                except Exception as exc:  # pragma: no cover - runtime errors
+                    show_feedback(self, f"Erro ao adicionar plano: {exc}", True)
+                else:
+                    show_feedback(self, "Plano adicionado com sucesso!")
+                    self.load_data()
 
     def editar(self) -> None:
         plano_id = self._selected_id()
@@ -277,15 +307,25 @@ class PlanosPage(QWidget):
         dlg = PlanDialog(plano[1], plano[2] or "", plano[3] or "", self)
         if dlg.exec() == QDialog.Accepted:
             nome, desc, ex = dlg.get_data()
-            controllers.atualizar_plano(plano_id, nome, desc, ex)
-            self.load_data()
+            try:
+                controllers.atualizar_plano(plano_id, nome, desc, ex)
+            except Exception as exc:  # pragma: no cover - runtime errors
+                show_feedback(self, f"Erro ao atualizar plano: {exc}", True)
+            else:
+                show_feedback(self, "Plano atualizado com sucesso!")
+                self.load_data()
 
     def excluir(self) -> None:
         plano_id = self._selected_id()
         if plano_id is None:
             return
-        controllers.remover_plano(plano_id)
-        self.load_data()
+        try:
+            controllers.remover_plano(plano_id)
+        except Exception as exc:  # pragma: no cover - runtime errors
+            show_feedback(self, f"Erro ao remover plano: {exc}", True)
+        else:
+            show_feedback(self, "Plano removido com sucesso!")
+            self.load_data()
 
     def exportar(self) -> None:
         plano_id = self._selected_id()
@@ -310,7 +350,12 @@ class PlanosPage(QWidget):
         path, _ = QFileDialog.getSaveFileName(self, "Exportar", default_name, f"*.{fmt}")
         if not path:
             return
-        controllers.exportar_treino(fmt, plano[1], exercicios, path)
+        try:
+            controllers.exportar_treino(fmt, plano[1], exercicios, path)
+        except Exception as exc:  # pragma: no cover - runtime errors
+            show_feedback(self, f"Erro ao exportar: {exc}", True)
+        else:
+            show_feedback(self, "Exporta\u00e7\u00e3o conclu\u00edda!")
 
 
 class MainWindow(QMainWindow):
