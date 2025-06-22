@@ -1,8 +1,9 @@
 ; Script de exemplo do Inno Setup para o Gestor de Alunos
 
-; Caminho padrao do projeto. Pode ser sobrescrito ao compilar com /DSourceRoot=...
+; Defina a raiz do projeto ao compilar usando
+;   /DSourceRoot=<caminho do repositório>
+; Este parâmetro é obrigatório para localizar os arquivos
 #ifndef SourceRoot
-#define SourceRoot "C:\\caminho\\para\\I.A-Sarah"  ; valor padrao, substituido pelo script de build
 #endif
 
 [Setup]

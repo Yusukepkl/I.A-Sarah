@@ -62,6 +62,10 @@ executável único e um instalador para Windows.
    Esse script cria o executável com o PyInstaller e, em seguida, utiliza o
    Inno Setup para gerar `GestorAlunosSetup.exe`. Caso o Inno Setup esteja em
    outro diretório, ajuste o caminho no script.
+   
+   Se preferir compilar o arquivo `installer.iss` manualmente, é necessário
+   informar o caminho para a raiz do repositório com
+   `/DSourceRoot=<caminho-do-repositório>`.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`, garantindo que o usuário receba os arquivos atuais ao
