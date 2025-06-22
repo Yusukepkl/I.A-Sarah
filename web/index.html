@@ -13,6 +13,9 @@
         th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
         dialog { border: none; padding: 1rem; border-radius: 4px; }
         dialog::backdrop { background: rgba(0,0,0,0.3); }
+        #loading { display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+            background:rgba(0,0,0,0.3); align-items:center; justify-content:center; }
+        #feedback-modal.error p { color:red; }
     </style>
 </head>
 <body>
@@ -35,11 +38,26 @@
         </form>
     </dialog>
 
+    <dialog id="confirm-modal">
+        <p id="confirm-text"></p>
+        <button id="confirm-ok">OK</button>
+        <button id="confirm-cancel">Cancelar</button>
+    </dialog>
+
+    <dialog id="feedback-modal">
+        <p></p>
+        <button id="feedback-close">Fechar</button>
+    </dialog>
+
+    <div id="loading"><p>Carregando...</p></div>
+
     <section>
         <h2>Tema</h2>
         <button id="load-theme">Carregar tema</button>
-        <button id="set-light">Claro</button>
-        <button id="set-dark">Escuro</button>
+        <select id="theme-select">
+            <option value="light">Claro</option>
+            <option value="dark">Escuro</option>
+        </select>
         <pre id="theme-output"></pre>
     </section>
 
@@ -65,6 +83,43 @@ const API = 'http://localhost:8001';
 const modal = document.getElementById('student-modal');
 const form = document.getElementById('student-form');
 const table = document.getElementById('students-table');
+const confirmModal = document.getElementById('confirm-modal');
+const confirmText = document.getElementById('confirm-text');
+const confirmOk = document.getElementById('confirm-ok');
+const confirmCancel = document.getElementById('confirm-cancel');
+const feedbackModal = document.getElementById('feedback-modal');
+const feedbackText = feedbackModal.querySelector('p');
+const loading = document.getElementById('loading');
+
+function showLoading() { loading.style.display = 'flex'; }
+function hideLoading() { loading.style.display = 'none'; }
+
+function showFeedback(msg, error = false) {
+    feedbackText.textContent = msg;
+    if (error) feedbackModal.classList.add('error');
+    else feedbackModal.classList.remove('error');
+    feedbackModal.showModal();
+}
+document.getElementById('feedback-close').onclick = () => feedbackModal.close();
+
+function confirmDialog(message) {
+    return new Promise((resolve) => {
+        confirmText.textContent = message;
+        confirmOk.onclick = () => { confirmModal.close(); resolve(true); };
+        confirmCancel.onclick = () => { confirmModal.close(); resolve(false); };
+        confirmModal.showModal();
+    });
+}
+
+async function request(url, options) {
+    showLoading();
+    try {
+        const res = await fetch(url, options);
+        return res;
+    } finally {
+        hideLoading();
+    }
+}
 
 function openModal(student = null) {
     if (student) {
@@ -79,7 +134,7 @@ function openModal(student = null) {
 }
 
 async function loadStudents() {
-    const res = await fetch(`${API}/students`);
+    const res = await request(`${API}/students`);
     const data = await res.json();
     renderTable(data);
 }
@@ -94,6 +149,20 @@ function renderTable(data) {
         btnEdit.textContent = 'Editar';
         btnEdit.onclick = () => openModal(aluno);
         actions.appendChild(btnEdit);
+        const btnDel = document.createElement('button');
+        btnDel.textContent = 'Excluir';
+        btnDel.onclick = async () => {
+            if (await confirmDialog('Confirmar exclusão?')) {
+                const r = await request(`${API}/students/${aluno.id}`, { method: 'DELETE' });
+                if (r.ok) {
+                    showFeedback('Aluno removido com sucesso!');
+                    loadStudents();
+                } else {
+                    showFeedback('Erro ao remover aluno', true);
+                }
+            }
+        };
+        actions.appendChild(btnDel);
         tr.appendChild(actions);
         table.appendChild(tr);
     }
@@ -108,18 +177,24 @@ form.addEventListener('submit', async (e) => {
     const nome = document.getElementById('modal-nome').value;
     const email = document.getElementById('modal-email').value;
     const payload = { nome, email };
+    let res;
     if (id) {
-        await fetch(`${API}/students/${id}`, {
+        res = await request(`${API}/students/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
     } else {
-        await fetch(`${API}/students`, {
+        res = await request(`${API}/students`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+    }
+    if (res.ok) {
+        showFeedback(id ? 'Aluno atualizado com sucesso!' : 'Aluno adicionado com sucesso!');
+    } else {
+        showFeedback('Erro ao salvar aluno', true);
     }
     modal.close();
     loadStudents();
@@ -128,33 +203,27 @@ form.addEventListener('submit', async (e) => {
 document.getElementById('modal-cancel').addEventListener('click', () => modal.close());
 
 async function loadTheme() {
-    const res = await fetch(`${API}/theme`);
+    const res = await request(`${API}/theme`);
     const data = await res.json();
     document.getElementById('theme-output').textContent = JSON.stringify(data, null, 2);
+    document.getElementById('theme-select').value = data.theme;
 }
 
 document.getElementById('load-theme').addEventListener('click', loadTheme);
 
-document.getElementById('set-light').addEventListener('click', async () => {
-    await fetch(`${API}/theme`, {
+document.getElementById('theme-select').addEventListener('change', async (e) => {
+    const theme = e.target.value;
+    await request(`${API}/theme`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: 'light' })
+        body: JSON.stringify({ theme })
     });
-    loadTheme();
-});
-
-document.getElementById('set-dark').addEventListener('click', async () => {
-    await fetch(`${API}/theme`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: 'dark' })
-    });
+    showFeedback('Tema atualizado!');
     loadTheme();
 });
 
 async function loadConfig() {
-    const res = await fetch(`${API}/config`);
+    const res = await request(`${API}/config`);
     const data = await res.json();
     document.getElementById('config-output').textContent = JSON.stringify(data, null, 2);
 }
@@ -164,26 +233,34 @@ document.getElementById('load-config').addEventListener('click', loadConfig);
 document.getElementById('update-config-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const json = document.getElementById('config-json').value;
+    let data;
     try {
-        const data = JSON.parse(json);
-        await fetch(`${API}/config`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        loadConfig();
+        data = JSON.parse(json);
     } catch(err) {
-        alert('JSON inválido');
+        showFeedback('JSON inválido', true);
+        return;
+    }
+    const res = await request(`${API}/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        showFeedback('Configurações atualizadas!');
+        loadConfig();
+    } else {
+        showFeedback('Erro ao salvar configurações', true);
     }
 });
 
 async function loadStats() {
-    const res = await fetch(`${API}/stats`);
+    const res = await request(`${API}/stats`);
     const data = await res.json();
     document.getElementById('stats-output').textContent = JSON.stringify(data, null, 2);
 }
 
 document.getElementById('load-stats').addEventListener('click', loadStats);
+loadTheme();
 </script>
 </body>
 </html>

@@ -122,3 +122,10 @@
 - Endpoint PUT `/students/{id}` adicionado à API.
 - Página `web/index.html` atualizada com tabela e validação imediata.
 
+## Versão 4.0 - Melhorias no frontend web
+- Confirmação de exclusão com modal.
+- Feedback visual de sucesso ou erro após operações.
+- Indicador de carregamento para requisições.
+- Seleção de tema claro/escuro via menu suspenso.
+- Tratamento de JSON inválido com modal de aviso.
+
