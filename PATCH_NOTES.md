@@ -90,3 +90,7 @@
 
 ## Versão 3.1 - Repaginação visual
 - Tema Qt modernizado com novos estilos para botões e tabelas.
+
+## Versão 3.2 - Cadastro premium
+- Função `adicionar_aluno_com_plano_pdf` cria aluno, plano e gera PDF.
+- Exemplo de uso adicionado na documentação.
