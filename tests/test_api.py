@@ -33,6 +33,15 @@ async def test_api_crud(tmp_path):
         assert resp.status_code == 200
         assert resp.json()["nome"] == "Ana"
 
+        # update
+        resp = await client.put(
+            f"/students/{aluno_id}",
+            json={"nome": "Ana Maria", "email": "ana.maria@test.com"},
+        )
+        assert resp.status_code == 204
+        resp = await client.get(f"/students/{aluno_id}")
+        assert resp.json()["nome"] == "Ana Maria"
+
         # delete
         resp = await client.delete(f"/students/{aluno_id}")
         assert resp.status_code == 204

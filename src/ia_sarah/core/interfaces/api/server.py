@@ -56,6 +56,15 @@ async def create_student(student: StudentIn):
     return {"id": aluno_id}
 
 
+@app.put("/students/{aluno_id}", status_code=204)
+async def update_student(aluno_id: int, student: StudentIn):
+    """Update an existing student."""
+    if controllers.obter_aluno(aluno_id) is None:
+        raise HTTPException(status_code=404, detail="Aluno not found")
+    controllers.atualizar_aluno(aluno_id, "nome", student.nome)
+    controllers.atualizar_aluno(aluno_id, "email", student.email)
+
+
 @app.delete("/students/{aluno_id}", status_code=204)
 async def delete_student(aluno_id: int):
     if controllers.obter_aluno(aluno_id) is None:

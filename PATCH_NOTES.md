@@ -117,3 +117,8 @@
 - Diretório `.devcontainer/` permite abrir o projeto em contêiner no VS Code.
 - README detalha como utilizar a extensão **Dev Containers**.
 
+## Versão 3.9 - Modal de alunos
+- Formulário substituído por modal para cadastro e edição de alunos.
+- Endpoint PUT `/students/{id}` adicionado à API.
+- Página `web/index.html` atualizada com tabela e validação imediata.
+

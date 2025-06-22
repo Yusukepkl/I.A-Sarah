@@ -9,6 +9,10 @@
         section { margin-bottom: 2rem; }
         input, button { padding: 0.4rem; margin-right: 0.5rem; }
         pre { background: #f0f0f0; padding: 1rem; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
+        dialog { border: none; padding: 1rem; border-radius: 4px; }
+        dialog::backdrop { background: rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -16,14 +20,20 @@
 
     <section>
         <h2>Alunos</h2>
-        <form id="create-student-form">
-            <input type="text" id="nome" placeholder="Nome" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <button type="submit">Criar</button>
-        </form>
+        <button id="btn-new-student">Novo aluno</button>
         <button id="load-students">Listar alunos</button>
-        <pre id="students-output"></pre>
+        <table id="students-table"></table>
     </section>
+
+    <dialog id="student-modal">
+        <form id="student-form" method="dialog">
+            <input type="text" id="modal-nome" placeholder="Nome" required>
+            <input type="email" id="modal-email" placeholder="Email" required>
+            <input type="hidden" id="modal-id">
+            <button type="submit">Salvar</button>
+            <button type="button" id="modal-cancel">Cancelar</button>
+        </form>
+    </dialog>
 
     <section>
         <h2>Tema</h2>
@@ -52,25 +62,70 @@
 <script>
 const API = 'http://localhost:8001';
 
+const modal = document.getElementById('student-modal');
+const form = document.getElementById('student-form');
+const table = document.getElementById('students-table');
+
+function openModal(student = null) {
+    if (student) {
+        document.getElementById('modal-id').value = student.id;
+        document.getElementById('modal-nome').value = student.nome;
+        document.getElementById('modal-email').value = student.email;
+    } else {
+        form.reset();
+        document.getElementById('modal-id').value = '';
+    }
+    modal.showModal();
+}
+
 async function loadStudents() {
     const res = await fetch(`${API}/students`);
     const data = await res.json();
-    document.getElementById('students-output').textContent = JSON.stringify(data, null, 2);
+    renderTable(data);
 }
 
+function renderTable(data) {
+    table.innerHTML = '<tr><th>Nome</th><th>Email</th><th>Ações</th></tr>';
+    for (const aluno of data) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${aluno.nome}</td><td>${aluno.email}</td>`;
+        const actions = document.createElement('td');
+        const btnEdit = document.createElement('button');
+        btnEdit.textContent = 'Editar';
+        btnEdit.onclick = () => openModal(aluno);
+        actions.appendChild(btnEdit);
+        tr.appendChild(actions);
+        table.appendChild(tr);
+    }
+}
+
+document.getElementById('btn-new-student').addEventListener('click', () => openModal());
 document.getElementById('load-students').addEventListener('click', loadStudents);
 
-document.getElementById('create-student-form').addEventListener('submit', async (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nome = document.getElementById('nome').value;
-    const email = document.getElementById('email').value;
-    await fetch(`${API}/students`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email })
-    });
+    const id = document.getElementById('modal-id').value;
+    const nome = document.getElementById('modal-nome').value;
+    const email = document.getElementById('modal-email').value;
+    const payload = { nome, email };
+    if (id) {
+        await fetch(`${API}/students/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+    } else {
+        await fetch(`${API}/students`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+    }
+    modal.close();
     loadStudents();
 });
+
+document.getElementById('modal-cancel').addEventListener('click', () => modal.close());
 
 async function loadTheme() {
     const res = await fetch(`${API}/theme`);
