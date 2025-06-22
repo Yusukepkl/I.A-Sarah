@@ -135,6 +135,7 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
 ### Variáveis de ambiente importantes
 * `CONFIG_FILE` - caminho opcional para o arquivo de configuração.
 * `METRICS_PORT` - porta utilizada pelo servidor de métricas.
+  Certifique-se de instalar `prometheus-client` para habilitar essa funcionalidade.
 * `DISABLED_PLUGINS` - lista de plugins separados por vírgula a serem ignorados.
 
 ### Executando os testes
