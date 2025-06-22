@@ -12,18 +12,39 @@ informações de forma estruturada.
 
 ## Requisitos
 - Python 3.11 ou superior
-- `pip` recente para instalar o pacote
+- `git` para clonar o repositório
 
-## Como usar
-1. Instale o Python 3.11 ou superior em seu computador.
-2. (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
-3. Instale o Gestor de Alunos executando `pip install .` dentro do diretório do projeto.
-4. (Opcional) Rode os testes com `pip install .[test]` e em seguida `pytest`.
-5. Após a instalação, rode `gestor-alunos` para abrir o sistema.
+## Instalação
+1. Instale o Python 3.11 ou superior e verifique se o comando `python` está disponível em seu terminal.
+2. Clone este repositório:
+   ```bash
+   git clone <URL do seu repositorio>
+   cd I.A-Sarah
+   ```
+3. (Opcional) Crie um ambiente virtual e ative-o:
+   ```bash
+   python -m venv venv
+   # Linux/macOS
+   source venv/bin/activate
+   # Windows
+   venv\Scripts\activate
+   ```
+4. Instale o aplicativo e suas dependências:
+   ```bash
+   pip install .
+   ```
+5. Para executar o programa use:
+   ```bash
+   gestor-alunos
+   ```
+6. Para rodar a suíte de testes (opcional):
+   ```bash
+   pip install .[test]
+   pytest
+   ```
 
-O banco de dados agora fica salvo em `~/.gestor_alunos/alunos.db`,
-garantindo que os dados permaneçam mesmo ao executar o programa
-em diretórios diferentes.
+O banco de dados é salvo em `~/.gestor_alunos/alunos.db`, garantindo que os dados permaneçam
+mesmo ao executar o programa em diretórios diferentes.
 
 ## Licença
 

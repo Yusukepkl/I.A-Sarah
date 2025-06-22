@@ -3,7 +3,7 @@
 import sqlite3
 from contextlib import closing
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Optional
 
 DB_DIR = Path.home() / ".gestor_alunos"
 DB_DIR.mkdir(parents=True, exist_ok=True)
