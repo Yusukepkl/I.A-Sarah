@@ -67,3 +67,8 @@
 - AGENTS.md atualizado com novas diretrizes.
 - Licença traduzida para português.
 - README atualizado.
+
+## Versão 2.7 - Catálogo de funções
+- Nova função `listar_exportadores` exposta em `controllers`.
+- README agora possui seção explicando como listar formatos de exportação.
+- AGENTS.md orienta documentar novas funções públicas.
