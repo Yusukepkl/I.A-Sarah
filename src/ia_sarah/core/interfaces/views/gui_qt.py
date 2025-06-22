@@ -48,7 +48,12 @@ def show_feedback(parent: QWidget, message: str, error: bool = False) -> None:
 class StudentDialog(QDialog):
     """Simple dialog to edit student information."""
 
-    def __init__(self, nome: str = "", email: str = "", parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        nome: str = "",
+        email: str = "",
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Aluno")
         layout = QFormLayout(self)
@@ -363,7 +368,12 @@ class PlanosPage(QWidget):
         plano = self._get_plano(plano_id)
         if plano is None:
             return
-        dlg = PlanDialog(plano.nome, plano.descricao or "", plano.exercicios_json or "", self)
+        dlg = PlanDialog(
+            plano.nome,
+            plano.descricao or "",
+            plano.exercicios_json or "",
+            self,
+        )
         if dlg.exec() == QDialog.Accepted:
             nome, desc, ex = dlg.get_data()
             try:
@@ -406,7 +416,12 @@ class PlanosPage(QWidget):
         if not ok or not fmt:
             return
         default_name = controllers.sanitize_filename(plano.nome) + f".{fmt}"
-        path, _ = QFileDialog.getSaveFileName(self, "Exportar", default_name, f"*.{fmt}")
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Exportar",
+            default_name,
+            f"*.{fmt}",
+        )
         if not path:
             return
         try:
@@ -450,7 +465,12 @@ class ConfigPage(QWidget):
         controllers.update_config({"notifications": self.notify_box.isChecked()})
 
     def _backup(self) -> None:
-        path, _ = QFileDialog.getSaveFileName(self, "Backup", "backup.sqlite", "*.sqlite")
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Backup",
+            "backup.sqlite",
+            "*.sqlite",
+        )
         if not path:
             return
         try:

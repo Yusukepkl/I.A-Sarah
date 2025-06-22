@@ -184,7 +184,13 @@ def listar_planos(aluno_id: int) -> list[TrainingPlan]:
     """
     records = db.listar_planos(aluno_id)
     return [
-        TrainingPlan(id=r[0], aluno_id=aluno_id, nome=r[1], descricao=r[2], exercicios_json=r[3])
+        TrainingPlan(
+            id=r[0],
+            aluno_id=aluno_id,
+            nome=r[1],
+            descricao=r[2],
+            exercicios_json=r[3],
+        )
         for r in records
     ]
 

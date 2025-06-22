@@ -129,3 +129,7 @@
 - Seleção de tema claro/escuro via menu suspenso.
 - Tratamento de JSON inválido com modal de aviso.
 
+
+## Versão 4.1 - Conformidade flake8
+- Correções de estilo e criação do arquivo `.flake8`.
+

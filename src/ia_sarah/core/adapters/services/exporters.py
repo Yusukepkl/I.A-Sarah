@@ -35,7 +35,10 @@ class PDFExporter(Exporter):
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 10, txt=title, ln=True, align="C")
         for ex in exercises:
-            line = f"{ex.get('nome','')} - {ex.get('series','')}x{ex.get('reps','')}"
+            line = (
+                f"{ex.get('nome', '')} - "
+                f"{ex.get('series', '')}x{ex.get('reps', '')}"
+            )
             if ex.get("peso"):
                 line += f" {ex['peso']}"
             if ex.get("descanso"):

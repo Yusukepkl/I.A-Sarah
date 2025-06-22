@@ -18,7 +18,8 @@ async def test_api_crud(tmp_path):
     transport = ASGITransport(app=server.app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # create
-        resp = await client.post("/students", json={"nome": "Ana", "email": "ana@test.com"})
+        aluno = {"nome": "Ana", "email": "ana@test.com"}
+        resp = await client.post("/students", json=aluno)
         assert resp.status_code == 201
         aluno_id = resp.json()["id"]
 
