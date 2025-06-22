@@ -30,6 +30,18 @@ from ia_sarah.core.interfaces.views.widgets import PlanoModal
 
 DEFAULT_PAD = 10
 
+COLORS_LIGHT = {
+    "primary": "#1976d2",
+    "secondary": "#f5f5f5",
+    "accent": "#ff4081",
+}
+COLORS_DARK = {
+    "primary": "#90caf9",
+    "secondary": "#212121",
+    "accent": "#ff80ab",
+}
+BASE_FONT = ("Roboto", 10)
+
 
 def _fade_in(win: tk.Toplevel, step: float = 0.1) -> None:
     """Increase window opacity until fully visible."""
@@ -104,9 +116,36 @@ def _add_hover_animation(frame: ttk.Frame, hover_color: str = "#f0f0f0") -> None
             current = None
         fade(current, normal)
 
-    for w in [frame] + list(frame.winfo_children()):
-        w.bind("<Enter>", on_enter)
-        w.bind("<Leave>", on_leave)
+        for w in [frame] + list(frame.winfo_children()):
+            w.bind("<Enter>", on_enter)
+            w.bind("<Leave>", on_leave)
+
+
+def _show_splash(app: tb.Window) -> None:
+    """Display a splash screen with a short animation."""
+    splash = tb.Toplevel(app)
+    splash.overrideredirect(True)
+    x = app.winfo_screenwidth() // 2 - 150
+    y = app.winfo_screenheight() // 2 - 100
+    splash.geometry(f"300x200+{x}+{y}")
+    splash.attributes("-alpha", 0.0)
+    _fade_in(splash)
+    ttk.Label(
+        splash,
+        text="Sarah 3.0",
+        font=("Roboto", 16, "bold"),
+        padding=20,
+    ).pack()
+    pb = ttk.Progressbar(splash, mode="indeterminate")
+    pb.pack(fill="x", padx=40, pady=20)
+    pb.start()
+
+    def close() -> None:
+        pb.stop()
+        _fade_out_destroy(splash)
+        app.deiconify()
+
+    app.after(1500, close)
 
 
 def abrir_modal_adicionar(atualizar: callable) -> None:
@@ -362,16 +401,18 @@ def criar_interface() -> None:
     init_app()
     theme = load_theme()
     app = tb.Window(themename=theme)
+    app.withdraw()
     app.title("Gestor de Alunos")
+    _show_splash(app)
 
     person_img = PhotoImage(data=Icon.icon, master=app)
 
     style = app.style
-    style.configure("TLabel", font=("Segoe UI", 10))
-    style.configure("TButton", font=("Segoe UI", 10))
-    style.configure("Title.TLabel", font=("Segoe UI", 14, "bold"))
-    style.configure("Header.TLabel", font=("Segoe UI", 12, "bold"))
-    style.configure("CardTitle.TLabel", font=("Segoe UI", 11, "bold"))
+    style.configure("TLabel", font=BASE_FONT)
+    style.configure("TButton", font=BASE_FONT)
+    style.configure("Title.TLabel", font=(BASE_FONT[0], 14, "bold"))
+    style.configure("Header.TLabel", font=(BASE_FONT[0], 12, "bold"))
+    style.configure("CardTitle.TLabel", font=(BASE_FONT[0], 11, "bold"))
     style.configure("Card.TFrame", borderwidth=1, relief="solid")
 
     def toggle_theme() -> None:
@@ -382,27 +423,64 @@ def criar_interface() -> None:
     app.columnconfigure(0, weight=1)
     app.rowconfigure(1, weight=1)
 
-    header = ttk.Frame(app, padding=DEFAULT_PAD)
-    header.grid(row=0, column=0, sticky="ew")
-    ttk.Label(header, text="Gestor de Alunos", style="Title.TLabel").pack(side="left")
+    nav = ttk.Frame(app, padding=DEFAULT_PAD)
+    nav.grid(row=0, column=0, sticky="ew")
+    ttk.Label(nav, text="Sarah 3.0", style="Title.TLabel").pack(side="left")
     theme_var = tk.BooleanVar(value=theme == "superhero")
     tb.Checkbutton(
-        header,
-        text="Modo Escuro",
+        nav,
+        text="\u263e",
         variable=theme_var,
         command=toggle_theme,
         bootstyle="round-toggle",
     ).pack(side="right")
 
-    main = ttk.Frame(app, padding=DEFAULT_PAD)
-    main.grid(row=1, column=0, sticky="nsew")
-    main.columnconfigure(0, weight=1)
-    main.rowconfigure(0, weight=1)
+    nav_buttons = ttk.Frame(nav)
+    nav_buttons.pack()
 
-    list_frame = ttk.Frame(main, padding=DEFAULT_PAD)
-    list_frame.grid(row=0, column=0, sticky="nsew")
-    list_frame.columnconfigure(0, weight=1)
-    list_frame.rowconfigure(0, weight=1)
+    container = ttk.Frame(app, padding=DEFAULT_PAD)
+    container.grid(row=1, column=0, sticky="nsew")
+    container.columnconfigure(0, weight=1)
+    container.rowconfigure(0, weight=1)
+
+    pages: dict[str, ttk.Frame] = {}
+
+    def show_page(name: str) -> None:
+        for f in pages.values():
+            f.grid_remove()
+        frame = pages.get(name)
+        if frame:
+            frame.grid(row=0, column=0, sticky="nsew")
+
+    dashboard = ttk.Frame(container, padding=DEFAULT_PAD)
+    pages["dashboard"] = dashboard
+    ttk.Label(dashboard, text="Bem-vindo ao Sarah 3.0", style="Header.TLabel").pack(anchor="w")
+
+    alunos_page = ttk.Frame(container, padding=DEFAULT_PAD)
+    alunos_page.columnconfigure(0, weight=1)
+    alunos_page.rowconfigure(0, weight=1)
+    pages["alunos"] = alunos_page
+
+    detalhes_page = ttk.Frame(container, padding=DEFAULT_PAD)
+    pages["detalhes"] = detalhes_page
+
+    config_page = ttk.Frame(container, padding=DEFAULT_PAD)
+    pages["config"] = config_page
+    ttk.Label(config_page, text="Configura\u00e7\u00f5es", style="Header.TLabel").pack(anchor="w")
+
+    for frame in pages.values():
+        frame.grid(row=0, column=0, sticky="nsew")
+        frame.grid_remove()
+
+    btn_dashboard = ttk.Button(nav_buttons, text="Dashboard", command=lambda: show_page("dashboard"))
+    btn_alunos = ttk.Button(nav_buttons, text="Alunos", command=lambda: show_page("alunos"))
+    btn_det = ttk.Button(nav_buttons, text="Detalhes", command=lambda: show_page("detalhes"))
+    btn_cfg = ttk.Button(nav_buttons, text="Config", command=lambda: show_page("config"))
+    for b in (btn_dashboard, btn_alunos, btn_det, btn_cfg):
+        b.pack(side="left", padx=5)
+
+    list_frame = alunos_page
+    detail_container = detalhes_page
 
     canvas = tk.Canvas(list_frame)
     scroll = ttk.Scrollbar(list_frame, orient="vertical", command=canvas.yview)
@@ -413,10 +491,6 @@ def criar_interface() -> None:
     cards = ttk.Frame(canvas, padding=DEFAULT_PAD)
     canvas.create_window((0, 0), window=cards, anchor="nw")
 
-    detail_container = ttk.Frame(main, padding=DEFAULT_PAD)
-    detail_container.grid(row=0, column=0, sticky="nsew")
-    detail_container.grid_remove()
-
     def on_configure(event=None) -> None:
         canvas.configure(scrollregion=canvas.bbox("all"))
 
@@ -425,19 +499,17 @@ def criar_interface() -> None:
     def show_list() -> None:
         for child in detail_container.winfo_children():
             child.destroy()
-        detail_container.grid_remove()
-        list_frame.grid()
         atualizar_cards()
+        show_page("alunos")
 
     def show_detail(aluno_id: int) -> None:
-        list_frame.grid_remove()
         for child in detail_container.winfo_children():
             child.destroy()
         dados = obter_aluno(aluno_id)
         DetalhesFrame(detail_container, dados, show_list, atualizar_cards).pack(
             fill="both", expand=True
         )
-        detail_container.grid()
+        show_page("detalhes")
 
     def atualizar_cards() -> None:
         for child in cards.winfo_children():
@@ -471,6 +543,8 @@ def criar_interface() -> None:
     ).pack()
 
     atualizar_cards()
+    show_page("dashboard")
+    app.deiconify()
     app.mainloop()
 
 
