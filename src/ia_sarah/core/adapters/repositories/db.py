@@ -204,3 +204,35 @@ def remover_plano(plano_id: int) -> None:
     except sqlite3.Error as exc:  # pragma: no cover - database errors
         logger.error("Erro ao remover plano: %s", exc)
         raise
+
+
+def contar_alunos() -> int:
+    """Return the total number of students."""
+    try:
+        with closing(sqlite3.connect(DB_NAME)) as conn:
+            cur = conn.execute("SELECT COUNT(*) FROM alunos")
+            (total,) = cur.fetchone()
+            return int(total)
+    except sqlite3.Error as exc:  # pragma: no cover - database errors
+        logger.error("Erro ao contar alunos: %s", exc)
+        raise
+
+
+def listar_planos_recentes(limit: int = 5) -> list[tuple]:
+    """Return the most recently created plans with student names."""
+    try:
+        with closing(sqlite3.connect(DB_NAME)) as conn:
+            cur = conn.execute(
+                """
+            SELECT planos.id, planos.nome, alunos.nome
+            FROM planos
+            JOIN alunos ON planos.aluno_id = alunos.id
+            ORDER BY planos.id DESC
+            LIMIT ?
+            """,
+                (limit,),
+            )
+            return cur.fetchall()
+    except sqlite3.Error as exc:  # pragma: no cover - database errors
+        logger.error("Erro ao listar planos recentes: %s", exc)
+        raise
