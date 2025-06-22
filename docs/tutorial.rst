@@ -4,7 +4,7 @@ Quick Start
 Install dependencies and run the application::
 
     poetry install
-    python run.py
+    poetry run iasarah
 
 Alternatively, after installing, you can use the console script::
 
