@@ -58,3 +58,7 @@
 ## Versão 2.4 - Exportadores de treino
 - Opções na interface para exportar planos.
 - Suporte a formatos PDF, CSV e XLSX através de exportadores registrados.
+
+## Versão 2.5 - Notificações e erros
+- Tratamento de exceções nas operações de banco de dados.
+- Mensagens de sucesso ou erro exibidas na interface para CRUD e exportações.
