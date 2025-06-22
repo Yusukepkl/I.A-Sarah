@@ -1,6 +1,6 @@
 param(
     [string]$Destination = "$PSScriptRoot\dados",
-    # URL do repositório com os dados mais recentes do Gestor de Alunos
+    # Repositório de onde baixar os dados (pode ser alterado)
     [string]$RepoUrl = "https://github.com/Yusukepkl/I.A-Sarah.git"
 )
 
