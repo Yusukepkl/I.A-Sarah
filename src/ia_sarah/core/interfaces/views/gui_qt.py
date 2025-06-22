@@ -4,9 +4,17 @@ from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QPoint
 from PySide6.QtGui import QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLineEdit,
     QMainWindow,
+    QPushButton,
     QSplashScreen,
     QStackedWidget,
+    QTableWidget,
+    QTableWidgetItem,
     QToolBar,
     QVBoxLayout,
     QWidget,
@@ -16,6 +24,100 @@ from ia_sarah.core.use_cases import controllers
 
 from .theme import Palette, stylesheet
 from .widgets_qt import AnimatedButton, CardFrame
+
+
+class StudentDialog(QDialog):
+    """Simple dialog to edit student information."""
+
+    def __init__(self, nome: str = "", email: str = "", parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("Aluno")
+        layout = QFormLayout(self)
+        self.nome_edit = QLineEdit(nome)
+        self.email_edit = QLineEdit(email)
+        layout.addRow("Nome:", self.nome_edit)
+        layout.addRow("Email:", self.email_edit)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def get_data(self) -> tuple[str, str]:
+        return self.nome_edit.text(), self.email_edit.text()
+
+
+class AlunosPage(QWidget):
+    """Page with CRUD operations for students."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        layout = QVBoxLayout(self)
+
+        self.table = QTableWidget(0, 3)
+        self.table.setHorizontalHeaderLabels(["ID", "Nome", "Email"])
+        layout.addWidget(self.table)
+
+        btn_layout = QHBoxLayout()
+        self.add_btn = QPushButton("Adicionar")
+        self.edit_btn = QPushButton("Editar")
+        self.del_btn = QPushButton("Excluir")
+        btn_layout.addWidget(self.add_btn)
+        btn_layout.addWidget(self.edit_btn)
+        btn_layout.addWidget(self.del_btn)
+        layout.addLayout(btn_layout)
+
+        self.add_btn.clicked.connect(self.adicionar)
+        self.edit_btn.clicked.connect(self.editar)
+        self.del_btn.clicked.connect(self.excluir)
+        self.table.itemDoubleClicked.connect(lambda *_: self.editar())
+
+        self.load_data()
+
+    def load_data(self) -> None:
+        self.table.setRowCount(0)
+        for row, aluno in enumerate(controllers.listar_alunos()):
+            self.table.insertRow(row)
+            for col, value in enumerate(aluno[:3]):
+                item = QTableWidgetItem(str(value))
+                self.table.setItem(row, col, item)
+
+    def _selected_id(self) -> int | None:
+        row = self.table.currentRow()
+        if row < 0:
+            return None
+        item = self.table.item(row, 0)
+        if item:
+            return int(item.text())
+        return None
+
+    def adicionar(self) -> None:
+        dlg = StudentDialog(parent=self)
+        if dlg.exec() == QDialog.Accepted:
+            nome, email = dlg.get_data()
+            if nome:
+                controllers.adicionar_aluno(nome, email)
+                self.load_data()
+
+    def editar(self) -> None:
+        aluno_id = self._selected_id()
+        if aluno_id is None:
+            return
+        aluno = controllers.obter_aluno(aluno_id)
+        if aluno is None:
+            return
+        dlg = StudentDialog(aluno[1], aluno[2] or "", self)
+        if dlg.exec() == QDialog.Accepted:
+            nome, email = dlg.get_data()
+            controllers.atualizar_aluno(aluno_id, "nome", nome)
+            controllers.atualizar_aluno(aluno_id, "email", email)
+            self.load_data()
+
+    def excluir(self) -> None:
+        aluno_id = self._selected_id()
+        if aluno_id is None:
+            return
+        controllers.remover_aluno(aluno_id)
+        self.load_data()
 
 
 class MainWindow(QMainWindow):
@@ -60,9 +162,7 @@ class MainWindow(QMainWindow):
         self.pages["dashboard"] = dashboard
         self.stack.addWidget(dashboard)
 
-        alunos = QWidget()
-        alunos_layout = QVBoxLayout(alunos)
-        alunos_layout.addWidget(CardFrame())
+        alunos = AlunosPage()
         self.pages["alunos"] = alunos
         self.stack.addWidget(alunos)
 
