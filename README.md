@@ -123,6 +123,9 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
 * `METRICS_PORT` - porta utilizada pelo servidor de métricas.
 * `DISABLED_PLUGINS` - lista de plugins separados por vírgula a serem ignorados.
 
+### CORS na API
+As rotas da API agora permitem solicitações de qualquer origem (CORS habilitado).
+
 ### Testes
 Para executar os testes:
 ```bash

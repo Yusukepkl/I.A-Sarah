@@ -100,3 +100,6 @@
 
 ## Versão 3.4 - Frontend web
 - Adicionada página `web/index.html` para testar a API.
+
+## Versão 3.5 - CORS na API
+- Middleware `CORSMiddleware` adicionado ao servidor FastAPI permitindo requisições de qualquer origem.
