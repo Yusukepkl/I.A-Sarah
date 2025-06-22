@@ -15,4 +15,10 @@ def test_import_qt_interface():
     assert hasattr(gui_qt, "criar_interface")
 
 
-
+def test_stylesheet_string():
+    try:
+        theme = import_module("ia_sarah.core.interfaces.views.theme")
+    except Exception as exc:  # pragma: no cover - env issues
+        pytest.skip(f"PySide6 not available: {exc}")
+    css = theme.stylesheet()
+    assert isinstance(css, str) and "QPushButton" in css
