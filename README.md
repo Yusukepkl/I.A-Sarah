@@ -123,8 +123,8 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
 * `METRICS_PORT` - porta utilizada pelo servidor de métricas.
 * `DISABLED_PLUGINS` - lista de plugins separados por vírgula a serem ignorados.
 
-### Testes
-Para executar os testes:
+### Executando os testes
+Instale primeiro as dependências de teste:
 ```bash
 pip install -r requirements.txt
 pytest -q
