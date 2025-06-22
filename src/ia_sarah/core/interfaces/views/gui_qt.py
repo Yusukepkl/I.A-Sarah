@@ -8,6 +8,8 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
+    QLabel,
+    QListWidget,
     QFileDialog,
     QFormLayout,
     QHBoxLayout,
@@ -80,6 +82,36 @@ class PlanDialog(QDialog):
             self.desc_edit.text(),
             self.ex_edit.text(),
         )
+
+
+class DashboardPage(QWidget):
+    """Simple dashboard with statistics."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        layout = QVBoxLayout(self)
+
+        card_stats = CardFrame()
+        stats_layout = QVBoxLayout(card_stats)
+        self.total_label = QLabel()
+        stats_layout.addWidget(self.total_label)
+        layout.addWidget(card_stats)
+
+        card_recent = CardFrame()
+        recent_layout = QVBoxLayout(card_recent)
+        recent_layout.addWidget(QLabel("Planos recentes:"))
+        self.plans_list = QListWidget()
+        recent_layout.addWidget(self.plans_list)
+        layout.addWidget(card_recent)
+
+        self.load_data()
+
+    def load_data(self) -> None:
+        total = controllers.contar_alunos()
+        self.total_label.setText(f"Total de alunos: {total}")
+        self.plans_list.clear()
+        for _id, nome, aluno in controllers.listar_planos_recentes(5):
+            self.plans_list.addItem(f"{nome} - {aluno}")
 
 
 class AlunosPage(QWidget):
@@ -317,9 +349,7 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(stylesheet(self.dark))
 
     def _init_pages(self) -> None:
-        dashboard = QWidget()
-        dash_layout = QVBoxLayout(dashboard)
-        dash_layout.addWidget(CardFrame())
+        dashboard = DashboardPage()
         self.pages["dashboard"] = dashboard
         self.stack.addWidget(dashboard)
 

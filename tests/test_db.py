@@ -35,3 +35,16 @@ def test_planos_crud(tmp_path):
     db.remover_plano(plano_id)
     planos = db.listar_planos(aluno_id)
     assert planos == []
+
+
+def test_stats_functions(tmp_path):
+    db.DB_NAME = str(tmp_path / "test.db")
+    db.init_db()
+    # add students and plans
+    a1 = db.adicionar_aluno("Joana", "joana@test.com")
+    a2 = db.adicionar_aluno("Carlos", "carlos@test.com")
+    db.adicionar_plano(a1, "Plano 1", "desc", "[]")
+    db.adicionar_plano(a2, "Plano 2", "desc", "[]")
+    assert db.contar_alunos() == 2
+    recentes = db.listar_planos_recentes(1)
+    assert recentes and recentes[0][1] == "Plano 2"

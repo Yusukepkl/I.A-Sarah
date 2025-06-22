@@ -88,6 +88,19 @@ def remover_plano(plano_id: int) -> None:
     db.remover_plano(plano_id)
 
 
+# ----- Dashboard stats -----
+
+
+def contar_alunos() -> int:
+    """Return total number of students."""
+    return db.contar_alunos()
+
+
+def listar_planos_recentes(limit: int = 5) -> list[tuple]:
+    """Return most recent plans with student names."""
+    return db.listar_planos_recentes(limit)
+
+
 # ----- Exportação -----
 
 
