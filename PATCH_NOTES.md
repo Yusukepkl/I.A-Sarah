@@ -72,3 +72,7 @@
 - Nova função `listar_exportadores` exposta em `controllers`.
 - README agora possui seção explicando como listar formatos de exportação.
 - AGENTS.md orienta documentar novas funções públicas.
+
+## Versão 2.8 - Recarga de plugins
+- Função `reload_entrypoints` adicionada para atualizar plugins dinâmicos.
+- README demonstra como utilizá-la para recarregar exportadores.
