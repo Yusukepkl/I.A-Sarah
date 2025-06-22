@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+if __package__ is None or __package__ == "":
+    import sys
+    from pathlib import Path
+
+    sys.path.append(str(Path(__file__).resolve().parents[4]))
+
 import json
 import tkinter as tk
 from tkinter import PhotoImage, messagebox, ttk
@@ -9,8 +15,8 @@ from tkinter import PhotoImage, messagebox, ttk
 import ttkbootstrap as tb
 from ttkbootstrap.icons import Icon
 
-from ...use_cases import controllers
-from ...use_cases.controllers import (
+from ia_sarah.core.use_cases import controllers
+from ia_sarah.core.use_cases.controllers import (
     adicionar_aluno,
     atualizar_plano,
     gerar_treino_pdf,
@@ -23,7 +29,7 @@ from ...use_cases.controllers import (
     sanitize_filename,
     save_theme,
 )
-from ...adapters.utils.background import run_task
+from ia_sarah.core.adapters.utils.background import run_task
 
 from .widgets import PlanoModal
 
@@ -358,7 +364,7 @@ class DetalhesFrame(ttk.Frame):
 
 def criar_interface() -> None:
     """Cria e exibe a interface principal."""
-    init_app()
+    controllers.init_app()
     theme = load_theme()
     app = tb.Window(themename=theme)
     app.title("Gestor de Alunos")

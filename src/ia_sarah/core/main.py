@@ -2,8 +2,14 @@
 
 import logging
 
-from .telemetry import init as init_telemetry
-from .interfaces.views.gui import criar_interface
+if __package__ is None or __package__ == "":
+    import sys
+    from pathlib import Path
+
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+
+from ia_sarah.core.telemetry import init as init_telemetry
+from ia_sarah.core.interfaces.views.gui import criar_interface
 
 
 def main() -> None:

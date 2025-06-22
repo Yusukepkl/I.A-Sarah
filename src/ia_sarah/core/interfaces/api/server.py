@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+if __package__ is None or __package__ == "":
+    import sys
+    from pathlib import Path
+
+    sys.path.append(str(Path(__file__).resolve().parents[4]))
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from ...use_cases import controllers
+from ia_sarah.core.use_cases import controllers
 
 app = FastAPI(title="I.A-Sarah API")
 
