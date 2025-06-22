@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Iterable
+import json
 
 from ia_sarah.core.adapters.repositories import db
 from ia_sarah.core.entities.models import Student, TrainingPlan
@@ -210,6 +211,49 @@ def adicionar_plano(
         Generated identifier for the plan.
     """
     return db.adicionar_plano(aluno_id, nome, descricao, exercicios_json)
+
+
+def adicionar_aluno_com_plano_pdf(
+    nome: str,
+    email: str,
+    plano: str,
+    descricao: str,
+    exercicios_json: str,
+    pdf_dest: Path | str,
+) -> tuple[int, int]:
+    """Criar aluno, plano e gerar PDF de treino.
+
+    Parameters
+    ----------
+    nome:
+        Nome do aluno.
+    email:
+        Endereço de e-mail.
+    plano:
+        Nome do plano de treino.
+    descricao:
+        Descrição do plano.
+    exercicios_json:
+        Lista de exercícios em JSON.
+    pdf_dest:
+        Caminho de saída do PDF.
+
+    Returns
+    -------
+    tuple[int, int]
+        IDs do aluno e do plano criados.
+    """
+
+    aluno_id = adicionar_aluno(nome, email)
+    plano_id = adicionar_plano(aluno_id, plano, descricao, exercicios_json)
+    try:
+        exercicios = json.loads(exercicios_json or "[]")
+        if not isinstance(exercicios, list):
+            exercicios = []
+    except Exception:
+        exercicios = []
+    exportar_treino("pdf", plano, exercicios, pdf_dest)
+    return aluno_id, plano_id
 
 
 def atualizar_plano(

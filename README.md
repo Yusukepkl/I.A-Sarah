@@ -52,6 +52,21 @@ O banco pode ser copiado para um arquivo local com:
 controllers.backup_dados("backup.sqlite")
 ```
 
+### Cadastro com plano e PDF
+
+Para criar um aluno já associado a um plano e gerar o PDF automaticamente:
+
+```python
+aluno_id, plano_id = controllers.adicionar_aluno_com_plano_pdf(
+    "Maria",
+    "maria@email.com",
+    plano="Treino A",
+    descricao="Plano inicial",
+    exercicios_json="[]",
+    pdf_dest="treino.pdf",
+)
+```
+
 ## Estrutura do Projeto
 ```
 src/

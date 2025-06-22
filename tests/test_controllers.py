@@ -25,3 +25,19 @@ def test_adicionar_completo_e_backup(tmp_path):
     backup = tmp_path / "copy.sqlite"
     controllers.backup_dados(backup)
     assert backup.exists() and backup.stat().st_size > 0
+
+
+def test_adicionar_com_plano_pdf(tmp_path):
+    controllers.db.DB_NAME = str(tmp_path / "test.db")
+    controllers.init_app()
+    pdf_file = tmp_path / "treino.pdf"
+    aluno_id, plano_id = controllers.adicionar_aluno_com_plano_pdf(
+        "Leo",
+        "leo@test.com",
+        plano="Treino B",
+        descricao="desc",
+        exercicios_json="[]",
+        pdf_dest=pdf_file,
+    )
+    assert pdf_file.exists() and pdf_file.stat().st_size > 0
+    assert aluno_id > 0 and plano_id > 0
