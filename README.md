@@ -86,4 +86,4 @@ pyinstaller gestor_exetavel.py -n iasarah
 O binário ficará em `dist/iasarah`.
 
 ## Licença
-Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).
+Distribuído sob a Licença MIT em português. Veja o arquivo [LICENSE](LICENSE).

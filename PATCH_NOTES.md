@@ -62,3 +62,8 @@
 ## Versão 2.5 - Notificações e erros
 - Tratamento de exceções nas operações de banco de dados.
 - Mensagens de sucesso ou erro exibidas na interface para CRUD e exportações.
+
+## Versão 2.6 - Documentação e licença
+- AGENTS.md atualizado com novas diretrizes.
+- Licença traduzida para português.
+- README atualizado.
