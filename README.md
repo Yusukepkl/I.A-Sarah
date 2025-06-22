@@ -11,6 +11,7 @@ Aplicação em Python para organizar alunos de academias ou atendimentos particu
 - Edição dos planos associados a cada aluno
 - Exportação de planos em PDF/CSV/XLSX
 - Interface gráfica modernizada com seleção de tema claro ou escuro
+- Animações suaves, botões com efeito e tela de splash
 - Plugins de exportação carregados dinamicamente
 
 ### Plugins de exportação

@@ -133,5 +133,12 @@
 ## Versão 4.1 - Conformidade flake8
 - Correções de estilo e criação do arquivo `.flake8`.
 
-\n## Versão 4.2 - Correção de animações
+## Versão 4.2 - Correção de animações
 - Transições entre abas mantêm referências das animações para evitar tela branca.
+
+## Versão 4.3 - Interface Qt aprimorada
+- Botões animados com efeitos de hover e clique.
+- Navegação SPA por `QStackedWidget` com transições de fade e slide.
+- Paleta centralizada em `theme.py` utilizando cores vibrantes.
+- Seções em formato de cartão com sombra suave.
+- Splash screen com animação de entrada e saída.
