@@ -13,7 +13,7 @@ try:
     import sentry_sdk  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
     sentry_sdk = None
-from prometheus_client import CollectorRegistry, Counter, generate_latest
+from prometheus_client import Counter, generate_latest
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,8 @@ def init() -> None:
     """Initialize Sentry and start metrics server."""
     config = cm.load_config()
     dsn = os.getenv("SENTRY_DSN") or config.get("sentry_dsn")
+    if not os.getenv("PV_KEYWORD_PATH"):
+        logger.info("PV_KEYWORD_PATH não definido - modo dummy ativo")
     if dsn and sentry_sdk is not None:
         sentry_sdk.init(dsn=dsn)
         logger.info("Sentry enabled")
@@ -42,8 +44,12 @@ def init() -> None:
         logger.warning("SENTRY_DSN set but sentry_sdk not installed")
 
     def run_server() -> None:
-        port = int(os.getenv("METRICS_PORT") or config.get("metrics_port", 8000))
-        httpd = HTTPServer(("0.0.0.0", port), MetricsHandler)
-        httpd.serve_forever()
+        port_env = os.getenv("METRICS_PORT")
+        port = int(port_env or config.get("metrics_port", 8000))
+        try:
+            httpd = HTTPServer(("0.0.0.0", port), MetricsHandler)
+            httpd.serve_forever()
+        except Exception as exc:  # pragma: no cover - runtime errors
+            logger.error("Erro ao iniciar servidor de métricas: %s", exc)
 
     Thread(target=run_server, daemon=True).start()

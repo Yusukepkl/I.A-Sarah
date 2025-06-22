@@ -17,6 +17,8 @@ CONFIG_FILE: Path = Path(
     )
 )
 
+DEFAULT_CONFIG: Dict[str, Any] = {"theme": "superhero", "metrics_port": 8000}
+
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from disk.
@@ -28,19 +30,27 @@ def load_config() -> Dict[str, Any]:
         or invalid.
     """
 
-    if CONFIG_FILE.exists():
-        try:
-            return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError) as exc:  # pragma: no cover - I/O
-            logger.error("Erro ao ler configuração: %s", exc)
-    return {}
+    if not CONFIG_FILE.exists():
+        save_config(DEFAULT_CONFIG)
+        return DEFAULT_CONFIG.copy()
+
+    try:
+        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:  # pragma: no cover - I/O
+        logger.error("Erro ao ler configuração: %s", exc)
+        return DEFAULT_CONFIG.copy()
+
+    return {**DEFAULT_CONFIG, **data}
 
 
 def save_config(config: Dict[str, Any]) -> None:
     """Persist configuration to disk."""
 
     try:
-        CONFIG_FILE.write_text(json.dumps(config, ensure_ascii=False), encoding="utf-8")
+        CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CONFIG_FILE.write_text(
+            json.dumps(config, ensure_ascii=False), encoding="utf-8"
+        )
     except OSError as exc:  # pragma: no cover - I/O
         logger.error("Erro ao salvar configuração: %s", exc)
         raise
