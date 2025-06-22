@@ -9,8 +9,8 @@ from tkinter import PhotoImage, messagebox, ttk
 import ttkbootstrap as tb
 from ttkbootstrap.icons import Icon
 
-from ...use_cases import controllers
-from ...use_cases.controllers import (
+from ia_sarah.core.use_cases import controllers
+from ia_sarah.core.use_cases.controllers import (
     adicionar_aluno,
     atualizar_plano,
     gerar_treino_pdf,
@@ -24,9 +24,9 @@ from ...use_cases.controllers import (
     sanitize_filename,
     save_theme,
 )
-from ...adapters.utils.background import run_task
+from ia_sarah.core.adapters.utils.background import run_task
 
-from .widgets import PlanoModal
+from ia_sarah.core.interfaces.views.widgets import PlanoModal
 
 DEFAULT_PAD = 10
 

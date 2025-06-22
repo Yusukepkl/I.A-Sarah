@@ -6,11 +6,11 @@ import logging
 from pathlib import Path
 from typing import Iterable
 
-from ...adapters.repositories import db
-from ...adapters.services import pdf_utils
-from ...adapters.services.exporters import get_exporter
-from ...adapters.utils.config_manager import load_theme as _load_theme
-from ...adapters.utils.config_manager import save_theme as _save_theme
+from ia_sarah.core.adapters.repositories import db
+from ia_sarah.core.adapters.services import pdf_utils
+from ia_sarah.core.adapters.services.exporters import get_exporter
+from ia_sarah.core.adapters.utils.config_manager import load_theme as _load_theme
+from ia_sarah.core.adapters.utils.config_manager import save_theme as _save_theme
 
 logger = logging.getLogger(__name__)
 

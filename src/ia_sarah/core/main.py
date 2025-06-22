@@ -2,8 +2,8 @@
 
 import logging
 
-from .interfaces.views.gui import criar_interface
-from .telemetry import init as init_telemetry
+from ia_sarah.core.interfaces.views.gui import criar_interface
+from ia_sarah.core.telemetry import init as init_telemetry
 
 
 def main() -> None:
