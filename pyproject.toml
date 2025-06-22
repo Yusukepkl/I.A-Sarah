@@ -14,6 +14,8 @@ ttkbootstrap = "^1.13"
 fpdf = "^1.7"
 pillow = "^10"
 openpyxl = "^3.1"
+fastapi = "^0.110"
+uvicorn = "^0.29"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7"
@@ -21,6 +23,7 @@ pyvirtualdisplay = "^3"
 pytest-xdist = "^3.5"
 coverage = "^7.4"
 pytest-cov = "^4.1"
+httpx = "^0.27"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -33,6 +36,7 @@ pre-commit = "^3.5"
 
 [tool.poetry.scripts]
 iasarah = "ia_sarah.core.main:main"
+iasarah-api = "ia_sarah.core.interfaces.api.server:main"
 
 [tool.poetry.plugins."ia_sarah.exporters"]
 pdf = "ia_sarah.core.adapters.services.exporters:PDFExporter"
