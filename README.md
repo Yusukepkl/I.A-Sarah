@@ -42,6 +42,8 @@ informações de forma estruturada.
    pip install .[test]
    pytest
    ```
+   O comando acima instalará pacotes adicionais, como `pyvirtualdisplay` e
+   `fpdf`, que são necessários para executar os testes.
 
 O banco de dados é salvo em `~/.gestor_alunos/alunos.db`, garantindo que os dados permaneçam
 mesmo ao executar o programa em diretórios diferentes.
