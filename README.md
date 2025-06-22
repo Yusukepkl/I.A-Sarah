@@ -61,10 +61,10 @@ executável único e um instalador para Windows.
 1. Instale o PyInstaller com `pip install pyinstaller` e tenha o Inno Setup
    instalado em seu sistema.
 2. No PowerShell, execute `installer\build_installer.ps1`.
-   Esse script cria o executável com o PyInstaller e, em seguida, utiliza o
-   Inno Setup para gerar `GestorAlunosSetup.exe`. Caso o Inno Setup esteja em
-   outro diretório, use o parâmetro opcional `-InnoPath` para informar o caminho
-   para `ISCC.exe`.
+   O script procura `ISCC.exe` nos diretórios `Program Files` e
+   `Program Files (x86)` antes de gerar o executável com o PyInstaller e o
+   instalador com o Inno Setup. Caso o Inno Setup esteja em outro local,
+   informe o caminho completo usando o parâmetro opcional `-InnoPath`.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`. Caso deseje utilizar um fork, informe a URL com o
