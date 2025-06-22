@@ -146,3 +146,7 @@
 - Novo arquivo `web/style.css` aplica tema escuro detalhado.
 - `index.html` reorganizado com containers e rodapé.
 
+## Versão 4.5 - Métricas opcionais
+- Dependência `prometheus-client` incluída para expor métricas.
+- Importação tornada opcional em `telemetry.py` para evitar erro ao iniciar sem a biblioteca.
+

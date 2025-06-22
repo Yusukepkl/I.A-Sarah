@@ -13,18 +13,29 @@ try:
     import sentry_sdk  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
     sentry_sdk = None
-from prometheus_client import Counter, generate_latest
+
+try:
+    from prometheus_client import Counter, generate_latest
+except ImportError:  # pragma: no cover - optional dependency
+    Counter = None
+    generate_latest = None
 
 logger = logging.getLogger(__name__)
 
-REQUESTS_COUNTER = Counter("app_requests_total", "Total HTTP requests")
+if Counter is not None:
+    REQUESTS_COUNTER = Counter("app_requests_total", "Total HTTP requests")
+else:  # pragma: no cover - optional dependency not installed
+    REQUESTS_COUNTER = None
 
 
 class MetricsHandler(BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: D401
         """Serve metrics."""
-        REQUESTS_COUNTER.inc()
-        data = generate_latest()
+        if REQUESTS_COUNTER is not None and generate_latest is not None:
+            REQUESTS_COUNTER.inc()
+            data = generate_latest()
+        else:  # pragma: no cover - metrics disabled
+            data = b""
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
         self.end_headers()
@@ -42,6 +53,10 @@ def init() -> None:
         logger.info("Sentry enabled")
     elif dsn:
         logger.warning("SENTRY_DSN set but sentry_sdk not installed")
+
+    if REQUESTS_COUNTER is None:
+        logger.warning("prometheus_client não instalado - métricas desativadas")
+        return
 
     def run_server() -> None:
         port_env = os.getenv("METRICS_PORT")
