@@ -47,7 +47,7 @@ async def test_config_api(tmp_path):
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         resp = await client.get("/config")
         assert resp.status_code == 200
-        assert resp.json() == {}
+        assert resp.json() == cm.DEFAULT_CONFIG
 
         resp = await client.post("/theme", json={"theme": "flat"})
         assert resp.status_code == 204
