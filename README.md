@@ -42,6 +42,9 @@ informações de forma estruturada.
    pip install .[test]
    pytest
    ```
+   - Alguns testes de interface usam um display virtual com `Xvfb`. Caso esse
+     utilitário não esteja instalado no sistema, esses testes serão
+     automaticamente pulados.
 
 O banco de dados é salvo em `~/.gestor_alunos/alunos.db`, garantindo que os dados permaneçam
 mesmo ao executar o programa em diretórios diferentes.
