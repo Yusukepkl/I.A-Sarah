@@ -5,7 +5,6 @@ from PySide6.QtGui import QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QPushButton,
     QSplashScreen,
     QStackedWidget,
     QToolBar,
@@ -15,7 +14,8 @@ from PySide6.QtWidgets import (
 
 from ia_sarah.core.use_cases import controllers
 
-from .theme import Palette
+from .theme import Palette, stylesheet
+from .widgets_qt import AnimatedButton, CardFrame
 
 
 class MainWindow(QMainWindow):
@@ -35,13 +35,16 @@ class MainWindow(QMainWindow):
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
-        btn_dashboard = QPushButton("Dashboard")
+        btn_dashboard = AnimatedButton("Dashboard")
         btn_dashboard.clicked.connect(lambda: self.show_page("dashboard"))
         toolbar.addWidget(btn_dashboard)
 
     def _init_pages(self) -> None:
         dashboard = QWidget()
-        dashboard.setLayout(QVBoxLayout())
+        layout = QVBoxLayout()
+        card = CardFrame()
+        layout.addWidget(card)
+        dashboard.setLayout(layout)
         self.pages["dashboard"] = dashboard
         self.stack.addWidget(dashboard)
 
@@ -92,6 +95,7 @@ def criar_interface() -> None:
 
     controllers.init_app()
     app = QApplication([])
+    app.setStyleSheet(stylesheet())
     _show_splash(app)
     window = MainWindow()
     window.show()
