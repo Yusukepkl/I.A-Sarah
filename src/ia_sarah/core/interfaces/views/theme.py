@@ -6,29 +6,43 @@ from PySide6.QtGui import QColor
 class Palette:
     """Central color palette for the PySide interface."""
 
-    electric_blue = QColor("#1e88e5")
-    vivid_orange = QColor("#ff9800")
+    # primary / secondary / neutral colours
+    electric_blue = QColor("#2979ff")
+    vivid_orange = QColor("#ff6d00")
     dark_gray = QColor("#212121")
-    light_gray = QColor("#f5f5f5")
+    white = QColor("#ffffff")
     neon_green = QColor("#39ff14")
 
 
-def stylesheet() -> str:
+def stylesheet(dark: bool = False) -> str:
     """Return the default QSS stylesheet for the application."""
 
+    bg = Palette.dark_gray.name() if dark else Palette.white.name()
+    fg = Palette.white.name() if dark else Palette.dark_gray.name()
+
     return f"""
+    * {{
+        font-family: 'Roboto', sans-serif;
+    }}
+    QMainWindow {{
+        background: {bg};
+        color: {fg};
+    }}
+    QToolBar {{
+        background: {Palette.dark_gray.name()};
+    }}
     QPushButton {{
         background-color: {Palette.electric_blue.name()};
-        color: white;
-        border-radius: 4px;
-        padding: 4px 10px;
+        color: {Palette.white.name()};
+        border-radius: 6px;
+        padding: 6px 12px;
     }}
     QPushButton:hover {{
         background-color: {Palette.vivid_orange.name()};
     }}
     QFrame#card {{
-        background-color: {Palette.light_gray.name()};
-        border-radius: 8px;
+        background-color: {Palette.white.name()};
+        border-radius: 10px;
     }}
     """
 

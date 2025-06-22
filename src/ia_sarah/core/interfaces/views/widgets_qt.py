@@ -17,6 +17,7 @@ class AnimatedButton(QPushButton):
         super().__init__(text, parent)
         self._hover_anim: QPropertyAnimation | None = None
         self._click_anim: QPropertyAnimation | None = None
+        self._base_geom = None
         self._shadow = QGraphicsDropShadowEffect(self)
         self._shadow.setBlurRadius(8)
         self._shadow.setOffset(0, 2)
@@ -26,6 +27,7 @@ class AnimatedButton(QPushButton):
 
     def enterEvent(self, event) -> None:  # noqa: D401 - Qt signature
         self._shadow.setEnabled(True)
+        self._base_geom = self.geometry()
         self._animate_hover(True)
         super().enterEvent(event)
 
@@ -39,21 +41,24 @@ class AnimatedButton(QPushButton):
         super().mousePressEvent(event)
 
     def _animate_hover(self, entering: bool) -> None:
-        start = self.pos()
-        delta = QPoint(0, -2) if entering else QPoint(0, 2)
-        end = start + delta
-        self._hover_anim = QPropertyAnimation(self, b"pos")
+        start = self.geometry()
+        end = start.adjusted(-2, -2, 2, 2) if entering else (self._base_geom or start)
+        self._hover_anim = QPropertyAnimation(self, b"geometry")
         self._hover_anim.setDuration(150)
         self._hover_anim.setStartValue(start)
         self._hover_anim.setEndValue(end)
         self._hover_anim.setEasingCurve(QEasingCurve.OutQuad)
         self._hover_anim.start()
+        if entering:
+            self.setStyleSheet(f"background-color: {Palette.vivid_orange.name()};")
+        else:
+            self.setStyleSheet("")
 
     def _animate_click(self) -> None:
-        start = self.pos()
-        self._click_anim = QPropertyAnimation(self, b"pos")
+        start = self.geometry()
+        self._click_anim = QPropertyAnimation(self, b"geometry")
         self._click_anim.setDuration(200)
-        self._click_anim.setKeyValueAt(0.5, start + QPoint(0, 4))
+        self._click_anim.setKeyValueAt(0.5, start.adjusted(0, 2, 0, 2))
         self._click_anim.setEndValue(start)
         self._click_anim.setEasingCurve(QEasingCurve.OutBounce)
         self._click_anim.start()

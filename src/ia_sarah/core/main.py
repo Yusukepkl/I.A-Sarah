@@ -2,7 +2,7 @@
 
 import logging
 
-from ia_sarah.core.interfaces.views.gui import criar_interface
+from ia_sarah.core.interfaces.views.gui_qt import criar_interface
 from ia_sarah.core.telemetry import init as init_telemetry
 
 
