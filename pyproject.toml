@@ -1,38 +1,32 @@
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "gestor-alunos"
 version = "0.1.0"
 description = "Gestor de Alunos para Personal Trainer"
 readme = "README.md"
-requires-python = ">=3.11"
-license = {file = "LICENSE"}
-dependencies = [
-    "ttkbootstrap>=1.13",
-    "fpdf>=1.7",
-    "pillow>=10"
-]
+license = "MIT"
+authors = ["Unknown <unknown@example.com>"]
+packages = [{ include = "*", from = "src" }]
+include = ["src/config.json"]
 
-[project.optional-dependencies]
-test = ["pytest>=7", "pyvirtualdisplay"]
+[tool.poetry.dependencies]
+python = "^3.11"
+ttkbootstrap = "^1.13"
+fpdf = "^1.7"
+pillow = "^10"
+openpyxl = "^3.1"
 
-[project.scripts]
+[tool.poetry.group.test.dependencies]
+pytest = "^7"
+pyvirtualdisplay = "^3"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.3.0"
+black = "^25.1.0"
+
+[tool.poetry.scripts]
 gestor-alunos = "main:criar_interface"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-py-modules = [
-    "background",
-    "config_manager",
-    "db",
-    "gui",
-    "main",
-    "pdf_utils",
-    "widgets"
-]
-
-[tool.setuptools.data-files]
-"" = ["src/config.json"]
-
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

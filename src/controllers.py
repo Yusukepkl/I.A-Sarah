@@ -6,6 +6,8 @@ import logging
 from pathlib import Path
 from typing import Iterable
 
+from exporters import get_exporter
+
 import db
 import pdf_utils
 from config_manager import load_theme as _load_theme, save_theme as _save_theme
@@ -79,11 +81,21 @@ def remover_plano(plano_id: int) -> None:
     db.remover_plano(plano_id)
 
 
-# ----- PDF -----
+# ----- Exportação -----
+
+def exportar_treino(
+    fmt: str, titulo: str, exercicios: Iterable[dict], caminho: Path | str
+) -> None:
+    """Export a training plan using a registered exporter."""
+    exporter = get_exporter(fmt)
+    exporter.export(titulo, exercicios, Path(caminho))
+
+
+# ----- PDF compatibilidade -----
 
 def gerar_treino_pdf(titulo: str, exercicios: Iterable[dict], caminho: Path | str) -> None:
-    """Generate training plan PDF."""
-    pdf_utils.gerar_treino_pdf(titulo, exercicios, caminho)
+    """Generate training plan PDF (legacy function)."""
+    exportar_treino("pdf", titulo, exercicios, caminho)
 
 
 def sanitize_filename(nome: str) -> str:
