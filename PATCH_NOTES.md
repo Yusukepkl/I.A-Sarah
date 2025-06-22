@@ -94,3 +94,6 @@
 ## Versão 3.2 - Cadastro premium
 - Função `adicionar_aluno_com_plano_pdf` cria aluno, plano e gera PDF.
 - Exemplo de uso adicionado na documentação.
+
+## Versão 3.3 - Testes assíncronos
+- Dependência `pytest-asyncio` adicionada para executar testes com corrotinas.
