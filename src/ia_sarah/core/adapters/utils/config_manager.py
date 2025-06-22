@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
-CONFIG_FILE: Path = Path(__file__).resolve().parents[2] / "config.json"
+CONFIG_FILE: Path = Path(
+    os.getenv(
+        "CONFIG_FILE",
+        str(Path(__file__).resolve().parents[2] / "config.json"),
+    )
+)
 
 
 def load_config() -> Dict[str, Any]:

@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
 )
 
 from ia_sarah.core.use_cases import controllers
+from ia_sarah.core.entities.models import TrainingPlan, Student
 
 from .theme import Palette, stylesheet
 from .widgets_qt import AnimatedButton, CardFrame
@@ -158,7 +159,8 @@ class AlunosPage(QWidget):
         self.table.setRowCount(0)
         for row, aluno in enumerate(controllers.listar_alunos()):
             self.table.insertRow(row)
-            for col, value in enumerate(aluno[:3]):
+            values = (aluno.id, aluno.nome, aluno.email)
+            for col, value in enumerate(values):
                 item = QTableWidgetItem(str(value))
                 self.table.setItem(row, col, item)
 
@@ -191,7 +193,7 @@ class AlunosPage(QWidget):
         aluno = controllers.obter_aluno(aluno_id)
         if aluno is None:
             return
-        dlg = StudentDialog(aluno[1], aluno[2] or "", self)
+        dlg = StudentDialog(aluno.nome, aluno.email or "", self)
         if dlg.exec() == QDialog.Accepted:
             nome, email = dlg.get_data()
             try:
@@ -265,7 +267,8 @@ class PlanosPage(QWidget):
         self.table.setRowCount(0)
         for row, plano in enumerate(controllers.listar_planos(self.aluno_id)):
             self.table.insertRow(row)
-            for col, value in enumerate(plano[:3]):
+            values = (plano.id, plano.nome, plano.descricao)
+            for col, value in enumerate(values):
                 item = QTableWidgetItem(str(value))
                 self.table.setItem(row, col, item)
 
@@ -278,9 +281,9 @@ class PlanosPage(QWidget):
             return int(item.text())
         return None
 
-    def _get_plano(self, plano_id: int) -> tuple | None:
+    def _get_plano(self, plano_id: int) -> TrainingPlan | None:
         for p in controllers.listar_planos(self.aluno_id):
-            if p[0] == plano_id:
+            if p.id == plano_id:
                 return p
         return None
 
@@ -304,7 +307,7 @@ class PlanosPage(QWidget):
         plano = self._get_plano(plano_id)
         if plano is None:
             return
-        dlg = PlanDialog(plano[1], plano[2] or "", plano[3] or "", self)
+        dlg = PlanDialog(plano.nome, plano.descricao or "", plano.exercicios_json or "", self)
         if dlg.exec() == QDialog.Accepted:
             nome, desc, ex = dlg.get_data()
             try:
@@ -335,7 +338,7 @@ class PlanosPage(QWidget):
         if plano is None:
             return
         try:
-            exercicios = json.loads(plano[3] or "[]")
+            exercicios = json.loads(plano.exercicios_json or "[]")
             if not isinstance(exercicios, list):
                 exercicios = []
         except Exception:
@@ -346,12 +349,12 @@ class PlanosPage(QWidget):
         )
         if not ok or not fmt:
             return
-        default_name = controllers.sanitize_filename(plano[1]) + f".{fmt}"
+        default_name = controllers.sanitize_filename(plano.nome) + f".{fmt}"
         path, _ = QFileDialog.getSaveFileName(self, "Exportar", default_name, f"*.{fmt}")
         if not path:
             return
         try:
-            controllers.exportar_treino(fmt, plano[1], exercicios, path)
+            controllers.exportar_treino(fmt, plano.nome, exercicios, path)
         except Exception as exc:  # pragma: no cover - runtime errors
             show_feedback(self, f"Erro ao exportar: {exc}", True)
         else:
