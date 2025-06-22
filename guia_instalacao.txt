@@ -12,8 +12,10 @@ Passo a passo para instalar o Gestor de Alunos
 
 3. **Instalar o programa**
    - (Opcional) Crie um ambiente virtual com `python -m venv venv` e ative-o.
-   - Ainda no terminal, execute:
+   - Ainda no terminal, execute um dos comandos abaixo:
      `pip install .`
+     # ou
+     `pip install -r requirements.txt`
 
 4. **Executar a aplicação**
    - Após a instalação, execute o comando:
@@ -24,9 +26,14 @@ Passo a passo para instalar o Gestor de Alunos
    - Clique em "Adicionar Aluno" para registrar um novo aluno.
    - Clique em um cartão para visualizar e gerenciar os planos de treino
      desse aluno. Em cada plano é possível definir exercícios, séries,
-     repetições, peso, descanso e observações.
+    repetições, peso, descanso e observações.
    - Cada plano possui opção para exportar um PDF resumindo todos os
      exercícios.
+
+6. **Rodar testes (opcional)**
+   - Para garantir que tudo está funcionando, instale as dependências de teste:
+     `pip install .[test]`
+   - Em seguida execute: `pytest`
 
 Todo o banco de dados é salvo no arquivo `alunos.db` e não necessita de conexão
 com a internet.
