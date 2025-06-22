@@ -17,7 +17,7 @@ def gerar_pdf(titulo: str, conteudo: str, caminho: str) -> None:
     pdf.add_page()
     pdf.set_title(titulo)
     pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt=titulo, ln=True, align='C')
+    pdf.cell(200, 10, txt=titulo, ln=True, align="C")
     pdf.multi_cell(0, 10, txt=conteudo)
     pdf.output(caminho)
 
@@ -39,4 +39,3 @@ def gerar_treino_pdf(titulo: str, exercicios: list[dict], caminho: str) -> None:
             linha += f" ({ex['obs']})"
         pdf.multi_cell(0, 10, txt=linha)
     pdf.output(caminho)
-
