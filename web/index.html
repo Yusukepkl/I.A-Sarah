@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>I.A-Sarah Frontend</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h1 { color: #333; }
+        section { margin-bottom: 2rem; }
+        input, button { padding: 0.4rem; margin-right: 0.5rem; }
+        pre { background: #f0f0f0; padding: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>Teste da API I.A-Sarah</h1>
+
+    <section>
+        <h2>Alunos</h2>
+        <form id="create-student-form">
+            <input type="text" id="nome" placeholder="Nome" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <button type="submit">Criar</button>
+        </form>
+        <button id="load-students">Listar alunos</button>
+        <pre id="students-output"></pre>
+    </section>
+
+    <section>
+        <h2>Tema</h2>
+        <button id="load-theme">Carregar tema</button>
+        <button id="set-light">Claro</button>
+        <button id="set-dark">Escuro</button>
+        <pre id="theme-output"></pre>
+    </section>
+
+    <section>
+        <h2>Configurações</h2>
+        <button id="load-config">Carregar configurações</button>
+        <form id="update-config-form" style="margin-top:1rem;">
+            <input type="text" id="config-json" size="40" placeholder='{"chave":"valor"}'>
+            <button type="submit">Atualizar</button>
+        </form>
+        <pre id="config-output"></pre>
+    </section>
+
+<script>
+const API = 'http://localhost:8001';
+
+async function loadStudents() {
+    const res = await fetch(`${API}/students`);
+    const data = await res.json();
+    document.getElementById('students-output').textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById('load-students').addEventListener('click', loadStudents);
+
+document.getElementById('create-student-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    await fetch(`${API}/students`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email })
+    });
+    loadStudents();
+});
+
+async function loadTheme() {
+    const res = await fetch(`${API}/theme`);
+    const data = await res.json();
+    document.getElementById('theme-output').textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById('load-theme').addEventListener('click', loadTheme);
+
+document.getElementById('set-light').addEventListener('click', async () => {
+    await fetch(`${API}/theme`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: 'light' })
+    });
+    loadTheme();
+});
+
+document.getElementById('set-dark').addEventListener('click', async () => {
+    await fetch(`${API}/theme`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: 'dark' })
+    });
+    loadTheme();
+});
+
+async function loadConfig() {
+    const res = await fetch(`${API}/config`);
+    const data = await res.json();
+    document.getElementById('config-output').textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById('load-config').addEventListener('click', loadConfig);
+
+document.getElementById('update-config-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const json = document.getElementById('config-json').value;
+    try {
+        const data = JSON.parse(json);
+        await fetch(`${API}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        loadConfig();
+    } catch(err) {
+        alert('JSON inválido');
+    }
+});
+</script>
+</body>
+</html>

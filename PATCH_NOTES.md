@@ -97,3 +97,6 @@
 
 ## Versão 3.3 - Testes assíncronos
 - Dependência `pytest-asyncio` adicionada para executar testes com corrotinas.
+
+## Versão 3.4 - Frontend web
+- Adicionada página `web/index.html` para testar a API.

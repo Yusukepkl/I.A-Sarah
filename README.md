@@ -78,6 +78,7 @@ src/
 scripts/          Scripts para gerar executável e baixar dados
 installer/        Arquivos do instalador para Windows
 tests/            Testes automatizados com pytest
+web/              Frontend básico para testar a API
 ```
 O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
 
@@ -113,6 +114,9 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
   ```bash
   iasarah-cli listar
   ```
+8. Com a API em execução, abra o arquivo `web/index.html` em seu navegador
+   e utilize o formulário para interagir com os endpoints `/students`,
+   `/theme` e `/config`.
 
 ### Variáveis de ambiente importantes
 * `CONFIG_FILE` - caminho opcional para o arquivo de configuração.
