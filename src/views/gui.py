@@ -9,22 +9,14 @@ from tkinter import PhotoImage, messagebox, ttk
 import ttkbootstrap as tb
 from ttkbootstrap.icons import Icon
 
-from background import run_task
 import controllers
-from controllers import (
-    adicionar_aluno,
-    atualizar_plano,
-    gerar_treino_pdf,
-    listar_alunos,
-    listar_planos,
-    load_theme,
-    obter_aluno,
-    remover_aluno,
-    remover_plano,
-    sanitize_filename,
-    save_theme,
-)
-from widgets import PlanoModal
+from controllers import (adicionar_aluno, atualizar_plano, gerar_treino_pdf,
+                         listar_alunos, listar_planos, load_theme, obter_aluno,
+                         remover_aluno, remover_plano, sanitize_filename,
+                         save_theme)
+from utils.background import run_task
+
+from .widgets import PlanoModal
 
 DEFAULT_PAD = 10
 
@@ -352,9 +344,7 @@ class DetalhesFrame(ttk.Frame):
                     "Erro", f"Falha ao excluir aluno:\n{err}", parent=self
                 )
 
-            run_task(
-                self, lambda: remover_aluno(self.aluno_id), on_success, on_error
-            )
+            run_task(self, lambda: remover_aluno(self.aluno_id), on_success, on_error)
 
 
 def criar_interface() -> None:

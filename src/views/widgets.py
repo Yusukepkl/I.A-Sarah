@@ -2,8 +2,9 @@
 
 import json
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox, ttk
 from typing import Callable, Optional
+
 import ttkbootstrap as tb
 
 

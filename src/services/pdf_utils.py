@@ -34,7 +34,9 @@ def gerar_pdf(titulo: str, conteudo: str, caminho: Path | str) -> None:
         raise
 
 
-def gerar_treino_pdf(titulo: str, exercicios: Iterable[dict], caminho: Path | str) -> None:
+def gerar_treino_pdf(
+    titulo: str, exercicios: Iterable[dict], caminho: Path | str
+) -> None:
     """Generate a structured PDF with an exercise list."""
     pdf = FPDF()
     pdf.add_page()

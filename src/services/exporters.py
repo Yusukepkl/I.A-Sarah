@@ -1,14 +1,17 @@
 """Plugins for exporting training data in various formats."""
+
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 import csv
+import logging
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterable
-import logging
 
-from fpdf import FPDF
 import openpyxl
+from fpdf import FPDF
+
+from plugin_loader import load_entrypoints
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +56,11 @@ class CSVExporter(Exporter):
     def export(self, title: str, exercises: Iterable[dict], path: Path) -> None:
         try:
             with path.open("w", newline="", encoding="utf-8") as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=list(exercises[0].keys())) if exercises else csv.DictWriter(csvfile, fieldnames=[])
+                writer = (
+                    csv.DictWriter(csvfile, fieldnames=list(exercises[0].keys()))
+                    if exercises
+                    else csv.DictWriter(csvfile, fieldnames=[])
+                )
                 writer.writeheader()
                 for ex in exercises:
                     writer.writerow(ex)
@@ -99,3 +106,6 @@ def get_exporter(fmt: str) -> Exporter:
 register_exporter("pdf", PDFExporter)
 register_exporter("csv", CSVExporter)
 register_exporter("xlsx", ExcelExporter)
+
+# Load external exporter plugins
+load_entrypoints("gestor_alunos.exporters", register_exporter)
