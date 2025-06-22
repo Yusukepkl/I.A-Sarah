@@ -17,7 +17,11 @@ CONFIG_FILE: Path = Path(
     )
 )
 
-DEFAULT_CONFIG: Dict[str, Any] = {"theme": "superhero", "metrics_port": 8000}
+DEFAULT_CONFIG: Dict[str, Any] = {
+    "theme": "superhero",
+    "metrics_port": 8000,
+    "notifications": True,
+}
 
 
 def load_config() -> Dict[str, Any]:

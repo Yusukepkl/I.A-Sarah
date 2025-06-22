@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import sqlite3
+import shutil
 from pathlib import Path
 from typing import Optional
 
@@ -109,6 +110,38 @@ def adicionar_aluno(nome: str, email: str) -> int:
             return cur.lastrowid
     except sqlite3.Error as exc:  # pragma: no cover - database errors
         logger.error("Erro ao adicionar aluno: %s", exc)
+        raise
+
+
+def adicionar_aluno_completo(
+    nome: str,
+    email: str,
+    data_inicio: str | None = None,
+    plano: str | None = None,
+    pagamento: str | None = None,
+    progresso: str | None = None,
+    dieta: str | None = None,
+    treino: str | None = None,
+) -> int:
+    """Insert a new student with all optional columns."""
+
+    from datetime import datetime
+
+    data_inicio = data_inicio or datetime.now().strftime("%Y-%m-%d")
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO alunos (
+                    nome, email, data_inicio, plano, pagamento,
+                    progresso, dieta, treino
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (nome, email, data_inicio, plano, pagamento, progresso, dieta, treino),
+            )
+            return cur.lastrowid
+    except sqlite3.Error as exc:  # pragma: no cover - database errors
+        logger.error("Erro ao adicionar aluno completo: %s", exc)
         raise
 
 
@@ -224,4 +257,15 @@ def listar_planos_recentes(limit: int = 5) -> list[tuple]:
             return cur.fetchall()
     except sqlite3.Error as exc:  # pragma: no cover - database errors
         logger.error("Erro ao listar planos recentes: %s", exc)
+        raise
+
+
+def backup_database(dest: Path | str) -> None:
+    """Copy the database file to ``dest``."""
+
+    path = Path(dest)
+    try:
+        shutil.copy(DB_NAME, path)
+    except (OSError, shutil.Error) as exc:  # pragma: no cover - I/O
+        logger.error("Erro ao criar backup: %s", exc)
         raise

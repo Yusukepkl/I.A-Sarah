@@ -122,6 +122,23 @@ def adicionar_aluno(nome: str, email: str) -> int:
     return db.adicionar_aluno(nome, email)
 
 
+def adicionar_aluno_completo(
+    nome: str,
+    email: str,
+    data_inicio: str | None = None,
+    plano: str | None = None,
+    pagamento: str | None = None,
+    progresso: str | None = None,
+    dieta: str | None = None,
+    treino: str | None = None,
+) -> int:
+    """Create a student filling all optional fields."""
+
+    return db.adicionar_aluno_completo(
+        nome, email, data_inicio, plano, pagamento, progresso, dieta, treino
+    )
+
+
 def atualizar_aluno(aluno_id: int, campo: str, valor: str) -> None:
     """Update a single field of a student.
 
@@ -253,6 +270,12 @@ def listar_planos_recentes(limit: int = 5) -> list[tuple]:
         Recent plan data.
     """
     return db.listar_planos_recentes(limit)
+
+
+def backup_dados(dest: str | Path) -> None:
+    """Create a copy of the database at ``dest``."""
+
+    db.backup_database(dest)
 
 
 def listar_exportadores() -> list[str]:
