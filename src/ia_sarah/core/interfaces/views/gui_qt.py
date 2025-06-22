@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QInputDialog,
     QLineEdit,
+    QComboBox,
+    QCheckBox,
     QMainWindow,
     QPushButton,
     QSplashScreen,
@@ -61,6 +63,42 @@ class StudentDialog(QDialog):
 
     def get_data(self) -> tuple[str, str]:
         return self.nome_edit.text(), self.email_edit.text()
+
+
+class FullStudentDialog(QDialog):
+    """Dialog with all student fields."""
+
+    def __init__(
+        self,
+        nome: str = "",
+        email: str = "",
+        plano: str = "",
+        pagamento: str = "",
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("Aluno Completo")
+        layout = QFormLayout(self)
+        self.nome_edit = QLineEdit(nome)
+        self.email_edit = QLineEdit(email)
+        self.plano_edit = QLineEdit(plano)
+        self.pagamento_edit = QLineEdit(pagamento)
+        layout.addRow("Nome:", self.nome_edit)
+        layout.addRow("Email:", self.email_edit)
+        layout.addRow("Plano:", self.plano_edit)
+        layout.addRow("Pagamento:", self.pagamento_edit)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def get_data(self) -> dict[str, str]:
+        return {
+            "nome": self.nome_edit.text(),
+            "email": self.email_edit.text(),
+            "plano": self.plano_edit.text(),
+            "pagamento": self.pagamento_edit.text(),
+        }
 
 
 class PlanDialog(QDialog):
@@ -114,6 +152,15 @@ class DashboardPage(QWidget):
         self.plans_list = QListWidget()
         recent_layout.addWidget(self.plans_list)
         layout.addWidget(card_recent)
+
+        btn_row = QHBoxLayout()
+        self.refresh_btn = QPushButton("Atualizar")
+        self.to_students_btn = QPushButton("Alunos")
+        btn_row.addWidget(self.refresh_btn)
+        btn_row.addWidget(self.to_students_btn)
+        layout.addLayout(btn_row)
+
+        self.refresh_btn.clicked.connect(self.load_data)
 
         self.load_data()
 
@@ -174,17 +221,26 @@ class AlunosPage(QWidget):
         return None
 
     def adicionar(self) -> None:
-        dlg = StudentDialog(parent=self)
+        dlg = FullStudentDialog(parent=self)
         if dlg.exec() == QDialog.Accepted:
-            nome, email = dlg.get_data()
-            if nome:
-                try:
-                    controllers.adicionar_aluno(nome, email)
-                except Exception as exc:  # pragma: no cover - runtime errors
-                    show_feedback(self, f"Erro ao adicionar aluno: {exc}", True)
-                else:
-                    show_feedback(self, "Aluno adicionado com sucesso!")
-                    self.load_data()
+            data = dlg.get_data()
+            nome = data.get("nome", "").strip()
+            email = data.get("email", "").strip()
+            if not nome or "@" not in email:
+                show_feedback(self, "Dados inválidos", True)
+                return
+            try:
+                controllers.adicionar_aluno_completo(
+                    nome,
+                    email,
+                    plano=data.get("plano"),
+                    pagamento=data.get("pagamento"),
+                )
+            except Exception as exc:  # pragma: no cover - runtime errors
+                show_feedback(self, f"Erro ao adicionar aluno: {exc}", True)
+            else:
+                show_feedback(self, "Aluno adicionado com sucesso!")
+                self.load_data()
 
     def editar(self) -> None:
         aluno_id = self._selected_id()
@@ -361,6 +417,50 @@ class PlanosPage(QWidget):
             show_feedback(self, "Exporta\u00e7\u00e3o conclu\u00edda!")
 
 
+class ConfigPage(QWidget):
+    """Configuration options for the app."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        layout = QVBoxLayout(self)
+
+        card = CardFrame()
+        form = QFormLayout(card)
+        self.theme_combo = QComboBox()
+        self.theme_combo.addItems(["superhero", "flat", "dark"])
+        form.addRow("Tema:", self.theme_combo)
+        self.notify_box = QCheckBox("Notifica\u00e7\u00f5es")
+        form.addRow(self.notify_box)
+        self.backup_btn = QPushButton("Backup")
+        form.addRow(self.backup_btn)
+        layout.addWidget(card)
+
+        conf = controllers.load_config()
+        self.theme_combo.setCurrentText(controllers.load_theme())
+        self.notify_box.setChecked(conf.get("notifications", True))
+
+        self.theme_combo.currentTextChanged.connect(self._save_theme)
+        self.notify_box.stateChanged.connect(self._save_notify)
+        self.backup_btn.clicked.connect(self._backup)
+
+    def _save_theme(self, theme: str) -> None:
+        controllers.save_theme(theme)
+
+    def _save_notify(self) -> None:
+        controllers.update_config({"notifications": self.notify_box.isChecked()})
+
+    def _backup(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(self, "Backup", "backup.sqlite", "*.sqlite")
+        if not path:
+            return
+        try:
+            controllers.backup_dados(path)
+        except Exception as exc:  # pragma: no cover - runtime errors
+            show_feedback(self, f"Erro ao gerar backup: {exc}", True)
+        else:
+            show_feedback(self, "Backup conclu\u00eddo")
+
+
 class MainWindow(QMainWindow):
     """Base window using QStackedWidget for navigation."""
 
@@ -394,10 +494,25 @@ class MainWindow(QMainWindow):
 
     def toggle_theme(self) -> None:
         self.dark = not self.dark
-        self.setStyleSheet(stylesheet(self.dark))
+        fade_out = QPropertyAnimation(self, b"windowOpacity")
+        fade_out.setDuration(200)
+        fade_out.setStartValue(1.0)
+        fade_out.setEndValue(0.0)
+
+        def apply_theme() -> None:
+            self.setStyleSheet(stylesheet(self.dark))
+            fade_in = QPropertyAnimation(self, b"windowOpacity")
+            fade_in.setDuration(200)
+            fade_in.setStartValue(0.0)
+            fade_in.setEndValue(1.0)
+            fade_in.start()
+
+        fade_out.finished.connect(apply_theme)
+        fade_out.start()
 
     def _init_pages(self) -> None:
         dashboard = DashboardPage()
+        dashboard.to_students_btn.clicked.connect(lambda: self.show_page("alunos"))
         self.pages["dashboard"] = dashboard
         self.stack.addWidget(dashboard)
 
@@ -405,9 +520,7 @@ class MainWindow(QMainWindow):
         self.pages["alunos"] = alunos
         self.stack.addWidget(alunos)
 
-        config = QWidget()
-        config_layout = QVBoxLayout(config)
-        config_layout.addWidget(CardFrame())
+        config = ConfigPage()
         self.pages["config"] = config
         self.stack.addWidget(config)
 

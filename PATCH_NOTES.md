@@ -82,3 +82,8 @@
 - Configuração padrão gerada quando ausente e fallback de valores.
 - Banco de dados usa `data/db.sqlite` com migrações simples.
 - Interface Qt agora exibe erro se inicialização falhar.
+
+## Versão 3.0 - Cadastro completo e backup
+- Novo diálogo de aluno permite preencher plano e pagamento com validação.
+- Funções `adicionar_aluno_completo` e `backup_dados` expostas em `controllers`.
+- Página de configurações oferece seleção de tema, notificações e backup.

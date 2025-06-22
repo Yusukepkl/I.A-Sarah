@@ -33,6 +33,25 @@ plugin_loader.reload_entrypoints("ia_sarah.exporters")
 
 Por padrão estão incluídos os formatos `pdf`, `csv` e `xlsx`.
 
+### Cadastro completo e backup
+
+Para incluir um aluno com todos os campos disponíveis utilize:
+
+```python
+id = controllers.adicionar_aluno_completo(
+    "Daniel",
+    "daniel@email.com",
+    plano="Avancado",
+    pagamento="Cartao",
+)
+```
+
+O banco pode ser copiado para um arquivo local com:
+
+```python
+controllers.backup_dados("backup.sqlite")
+```
+
 ## Estrutura do Projeto
 ```
 src/

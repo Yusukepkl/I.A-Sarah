@@ -11,6 +11,7 @@ def test_config_crud(tmp_path):
     cm.save_config({"theme": "flat"})
     data = cm.load_config()
     assert data["theme"] == "flat"
+    assert data["notifications"] is True
     cm.save_config({"theme": "dark"})
     assert cm.load_theme() == "dark"
     cm.delete_config()
