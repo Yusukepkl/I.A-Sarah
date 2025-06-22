@@ -2,7 +2,7 @@
 
 ; Caminho padrao do projeto. Pode ser sobrescrito ao compilar com /DSourceRoot=...
 #ifndef SourceRoot
-#define SourceRoot "C:\\caminho\\para\\I.A-Sarah"  ; ajuste para o local do repositorio
+#define SourceRoot "C:\\caminho\\para\\I.A-Sarah"  ; valor padrao, substituido pelo script de build
 #endif
 
 [Setup]

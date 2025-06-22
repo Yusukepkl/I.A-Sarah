@@ -54,16 +54,14 @@ informações.
 ## Gerar executável e instalador
 
 Para distribuir o programa como aplicativo de desktop, você pode gerar um
-executável único e um instalador simples. Siga estes passos:
+executável único e um instalador para Windows.
 
-1. Instale o PyInstaller com `pip install pyinstaller`.
-2. Execute o script `scripts/build_exe.ps1` no PowerShell para criar o
-   executável em `dist/gestor-alunos.exe`.
-3. Opcionalmente, utilize o script `installer/installer.iss` com o Inno Setup
-   para montar um instalador. Esse instalador inclui o executável e rodará o
-   script `setup_data.ps1` na primeira execução, baixando os dados mais recentes
-   do repositório.
-4. Execute `installer\build_installer.ps1` para gerar o instalador apontando para o caminho onde o repositório está clonado.
+1. Instale o PyInstaller com `pip install pyinstaller` e tenha o Inno Setup
+   instalado em seu sistema.
+2. No PowerShell, execute `installer\build_installer.ps1`.
+   Esse script cria o executável com o PyInstaller e, em seguida, utiliza o
+   Inno Setup para gerar `GestorAlunosSetup.exe`. Caso o Inno Setup esteja em
+   outro diretório, ajuste o caminho no script.
 
 O script `scripts/setup_data.ps1` faz o download ou atualização do conteúdo do
 repositório via `git`, garantindo que o usuário receba os arquivos atuais ao
