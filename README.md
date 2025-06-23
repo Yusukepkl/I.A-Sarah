@@ -117,7 +117,7 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
    ```bash
    iasarah
    ```
-6. Para rodar a API FastAPI:
+6. Para rodar a API FastAPI e abrir automaticamente a interface web:
  ```bash
   iasarah-api
   ```
@@ -125,8 +125,8 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
   ```bash
   iasarah-cli listar
   ```
-8. Com a API em execução, abra o arquivo `web/index.html` em seu navegador
-   e utilize os botões para listar ou excluir alunos. Todas as ações
+8. A página `web/index.html` será aberta em seu navegador padrão
+   e permite listar ou excluir alunos. Todas as ações
    exibem modais de confirmação e feedback. O tema claro/escuro pode
    ser escolhido em um menu suspenso, interagindo com os endpoints
    `/students`, `/theme` e `/config`. O layout utiliza o arquivo
