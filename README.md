@@ -170,5 +170,8 @@ configuração em `.devcontainer/` utiliza o `Dockerfile` do projeto e instala a
 dependências automaticamente. Após a criação do contêiner, os comandos de
 tarefas e depuração funcionam normalmente.
 
+## Abertura rápida em IDEs
+Execute `open_pycharm.py` para abrir o projeto no PyCharm ou `open_vscode.py` para abrir no VS Code. Os comandos `pycharm` e `code` devem estar no PATH.
+
 ## Licença
 Distribuído sob a Licença MIT em português. Veja o arquivo [LICENSE](LICENSE).

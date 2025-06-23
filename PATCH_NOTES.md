@@ -153,3 +153,7 @@
 
 ## Versão 4.6 - Tela inicial repaginada
 - Layout escuro com sidebar e painéis inspirados em patch notes 0.6.6.
+
+## Versao 4.7 - Abertura facil em IDEs
+- Scripts `open_pycharm.py` e `open_vscode.py` permitem abrir o projeto diretamente no PyCharm ou VS Code.
+
