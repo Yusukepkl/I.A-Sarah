@@ -137,6 +137,8 @@ O banco de dados é salvo em `~/.gestor_alunos/alunos.db`.
 * `METRICS_PORT` - porta utilizada pelo servidor de métricas.
   Certifique-se de instalar `prometheus-client` para habilitar essa funcionalidade.
 * `DISABLED_PLUGINS` - lista de plugins separados por vírgula a serem ignorados.
+* `PV_KEYWORD_PATH` - caminho do arquivo de palavra‑chave para o Porcupine; se
+  vazio, o reconhecimento por voz usa modo dummy.
 
 ### Executando os testes
 Instale primeiro as dependências de teste:

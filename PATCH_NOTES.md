@@ -157,3 +157,6 @@
 ## Versao 4.7 - Abertura facil em IDEs
 - Scripts `open_pycharm.py` e `open_vscode.py` permitem abrir o projeto diretamente no PyCharm ou VS Code.
 
+## Versão 4.8 - Documentação de PV_KEYWORD_PATH
+- Seção de variáveis de ambiente ampliada com instruções sobre `PV_KEYWORD_PATH`.
+
