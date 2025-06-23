@@ -150,3 +150,6 @@
 - Dependência `prometheus-client` incluída para expor métricas.
 - Importação tornada opcional em `telemetry.py` para evitar erro ao iniciar sem a biblioteca.
 
+
+## Versão 4.6 - Tela inicial repaginada
+- Layout escuro com sidebar e painéis inspirados em patch notes 0.6.6.
