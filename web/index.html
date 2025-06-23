@@ -2,262 +2,76 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>I.A-Sarah Frontend</title>
+    <title>Gestor Trainer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-dark">
-<div id="root">
-  <div class="app-container">
-    <header class="app-header">
-      <span class="logo">I.A-Sarah</span>
+<div class="dashboard-container">
+    <header class="gt-header">
+        <span class="gt-logo">Gestor Trainer</span>
+        <span class="gt-close">&times;</span>
+        <button class="gt-patch">Patch Notes (v0.6.6)</button>
     </header>
-    <main class="app-main">
-      <h1>Teste da API I.A-Sarah</h1>
-
-      <section>
-        <h2>Alunos</h2>
-        <button id="btn-new-student">Novo aluno</button>
-        <button id="load-students">Listar alunos</button>
-        <table id="students-table"></table>
-    </section>
-
-    <dialog id="student-modal">
-        <form id="student-form" method="dialog">
-            <input type="text" id="modal-nome" placeholder="Nome" required>
-            <input type="email" id="modal-email" placeholder="Email" required>
-            <input type="hidden" id="modal-id">
-            <button type="submit">Salvar</button>
-            <button type="button" id="modal-cancel">Cancelar</button>
-        </form>
-    </dialog>
-
-    <dialog id="confirm-modal">
-        <p id="confirm-text"></p>
-        <button id="confirm-ok">OK</button>
-        <button id="confirm-cancel">Cancelar</button>
-    </dialog>
-
-    <dialog id="feedback-modal">
-        <p></p>
-        <button id="feedback-close">Fechar</button>
-    </dialog>
-
-    <div id="loading"><p>Carregando...</p></div>
-
-    <section>
-        <h2>Tema</h2>
-        <button id="load-theme">Carregar tema</button>
-        <select id="theme-select">
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-        </select>
-        <pre id="theme-output"></pre>
-    </section>
-
-    <section>
-        <h2>Configurações</h2>
-        <button id="load-config">Carregar configurações</button>
-        <form id="update-config-form" style="margin-top:1rem;">
-            <input type="text" id="config-json" size="40" placeholder='{"chave":"valor"}'>
-            <button type="submit">Atualizar</button>
-        </form>
-        <pre id="config-output"></pre>
-    </section>
-
-    <section>
-        <h2>Estatísticas</h2>
-        <button id="load-stats">Carregar estatísticas</button>
-        <pre id="stats-output"></pre>
-    </section>
-
-<script>
-const API = 'http://localhost:8001';
-
-const modal = document.getElementById('student-modal');
-const form = document.getElementById('student-form');
-const table = document.getElementById('students-table');
-const confirmModal = document.getElementById('confirm-modal');
-const confirmText = document.getElementById('confirm-text');
-const confirmOk = document.getElementById('confirm-ok');
-const confirmCancel = document.getElementById('confirm-cancel');
-const feedbackModal = document.getElementById('feedback-modal');
-const feedbackText = feedbackModal.querySelector('p');
-const loading = document.getElementById('loading');
-
-function showLoading() { loading.style.display = 'flex'; }
-function hideLoading() { loading.style.display = 'none'; }
-
-function showFeedback(msg, error = false) {
-    feedbackText.textContent = msg;
-    if (error) feedbackModal.classList.add('error');
-    else feedbackModal.classList.remove('error');
-    feedbackModal.showModal();
-}
-document.getElementById('feedback-close').onclick = () => feedbackModal.close();
-
-function confirmDialog(message) {
-    return new Promise((resolve) => {
-        confirmText.textContent = message;
-        confirmOk.onclick = () => { confirmModal.close(); resolve(true); };
-        confirmCancel.onclick = () => { confirmModal.close(); resolve(false); };
-        confirmModal.showModal();
-    });
-}
-
-async function request(url, options) {
-    showLoading();
-    try {
-        const res = await fetch(url, options);
-        return res;
-    } finally {
-        hideLoading();
-    }
-}
-
-function openModal(student = null) {
-    if (student) {
-        document.getElementById('modal-id').value = student.id;
-        document.getElementById('modal-nome').value = student.nome;
-        document.getElementById('modal-email').value = student.email;
-    } else {
-        form.reset();
-        document.getElementById('modal-id').value = '';
-    }
-    modal.showModal();
-}
-
-async function loadStudents() {
-    const res = await request(`${API}/students`);
-    const data = await res.json();
-    renderTable(data);
-}
-
-function renderTable(data) {
-    table.innerHTML = '<tr><th>Nome</th><th>Email</th><th>Ações</th></tr>';
-    for (const aluno of data) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${aluno.nome}</td><td>${aluno.email}</td>`;
-        const actions = document.createElement('td');
-        const btnEdit = document.createElement('button');
-        btnEdit.textContent = 'Editar';
-        btnEdit.onclick = () => openModal(aluno);
-        actions.appendChild(btnEdit);
-        const btnDel = document.createElement('button');
-        btnDel.textContent = 'Excluir';
-        btnDel.onclick = async () => {
-            if (await confirmDialog('Confirmar exclusão?')) {
-                const r = await request(`${API}/students/${aluno.id}`, { method: 'DELETE' });
-                if (r.ok) {
-                    showFeedback('Aluno removido com sucesso!');
-                    loadStudents();
-                } else {
-                    showFeedback('Erro ao remover aluno', true);
-                }
-            }
-        };
-        actions.appendChild(btnDel);
-        tr.appendChild(actions);
-        table.appendChild(tr);
-    }
-}
-
-document.getElementById('btn-new-student').addEventListener('click', () => openModal());
-document.getElementById('load-students').addEventListener('click', loadStudents);
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('modal-id').value;
-    const nome = document.getElementById('modal-nome').value;
-    const email = document.getElementById('modal-email').value;
-    const payload = { nome, email };
-    let res;
-    if (id) {
-        res = await request(`${API}/students/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-    } else {
-        res = await request(`${API}/students`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-    }
-    if (res.ok) {
-        showFeedback(id ? 'Aluno atualizado com sucesso!' : 'Aluno adicionado com sucesso!');
-    } else {
-        showFeedback('Erro ao salvar aluno', true);
-    }
-    modal.close();
-    loadStudents();
-});
-
-document.getElementById('modal-cancel').addEventListener('click', () => modal.close());
-
-async function loadTheme() {
-    const res = await request(`${API}/theme`);
-    const data = await res.json();
-    document.getElementById('theme-output').textContent = JSON.stringify(data, null, 2);
-    document.getElementById('theme-select').value = data.theme;
-}
-
-document.getElementById('load-theme').addEventListener('click', loadTheme);
-
-document.getElementById('theme-select').addEventListener('change', async (e) => {
-    const theme = e.target.value;
-    await request(`${API}/theme`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme })
-    });
-    showFeedback('Tema atualizado!');
-    loadTheme();
-});
-
-async function loadConfig() {
-    const res = await request(`${API}/config`);
-    const data = await res.json();
-    document.getElementById('config-output').textContent = JSON.stringify(data, null, 2);
-}
-
-document.getElementById('load-config').addEventListener('click', loadConfig);
-
-document.getElementById('update-config-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const json = document.getElementById('config-json').value;
-    let data;
-    try {
-        data = JSON.parse(json);
-    } catch(err) {
-        showFeedback('JSON inválido', true);
-        return;
-    }
-    const res = await request(`${API}/config`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-    if (res.ok) {
-        showFeedback('Configurações atualizadas!');
-        loadConfig();
-    } else {
-        showFeedback('Erro ao salvar configurações', true);
-    }
-});
-
-async function loadStats() {
-    const res = await request(`${API}/stats`);
-    const data = await res.json();
-    document.getElementById('stats-output').textContent = JSON.stringify(data, null, 2);
-}
-
-document.getElementById('load-stats').addEventListener('click', loadStats);
-loadTheme();
-</script>
-    </main>
-    <footer class="app-footer">Frontend de teste I.A-Sarah</footer>
-  </div>
+    <div class="dashboard-grid">
+        <aside class="gt-sidebar">
+            <div class="gt-card profile-card">
+                <div class="gt-avatar">PR</div>
+                <h3>Professor</h3>
+                <p>Plano PRO</p>
+                <button class="gt-btn-primary">Minha Conta</button>
+            </div>
+            <div class="gt-card actions-card">
+                <button class="gt-btn-secondary">Ver Lista</button>
+                <button class="gt-btn-secondary">Ver Agenda</button>
+            </div>
+        </aside>
+        <main class="gt-main">
+            <section class="gt-panel">
+                <h4 class="panel-title">Alunos Cadastrados – 1/100</h4>
+                <div class="alunos-summary">
+                    <div class="donut-chart-placeholder"></div>
+                    <ul class="status-list">
+                        <li><span class="circle active"></span>1 Ativos</li>
+                        <li><span class="circle expired"></span>0 Expirados</li>
+                        <li><span class="circle blocked"></span>0 Bloqueados</li>
+                    </ul>
+                    <div class="percentages">
+                        <span>100%</span>
+                        <span>0%</span>
+                        <span>0%</span>
+                    </div>
+                </div>
+                <div class="financial-summary">
+                    <span>Pendente Global: R$ 0.00</span>
+                    <span>Atrasado Global: R$ 0.00</span>
+                </div>
+            </section>
+            <section class="gt-panel">
+                <h4 class="panel-title">Programas &amp; Objetivos</h4>
+                <div class="objective-chart">
+                    <div class="pie-chart-placeholder"></div>
+                    <div class="legend-item">
+                        <span class="legend-color"></span>11 (100%)
+                    </div>
+                </div>
+            </section>
+            <section class="gt-panel">
+                <div class="panel-header">
+                    <h4 class="panel-title">Tempo de Consultoria</h4>
+                    <button class="gt-btn-primary">Adicionar Aluno</button>
+                </div>
+                <div class="consultoria-item">
+                    <div class="consultoria-avatar">AS</div>
+                    <span class="consultoria-nome">aswqw</span>
+                    <span class="consultoria-data">11/11/1911</span>
+                    <div class="consultoria-progresso"><div class="barra" style="width:35%"></div></div>
+                    <button class="gt-btn-secondary btn-perfil">Perfil</button>
+                    <span class="info-icon">i</span>
+                </div>
+            </section>
+        </main>
+    </div>
+    <footer class="gt-footer">© 2025 Gestor Trainer. Direitos Reservados.</footer>
 </div>
 </body>
 </html>
