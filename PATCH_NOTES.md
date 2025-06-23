@@ -160,3 +160,7 @@
 ## Versão 4.8 - Documentação de PV_KEYWORD_PATH
 - Seção de variáveis de ambiente ampliada com instruções sobre `PV_KEYWORD_PATH`.
 
+## Versão 4.9 - Tabelas com visual de cartões
+- Estilo das tabelas atualizado para bordas suaves e espaçamento entre linhas,
+  evitando aparência de planilha.
+

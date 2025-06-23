@@ -906,21 +906,29 @@ button:disabled {
 /* --- Tabelas de Dados em Modais (WL & SW) --- */
 .data-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 6px; /* Espaço entre as linhas para estilo de "cards" */
     font-size: 0.9em;
 }
 .data-table th, .data-table td {
     padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--border-primary);
     color: var(--text-secondary);
     vertical-align: middle;
+    border-bottom: none;
 }
 .data-table th {
     background-color: var(--bg-tertiary);
     color: var(--text-primary);
     font-weight: 500;
     white-space: nowrap;
+    border: none;
+}
+.data-table tbody tr {
+    background-color: var(--bg-tertiary);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
 }
 .data-table tbody tr:hover {
     background-color: var(--bg-hover);
@@ -1129,17 +1137,19 @@ button:disabled {
   .data-table tr {
     display: block;
     margin-bottom: 15px;
-    border: 1px solid var(--border-secondary);
+    border: none;
     border-radius: 6px;
     padding: 10px;
-    background-color: var(--bg-tertiary); 
+    background-color: var(--bg-tertiary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .data-table td {
     display: block;
-    text-align: right; 
-    padding-left: 50%; 
+    text-align: right;
+    padding-left: 50%;
     position: relative;
     border-bottom: 1px dashed var(--border-primary);
+    color: var(--text-secondary);
   }
   .data-table td:last-child {
       border-bottom: none;
