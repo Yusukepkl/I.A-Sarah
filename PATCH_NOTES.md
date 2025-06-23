@@ -164,3 +164,6 @@
 - Estilo das tabelas atualizado para bordas suaves e espaçamento entre linhas,
   evitando aparência de planilha.
 
+## Versão 5.0 - Interface web automática
+- `iasarah-api` agora abre `web/index.html` no navegador ao iniciar.
+

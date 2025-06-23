@@ -102,8 +102,24 @@ async def get_stats(limit: int = 5):
     return controllers.obter_estatisticas(limit)
 
 
-def main() -> None:
+def main(open_browser: bool = True) -> None:
+    """Inicializa o servidor e, opcionalmente, abre a interface web."""
     import uvicorn
+    import threading
+    import time
+    import webbrowser
+    from pathlib import Path
+
+    if open_browser:
+        root_dir = Path(__file__).resolve().parents[4]
+        index_file = root_dir / "web" / "index.html"
+
+        if index_file.is_file():
+            def _open() -> None:
+                time.sleep(1)
+                webbrowser.open_new_tab(index_file.as_uri())
+
+            threading.Thread(target=_open, daemon=True).start()
 
     uvicorn.run(app, host="0.0.0.0", port=8001)
 
